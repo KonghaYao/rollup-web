@@ -1,9 +1,5 @@
 import type { Plugin } from "rollup-web";
-import {
-    ModuleTree,
-    ModuleTreeLeaf,
-    VisualizerData,
-} from "./drawDependence/types";
+import { ModuleTree, ModuleTreeLeaf } from "./drawDependence/types";
 import { ModuleMapper } from "./drawDependence/module-mapper";
 import { addLinks, buildTree } from "./drawDependence/data";
 import { Buffer } from "buffer";
@@ -24,7 +20,8 @@ const ModuleLengths = async ({
                 : Buffer.byteLength(code, "utf-8"),
     };
 };
-export const MapperStore = new Map<string, ModuleMapper[]>();
+export const MapperStore = new Map<string, ModuleMapper>();
+
 // 借鉴 rollup-plugin-visualizer 实现的模块关系导出
 export const drawDependence = ({
     projectRoot = window.location.href,
@@ -43,7 +40,12 @@ export const drawDependence = ({
         name: "draw-dependence",
         async generateBundle(_, outputBundle) {
             const roots: Array<ModuleTree | ModuleTreeLeaf> = [];
-            const mapper = new ModuleMapper(projectRoot, mapperTag);
+            let mapper: ModuleMapper;
+            if (MapperStore.has(mapperTag)) {
+                mapper = MapperStore.get(mapperTag)!;
+            } else {
+                mapper = new ModuleMapper(projectRoot, mapperTag);
+            }
 
             // collect trees
             for (const [bundleId, bundle] of Object.entries(outputBundle)) {
@@ -87,7 +89,6 @@ export const drawDependence = ({
             for (const [, bundle] of Object.entries(outputBundle)) {
                 if (bundle.type !== "chunk" || bundle.facadeModuleId == null)
                     continue; //only chunks
-
                 addLinks(
                     bundle.facadeModuleId,
                     this.getModuleInfo.bind(this),
@@ -96,13 +97,6 @@ export const drawDependence = ({
             }
 
             // 直接向外部暴露而不进行操作
-
-            const store = MapperStore.get(mapperTag);
-            if (store instanceof Array) {
-                store.push(mapper);
-            } else {
-                MapperStore.set(mapperTag, [mapper]);
-            }
             log(mapperTag, mapper);
         },
     } as Plugin;

@@ -39,7 +39,7 @@ export const _babel = ({
         },
     } as Plugin;
 };
-
+/* Babel 桥接插件 */
 export const babel = wrapPlugin(_babel, {
     extensions: [".js", ".jsx", ".es6", ".es", ".mjs"],
 });
