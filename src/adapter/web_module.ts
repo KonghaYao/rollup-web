@@ -1,7 +1,7 @@
 import { addExtension } from "@rollup/pluginutils";
 import { Plugin } from "rollup";
 import { isURLString } from "../utils/isURLString";
-import { extname } from "../shim/path";
+import { extname } from "../shim/_/path";
 import { wrapPlugin } from "../utils/wrapPlugin";
 
 /* 文件缓存器 */

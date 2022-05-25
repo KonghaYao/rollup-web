@@ -1,6 +1,6 @@
 import { createFilter, FilterPattern } from "@rollup/pluginutils";
 import type { Plugin, LoadHook, TransformHook, ResolveIdHook } from "rollup";
-import { extname } from "../shim/path";
+import { extname } from "../shim/_/path";
 import { isURLString } from "./isURLString";
 import { relativeResolve } from "./pathUtils";
 

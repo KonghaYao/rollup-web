@@ -1,3 +1,4 @@
+/* 创建 ESM 代码的 URL */
 export const createModule = (str: string, fileName: string) => {
     return URL.createObjectURL(
         new File([str], fileName, { type: "application/javascript" })
@@ -13,7 +14,7 @@ export const ModuleEval = async (str: string, fileName = "index.js") => {
     });
 };
 
-/** 为 iife 文本添加 ESM 导出*/
+/** 为 iife 文本添加 ESM 导出 */
 export const IifeToESMEval = async (
     str: string,
     /** esm 更名导出，可以使用空字符串代表原来的名称 */

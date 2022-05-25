@@ -1,4 +1,5 @@
 const successSet = new Set<string>();
+// 从 url 加载一个 script
 export const loadScript = async (
     url: string,
     attr: any = {},
@@ -21,6 +22,8 @@ export const loadScript = async (
         to.appendChild(script);
     });
 };
+
+// 从 url 加载一个 link
 export const loadLink = (url: string) => {
     if (successSet.has(url)) return true;
     return new Promise((resolve, reject) => {

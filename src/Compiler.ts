@@ -1,4 +1,4 @@
-import { RollupOptions, OutputChunk } from "rollup-web";
+import type { RollupOptions, OutputChunk } from "rollup";
 import { web_module, ModuleConfig } from "./adapter/web_module";
 import { useRollup } from "./rollup";
 import { useGlobal } from "./utils/useGlobal";

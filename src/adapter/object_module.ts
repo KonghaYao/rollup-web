@@ -2,7 +2,7 @@ import get from "lodash-es/get";
 import { Plugin } from "rollup";
 import { wrapPlugin } from "../utils/wrapPlugin";
 import { relativeResolve } from "../utils/pathUtils";
-import { extname } from "../shim/path";
+import { extname } from "../shim/_/path";
 import { addExtension } from "@rollup/pluginutils";
 
 type stringObject = {
