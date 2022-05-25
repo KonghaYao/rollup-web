@@ -8,7 +8,7 @@ describe("Typescript 测试", () => {
             a: "b",
         });
     });
-    it("多导出 测试", () => {
+    it("多导出 + 异步 import 测试", () => {
         expect(module.a).to.deep.equal({
             _buildDate_: 3434,
             _buildVersion_: 15,

@@ -1,6 +1,6 @@
 <template>
-    <div class="map">
-        Vue3 编辑 {{ A }}
+    <div id="vue3">
+        Vue3 编辑 {{ JSON.stringify(A) }}
     </div>
 </template>
 
@@ -11,7 +11,7 @@ console.warn("vue3 编译成功")
 </script>
 
 <style scoped>
-.map {
-    color: "#ff0000"
+#vue3 {
+    color: #ff0000
 }
 </style>

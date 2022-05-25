@@ -19,4 +19,7 @@ const App = () => {
         </div>
     );
 };
-export default render(App, document.body);
+const div = document.createElement("div");
+div.id = "solidjs";
+document.body.appendChild(div);
+export default render(App, "#solidjs");
