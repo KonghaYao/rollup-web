@@ -70,6 +70,12 @@ export class Compiler {
             bundleArea?: string[];
         }
     ) {
+        if (!this.moduleConfig.root) {
+            this.moduleConfig.root = globalThis.location.href.replace(
+                /[^\/]*?#.*/,
+                ""
+            );
+        }
         fetchHook(this.moduleCache, this.moduleConfig, () => {
             return this.CompileSingleFile.bind(this);
         });

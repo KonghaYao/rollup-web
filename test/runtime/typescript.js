@@ -42,7 +42,6 @@ const config = {
 };
 const compiler = new Compiler(config, {
     // 用于为相对地址添加绝对地址
-    root: window.location.href.replace(/[^\/]*?#.*/, ""),
     // 为没有后缀名的 url 添加后缀名
     extensions: [".ts", ".cjs", ".json"],
     log(url) {
