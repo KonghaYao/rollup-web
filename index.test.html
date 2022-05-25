@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+        <link
+            rel="stylesheet"
+            href="https://fastly.jsdelivr.net/npm/mocha/mocha.css"
+        />
+        <style>
+            #mocha {
+                font-family: "Noto Serif SC";
+                font-size: 24px;
+            }
+            #mocha h2 {
+                font-size: 16px;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="mocha"></div>
+    </body>
+    <script type="importmap">
+        {
+            "imports": {
+                "path": "https://esm.sh/path"
+            }
+        }
+    </script>
+    <script type="module" src="./test/install.js"></script>
+</html>

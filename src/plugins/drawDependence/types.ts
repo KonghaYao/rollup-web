@@ -1,0 +1,48 @@
+export type SizeKey = "renderedLength" | "gzipLength" | "brotliLength";
+
+export const isModuleTree = (
+    mod: ModuleTree | ModuleTreeLeaf
+): mod is ModuleTree => "children" in mod;
+
+export type ModuleUID = string;
+export type BundleId = string;
+
+export interface ModuleTreeLeaf {
+    name: string;
+    uid: ModuleUID;
+}
+
+export interface ModuleTree {
+    name: string;
+    children: Array<ModuleTree | ModuleTreeLeaf>;
+}
+
+export type ModulePart = {
+    mainUid: ModuleUID;
+} & ModuleLengths;
+
+export type ModuleImport = {
+    uid: ModuleUID;
+    dynamic?: boolean;
+};
+
+export type ModuleMeta = {
+    moduleParts: Record<BundleId, ModuleUID>;
+    importedBy: ModuleImport[];
+    imported: ModuleImport[];
+    isEntry?: boolean;
+    isExternal?: boolean;
+    id: string;
+};
+
+export interface ModuleLengths {
+    renderedLength: number;
+    // gzipLength: number;
+    // brotliLength: number;
+}
+
+export interface VisualizerData {
+    tree: ModuleTree;
+    nodeParts: Record<ModuleUID, ModulePart>;
+    nodeMetas: Record<ModuleUID, ModuleMeta>;
+}
