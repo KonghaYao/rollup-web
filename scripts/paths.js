@@ -1,5 +1,4 @@
-import { npmCDN } from "../rollup.config";
-
+const npmCDN = "https://fastly.jsdelivr.net/npm/";
 /*
     统一的 paths 替换项
 */

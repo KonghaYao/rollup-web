@@ -2,13 +2,12 @@ import multiInput from "rollup-plugin-multi-input";
 import analyze from "rollup-plugin-analyzer";
 import json from "@rollup/plugin-json";
 import { writeFileSync } from "fs";
-import { emptyDir } from "./script/emptyDir";
-import { plugins } from "./scripts/plugins";
-import { paths } from "./scripts/paths";
+import { emptyDir } from "./scripts/emptyDir.js";
+import { plugins } from "./scripts/plugins.js";
+import { paths } from "./scripts/paths.js";
 
 true && emptyDir("./dist");
 const pluginInput = "*";
-export const npmCDN = "https://fastly.jsdelivr.net/npm/";
 export default [
     {
         external: ["rollup-web", "process-bundle", "picomatch"],
