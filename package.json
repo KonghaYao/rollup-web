@@ -5,9 +5,9 @@
     "main": "./src/index.ts",
     "browser": "./dist/index.js",
     "scripts": {
-        "dev": "rollup -c rollup.config.ts --watch",
-        "build": "rollup -c rollup.config.ts",
-        "draw": "madge src/index.ts --image dist/index.svg"
+        "dev": "rollup -c rollup.config.js --watch",
+        "build": "rollup -c rollup.config.js",
+        "draw": "madge src/index.js --image dist/index.svg"
     },
     "repository": {
         "type": "git",
