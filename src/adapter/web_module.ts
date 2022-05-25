@@ -74,6 +74,7 @@ const returnResult = (
         id: result,
     };
 };
+
 const _web_module = ({
     /* 必须为绝对地址 */
     root = window.location.href,
@@ -123,7 +124,6 @@ const _web_module = ({
                         const result = await isExist(addExtension(url, ext));
                         if (result) {
                             Cache && Cache.add(url, result);
-
                             return returnResult(
                                 forceDependenciesExternal,
                                 result,

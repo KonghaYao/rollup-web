@@ -30,15 +30,24 @@ const fetchHook = (
 
         if (moduleCache.has(url)) {
             /* 已经存在缓存 */
-            console.log("%c cache " + url, "color:green");
+            console.log(
+                "%c Compiler | fetch | cache " + url,
+                "background-color:#00aa0011;"
+            );
             code = moduleCache.get(url)!.code;
         } else if (moduleConfig.allBundle || isMatch(url)) {
-            console.log("%c bundle " + url, "color:orange");
+            console.log(
+                "%c Compiler | fetch | bundle " + url,
+                "background-color:#77007711;"
+            );
             /* 全打包或者被选中打包 */
             code = await Bundle(url, rollupCode, moduleCache);
         } else {
             /* 默认使用 esm import 方式导入代码 */
-            console.log("%c import " + url, "color:blue");
+            console.log(
+                "%c Compiler | fetch | import " + url,
+                "background-color:#00007711;"
+            );
             code = await LoadEsmModule(url);
         }
         return new Response(
@@ -82,7 +91,7 @@ export class Compiler {
     }
 
     /* 编译单个代码，不宜单独使用 */
-    async CompileSingleFile(url: string, replaceUrl?: string) {
+    async CompileSingleFile(url: string) {
         return useRollup({
             ...this.options,
             input: url,
@@ -96,8 +105,9 @@ export class Compiler {
                 format: "system",
             },
         }).then((res) => {
+            // 将结果写入缓存，url 可能会被添加上 searchParams
             (res.output as OutputChunk[]).forEach((i) => {
-                this.moduleCache.set(replaceUrl || i.facadeModuleId!, i);
+                this.moduleCache.set(i.facadeModuleId!.replace(/\?.*/, ""), i);
             });
             return res.output;
         });

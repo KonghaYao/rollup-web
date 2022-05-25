@@ -9,8 +9,7 @@ import { relativeResolve } from "./pathUtils";
  * @returns  ext 后缀名，没有后缀名为空字符，不符合后缀名则为 false
  * */
 export const checkExtension = (path: string, extensions: string[]) => {
-    const url = new URL(path);
-    const ext = extname(url.origin + "/" + url.pathname);
+    const ext = extname(path.replace(/[#|?][^\/]*/, ""));
     // console.log(extensions, ext, extensions.includes(ext));
     if (ext) {
         return extensions.includes(ext) && ext;
