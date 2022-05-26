@@ -15,7 +15,6 @@ export const _css = ({}: {} = {}) => {
         },
         async load(id) {
             const text = await fetch(id).then((res) => res.text());
-
             return { code: text };
         },
     } as Plugin;

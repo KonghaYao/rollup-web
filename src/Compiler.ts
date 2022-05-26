@@ -98,15 +98,17 @@ export class Compiler {
 
     /* 编译单个代码，不宜单独使用 */
     async CompileSingleFile(url: string) {
+        const plugins = this.options.plugins || [];
+        plugins.push(
+            web_module({
+                ...this.moduleConfig,
+                forceDependenciesExternal: true,
+            })
+        );
         return useRollup({
             ...this.options,
             input: url,
-            plugins: (this.options.plugins || []).concat(
-                web_module({
-                    ...this.moduleConfig,
-                    forceDependenciesExternal: true,
-                })
-            ),
+            plugins,
             output: {
                 format: "system",
             },

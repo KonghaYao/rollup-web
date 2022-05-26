@@ -13,12 +13,8 @@ import replace from "https://esm.sh/@rollup/plugin-replace";
 // swc, babel 需要先进行初始化
 // Babel 2-3M 体积明显小于 SWC 17-18M
 await initBabel();
-// await initSwc();
+
 const config = {
-    input: "./public/index.vue",
-    output: {
-        format: "es",
-    },
     plugins: [
         json(),
         alias({

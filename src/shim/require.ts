@@ -1,5 +1,5 @@
 const __require = {
-    _cdn: "https://cdn.jsdelivr.net/npm",
+    _cdn: "https://fastly.jsdelivr.net/npm",
     resolve(path: string) {
         return path;
     },

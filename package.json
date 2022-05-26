@@ -54,10 +54,12 @@
         "lodash-es": "^4.17.21",
         "micromatch": "^4.0.5",
         "picomatch": "^2.3.1",
+        "postcss-modules": "^4.3.1",
         "process": "^0.11.10",
         "punycode": "^2.1.1",
         "rollup": "2.63.0",
         "rollup-plugin-postcss": "^4.0.2",
+        "rollup-plugin-styles": "^4.0.0",
         "style-inject": "^0.3.0"
     },
     "files": [

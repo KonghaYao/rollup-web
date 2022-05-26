@@ -15,6 +15,7 @@ declare module "rollup-plugin-multi-input" {
     export default a;
 }
 declare module "safe-identifier-bundle" {
+    const identifier: any;
     const a: any;
     export default a;
 }
