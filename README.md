@@ -13,9 +13,13 @@ Our plugins create bridge to use Ts, Tsx, Vue SFC, Babel ... in Our Project , ju
 -   [x] Dynamic Import
 -   [x] Babel Support
 -   [x] Vue SFC Support
--   [x] SWC Support
--   [x] Less Support
 -   [x] Solidjs Support
+-   [x] Typescript Support
+-   [x] CSS Support
+-   [x] json Support
+
+-   [ ] SWC Support
+-   [ ] Less Support
 -   [ ] WASM Support
 -   [ ] Web Worker Support
 

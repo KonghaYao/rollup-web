@@ -40,6 +40,7 @@ export const drawDependence = ({
         name: "draw-dependence",
         async generateBundle(_, outputBundle) {
             const roots: Array<ModuleTree | ModuleTreeLeaf> = [];
+            // 构建 Mapper
             let mapper: ModuleMapper;
             if (MapperStore.has(mapperTag)) {
                 mapper = MapperStore.get(mapperTag)!;
