@@ -3,6 +3,7 @@ import { web_module, ModuleConfig } from "./adapter/web_module";
 import { useRollup } from "./rollup";
 import { useGlobal } from "./utils/useGlobal";
 import pm from "picomatch";
+import { loadScript } from "./utils/loadScript";
 
 // 用于和 Systemjs 进行互动
 const fetchHook = (
@@ -27,14 +28,14 @@ const fetchHook = (
     ) {
         const [url] = args;
         let code: string;
-
-        if (moduleCache.has(url)) {
+        const isExist = await moduleCache.hasData(url);
+        if (isExist) {
             /* 已经存在缓存 */
             console.log(
                 "%c Compiler | fetch | cache " + url,
                 "background-color:#00aa0011;"
             );
-            code = moduleCache.get(url)!.code;
+            code = (await moduleCache.getData(url))!.code;
         } else if (moduleConfig.allBundle || isMatch(url)) {
             console.log(
                 "%c Compiler | fetch | bundle " + url,
@@ -57,6 +58,47 @@ const fetchHook = (
         );
     };
 };
+
+class ModuleCache<T, E> extends Map<T, E> {
+    set(key: T, value: E): this {
+        if (this.store) {
+            this.store.setItem(key, value);
+        }
+        return super.set.call(this, key, value);
+    }
+    store!: any;
+    async registerCache() {
+        await loadScript(
+            "https://fastly.jsdelivr.net/npm/localforage/dist/localforage.min.js"
+        );
+        const localforage = useGlobal<any>("localforage");
+        // Feel free to change the drivers order :)
+        this.store = localforage.createInstance({
+            name: "rollup_web",
+            driver: [
+                localforage.INDEXEDDB,
+                localforage.WEBSQL,
+                localforage.LOCALSTORAGE,
+            ],
+        });
+    }
+    async hasData(key: T): Promise<boolean> {
+        if (this.store) {
+            return this.store.keys().then((res: T[]) => {
+                return res.includes(key);
+            });
+        }
+        return super.has.call(this, key);
+    }
+    async getData(key: T): Promise<E | undefined> {
+        if (this.store) {
+            const data = await this.store.getItem(key);
+            if (data) return data;
+        }
+        return super.get.call(this, key);
+    }
+}
+
 export class Compiler {
     System = useGlobal<any>("System");
     constructor(
@@ -68,6 +110,7 @@ export class Compiler {
             allBundle?: boolean;
             /* 匹配到的区域都将使用 rollup 打包 */
             bundleArea?: string[];
+            useDataCache?: boolean;
         }
     ) {
         if (!this.moduleConfig.root) {
@@ -76,18 +119,20 @@ export class Compiler {
                 ""
             );
         }
+        if (moduleConfig.useDataCache) this.moduleCache.registerCache();
         fetchHook(this.moduleCache, this.moduleConfig, () => {
             return this.CompileSingleFile.bind(this);
         });
     }
     /* 打包缓存，code import 被替换为指定的 url 标记 */
-    moduleCache = new Map<string, OutputChunk>();
+    moduleCache = new ModuleCache<string, OutputChunk>();
 
     /* 执行代码 */
     async evaluate(path: string) {
         const System = useGlobal<any>("System");
         const url = new URL(path, this.moduleConfig.root).toString();
-        if (!this.moduleCache.has(url)) {
+        const isExist = this.moduleCache.hasData(url);
+        if (!isExist) {
             await this.CompileSingleFile(url);
         }
         return System.import(url);
@@ -148,9 +193,9 @@ async function LoadEsmModule(url: string) {
 async function Bundle(
     url: string,
     rollupCode: () => (code: string, replaceUrl?: string) => Promise<any>,
-    moduleCache: Map<string, OutputChunk>
+    moduleCache: ModuleCache<string, OutputChunk>
 ) {
     /* 副作用： 打包，打包过后是会有缓存的 */
     await rollupCode()(url);
-    return moduleCache.get(url)!.code;
+    return moduleCache.getData(url).then((res) => res!.code);
 }
