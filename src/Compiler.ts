@@ -59,14 +59,18 @@ const fetchHook = (
     };
 };
 
+/** 模块缓存类，被打包的代码将不会被更新 */
 class ModuleCache<T, E> extends Map<T, E> {
     set(key: T, value: E): this {
         if (this.store) {
-            this.store.setItem(key, value);
+            this.store.setItem(key, value).then(() => {
+                this.Keys.push(key);
+            });
         }
         return super.set.call(this, key, value);
     }
     store!: any;
+    Keys: T[] = [];
     async registerCache() {
         await loadScript(
             "https://fastly.jsdelivr.net/npm/localforage/dist/localforage.min.js"
@@ -84,9 +88,8 @@ class ModuleCache<T, E> extends Map<T, E> {
     }
     async hasData(key: T): Promise<boolean> {
         if (this.store) {
-            return this.store.keys().then((res: T[]) => {
-                return res.includes(key);
-            });
+            if (this.Keys.length === 0) this.Keys = await this.store.keys();
+            return this.Keys.includes(key);
         }
         return super.has.call(this, key);
     }
