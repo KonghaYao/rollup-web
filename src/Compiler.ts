@@ -101,7 +101,10 @@ class ModuleCache<T, E> extends Map<T, E> {
         return super.get.call(this, key);
     }
 }
-
+type CacheConfig = {
+    // 设置忽略缓存的文件
+    ignore: string[];
+};
 export class Compiler {
     System = useGlobal<any>("System");
     constructor(
@@ -113,7 +116,7 @@ export class Compiler {
             allBundle?: boolean;
             /* 匹配到的区域都将使用 rollup 打包 */
             bundleArea?: string[];
-            useDataCache?: boolean;
+            useDataCache?: boolean | CacheConfig;
         }
     ) {
         if (!this.moduleConfig.root) {
