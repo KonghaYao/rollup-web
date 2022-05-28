@@ -2,8 +2,8 @@ import type { RollupOptions, OutputChunk } from "rollup";
 import { web_module, ModuleConfig } from "./adapter/web_module";
 import { useRollup } from "./rollup";
 import { useGlobal } from "./utils/useGlobal";
-import pm from "picomatch";
-import { loadScript } from "./utils/loadScript";
+import { isMatch } from "picomatch";
+import { CacheConfig, ModuleCache } from "./Compiler/ModuleCache";
 
 // 用于和 Systemjs 进行互动
 const fetchHook = (
@@ -19,10 +19,7 @@ const fetchHook = (
 
     console.log("fetch hook 注入成功");
     const hookName = "fetch";
-    /* 匹配到具体的 bundleArea */
-    const isMatch = (url: string) => {
-        return (moduleConfig.bundleArea || []).some((i) => pm(i)(url));
-    };
+
     System.constructor.prototype[hookName] = async function (
         ...args: [string, any]
     ) {
@@ -36,7 +33,13 @@ const fetchHook = (
                 "background-color:#00aa0011;"
             );
             code = (await moduleCache.getData(url))!.code;
-        } else if (moduleConfig.allBundle || isMatch(url)) {
+        } else if (
+            moduleConfig.allBundle ||
+            /* 如果没有设置打包区域，那么将全部打包 */
+            typeof moduleConfig.bundleArea === "undefined" ||
+            /* 如果设置了打包区域，那么将会按照这些进行打包 */
+            isMatch(url, moduleConfig.bundleArea)
+        ) {
             console.log(
                 "%c Compiler | fetch | bundle " + url,
                 "background-color:#77007711;"
@@ -59,52 +62,6 @@ const fetchHook = (
     };
 };
 
-/** 模块缓存类，被打包的代码将不会被更新 */
-class ModuleCache<T, E> extends Map<T, E> {
-    set(key: T, value: E): this {
-        if (this.store) {
-            this.store.setItem(key, value).then(() => {
-                this.Keys.push(key);
-            });
-        }
-        return super.set.call(this, key, value);
-    }
-    store!: any;
-    Keys: T[] = [];
-    async registerCache() {
-        await loadScript(
-            "https://fastly.jsdelivr.net/npm/localforage/dist/localforage.min.js"
-        );
-        const localforage = useGlobal<any>("localforage");
-        // Feel free to change the drivers order :)
-        this.store = localforage.createInstance({
-            name: "rollup_web",
-            driver: [
-                localforage.INDEXEDDB,
-                localforage.WEBSQL,
-                localforage.LOCALSTORAGE,
-            ],
-        });
-    }
-    async hasData(key: T): Promise<boolean> {
-        if (this.store) {
-            if (this.Keys.length === 0) this.Keys = await this.store.keys();
-            return this.Keys.includes(key);
-        }
-        return super.has.call(this, key);
-    }
-    async getData(key: T): Promise<E | undefined> {
-        if (this.store) {
-            const data = await this.store.getItem(key);
-            if (data) return data;
-        }
-        return super.get.call(this, key);
-    }
-}
-type CacheConfig = {
-    // 设置忽略缓存的文件
-    ignore: string[];
-};
 export class Compiler {
     System = useGlobal<any>("System");
     constructor(
@@ -125,7 +82,14 @@ export class Compiler {
                 ""
             );
         }
-        if (moduleConfig.useDataCache) this.moduleCache.registerCache();
+        if (moduleConfig.useDataCache) {
+            this.moduleCache.createConfig(
+                typeof moduleConfig.useDataCache === "object"
+                    ? moduleConfig.useDataCache
+                    : {}
+            );
+            this.moduleCache.registerCache();
+        }
         fetchHook(this.moduleCache, this.moduleConfig, () => {
             return this.CompileSingleFile.bind(this);
         });
@@ -203,5 +167,7 @@ async function Bundle(
 ) {
     /* 副作用： 打包，打包过后是会有缓存的 */
     await rollupCode()(url);
-    return moduleCache.getData(url).then((res) => res!.code);
+
+    // 从缓存中取出这个代码
+    return moduleCache.get(url)!.code;
 }
