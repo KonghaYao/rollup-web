@@ -3,11 +3,5 @@ import { module } from "./runtime/postcss.js";
 import { expect } from "chai";
 describe("Postcss 测试", () => {
     console.log(module);
-    it("基础渲染测试", () => {
-        const test = document.getElementById("vue3").innerHTML;
-        console.log(test);
-        expect(test).to.eq(
-            ' Vue3 编辑 {"_buildDate_":3434,"_buildVersion_":15}'
-        );
-    });
+    // TODO
 });

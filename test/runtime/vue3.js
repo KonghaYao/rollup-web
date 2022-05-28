@@ -45,9 +45,9 @@ const config = {
                 console.log("%cBabel typescript > " + id, "color:orange");
             },
         }),
-        css(),
 
         vue(),
+        css(),
         sky_module({
             cdn: (name) => `https://fastly.jsdelivr.net/npm/${name}/+esm`,
             rename: {
