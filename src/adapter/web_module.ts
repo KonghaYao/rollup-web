@@ -3,6 +3,7 @@ import { Plugin } from "rollup";
 import { isURLString } from "../utils/isURLString";
 import { extname } from "../shim/_/path";
 import { wrapPlugin } from "../utils/wrapPlugin";
+import { ResolveIdHook, ResolveIdResult } from "rollup-web";
 
 /* 文件缓存器 */
 const fileCache = new Map<string, string>();
@@ -56,11 +57,6 @@ export interface ModuleConfig {
     root?: string;
     log?: (string: string) => void;
     logExternal?: (url: string) => void;
-    /* 自定义修改最终的 id */
-    __modifyId?: ({ id, external }: { id: string; external: boolean }) => {
-        id: string;
-        external: boolean;
-    };
     /* 用于没有设置后缀名时的猜测函数，并具有筛选功能 */
     extensions?: string[];
     /* 不缓存文件 */
@@ -72,20 +68,14 @@ const returnResult = (
     forceDependenciesExternal: boolean,
     result: string,
     isEntry: boolean,
-    logExternal?: ModuleConfig["logExternal"],
-    __modifyId?: ModuleConfig["__modifyId"]
+    logExternal?: ModuleConfig["logExternal"]
 ) => {
     if (!isEntry && forceDependenciesExternal && logExternal)
         logExternal(result);
-    const finalResult = {
+    return {
         external: isEntry ? false : forceDependenciesExternal,
         id: result,
     };
-    if (__modifyId) {
-        return __modifyId(finalResult);
-    } else {
-        return finalResult;
-    }
 };
 
 const _web_module = ({
@@ -97,7 +87,7 @@ const _web_module = ({
     /* 使用后缀名缓存，不缓存文件,默认是全局都是采用这个标记的缓存区间 */
     cache = "module_info",
     forceDependenciesExternal = false,
-    __modifyId,
+
     logExternal = () => {},
 }: ModuleConfig = {}) => {
     let Cache: ExtensionCache | undefined;
@@ -130,8 +120,7 @@ const _web_module = ({
                                 forceDependenciesExternal,
                                 current,
                                 isEntry,
-                                logExternal,
-                                __modifyId
+                                logExternal
                             );
                         }
                     }
@@ -143,8 +132,7 @@ const _web_module = ({
                                 forceDependenciesExternal,
                                 result,
                                 isEntry,
-                                logExternal,
-                                __modifyId
+                                logExternal
                             );
                         }
                     }
@@ -156,8 +144,7 @@ const _web_module = ({
                               forceDependenciesExternal,
                               id,
                               isEntry,
-                              logExternal,
-                              __modifyId
+                              logExternal
                           )
                         : id;
                 }

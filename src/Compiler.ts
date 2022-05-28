@@ -3,7 +3,7 @@ import { web_module, ModuleConfig } from "./adapter/web_module";
 import { useRollup } from "./rollup";
 import { useGlobal } from "./utils/useGlobal";
 import { CacheConfig, ModuleCache } from "./Compiler/ModuleCache";
-import { fetchHook } from "./Compiler/fetchHook";
+import { fetchHook, hasForceBundle } from "./Compiler/fetchHook";
 import { Plugin } from "rollup-web";
 
 /* 
@@ -49,12 +49,29 @@ export class Compiler {
         this.refreshPlugin();
     }
     plugins: Plugin[] = [];
+    /* 更新插件配置 */
     refreshPlugin() {
         this.plugins = this.options.plugins as Plugin[];
         this.plugins.push(
             web_module({
                 ...this.moduleConfig,
                 forceDependenciesExternal: true,
+                /* 当 导入的包具有强制打包印记时，将会把所有依赖设置为强制打包 */
+                __modifyId(result, importer) {
+                    const isForce = hasForceBundle(importer);
+                    if (isForce) {
+                        if (typeof result === "object") {
+                            const url = new URL(result!.id, this.root);
+                            url.searchParams.set("__force_bundle", "true");
+                            result!.id = url.toString();
+                            return result;
+                        } else {
+                            const url = new URL(result as string, this.root);
+                            url.searchParams.set("__force_bundle", "true");
+                            return url.toString();
+                        }
+                    }
+                },
             })
         );
     }
@@ -76,7 +93,7 @@ export class Compiler {
     }
 
     /* 编译单个代码，不宜单独使用 */
-    async CompileSingleFile(url: string, params = new URLSearchParams()) {
+    async CompileSingleFile(url: string) {
         return useRollup({
             ...this.options,
             input: url,
@@ -85,9 +102,8 @@ export class Compiler {
                 format: "system",
             },
         }).then((res) => {
-            // 将结果写入缓存，url 可能会被添加上 searchParams
             (res.output as OutputChunk[]).forEach((i) => {
-                this.moduleCache.set(i.facadeModuleId!.replace(/\?.*/, ""), i);
+                this.moduleCache.set(i.facadeModuleId!, i);
             });
             return res.output;
         });

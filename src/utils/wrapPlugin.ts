@@ -1,5 +1,11 @@
 import { createFilter, FilterPattern } from "@rollup/pluginutils";
-import type { Plugin, LoadHook, TransformHook, ResolveIdHook } from "rollup";
+import type {
+    Plugin,
+    LoadHook,
+    TransformHook,
+    ResolveIdHook,
+    ResolveIdResult,
+} from "rollup";
 import { extname } from "../shim/_/path";
 import { isURLString } from "./isURLString";
 import { relativeResolve } from "./pathUtils";
@@ -28,6 +34,7 @@ interface ExtraOptions {
     exclude?: FilterPattern;
     include?: FilterPattern;
     extensions?: string[];
+    __modifyId?: (result: ResolveIdResult, importer: string) => ResolveIdResult;
     loadCache?: false | string;
     _prefix?: string[];
     _suffix?: string[];
@@ -37,14 +44,14 @@ export const wrapPlugin = <T>(
     creator: (options: T) => Plugin,
     defaultOptions: Partial<T & ExtraOptions>
 ) => {
-    return function (options: T & ExtraOptions) {
-        options = Object.assign({}, defaultOptions, options);
-        const origin = creator.call(null, options);
+    return function (Options: T & ExtraOptions) {
+        Options = Object.assign({}, defaultOptions, Options);
+        const origin = creator.call(null, Options);
         const p = {
             ...origin,
         };
         // 注意 ，filter 只使用于相对路径导入
-        const filter = createFilter(options.include, options.exclude, {
+        const filter = createFilter(Options.include, Options.exclude, {
             resolve: "/",
         });
         if (origin.resolveId) {
@@ -57,7 +64,20 @@ export const wrapPlugin = <T>(
                 )
                     return;
 
-                return origin.resolveId!.call(this, source, importer, options);
+                const result = origin.resolveId!.call(
+                    this,
+                    source,
+                    importer,
+                    options
+                );
+
+                // 添加修改 id 的操作
+                if (Options.__modifyId && result) {
+                    return Promise.resolve(result).then((result) => {
+                        return Options.__modifyId!(result, importer || "");
+                    });
+                }
+                return result;
             } as ResolveIdHook;
         }
         if (origin.load) {
@@ -66,18 +86,18 @@ export const wrapPlugin = <T>(
 
                 //! 前缀和后缀有一个符合即可
                 if (
-                    options._prefix &&
-                    options._prefix.length &&
-                    checkPrefix(id, options._prefix) &&
-                    options._suffix &&
-                    options._suffix.length &&
-                    checkSuffix(id, options._suffix)
+                    Options._prefix &&
+                    Options._prefix.length &&
+                    checkPrefix(id, Options._prefix) &&
+                    Options._suffix &&
+                    Options._suffix.length &&
+                    checkSuffix(id, Options._suffix)
                 ) {
                     // 前缀名检查
                     console.warn("通过前缀测试", id);
-                } else if (options.extensions) {
+                } else if (Options.extensions) {
                     // 后缀名检查
-                    const result = checkExtension(id, options.extensions);
+                    const result = checkExtension(id, Options.extensions);
                     // console.log(id, extname(id), options, p);
                     if (result === false) return;
                 }
@@ -88,10 +108,10 @@ export const wrapPlugin = <T>(
             p.transform = function (code, id) {
                 // 所有文件都是load 过来的，所以文件都是有 http 开头的 id
                 // transform 对于没有后缀名的进行
-                const result = checkExtension(id, options.extensions!);
+                const result = checkExtension(id, Options.extensions!);
                 if (
                     result ||
-                    (result === "" && options.extensions?.includes(""))
+                    (result === "" && Options.extensions?.includes(""))
                 ) {
                     return origin.transform!.call(this, code, id);
                 }
