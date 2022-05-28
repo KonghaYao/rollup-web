@@ -13,9 +13,18 @@ describe("Typescript 测试", () => {
             _buildDate_: 3434,
             _buildVersion_: 15,
         });
-        return module.getDynamic().then((res) => {
-            expect(res.default).to.deep.eq({ a: "b" });
-        });
+        return module
+            .getDynamic()
+            .then((res) => {
+                expect(res.default).to.deep.eq({ a: "b" });
+            })
+            .then(() => {
+                module.setData(100);
+                return module.getData().then((res) => {
+                    console.log(res);
+                    expect(module.a._buildDate_).to.eq(res);
+                });
+            });
     });
     it("commonjs 测试", () => {
         expect(module.process).to.equal(window.process);

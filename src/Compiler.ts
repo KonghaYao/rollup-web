@@ -3,7 +3,7 @@ import { web_module, ModuleConfig } from "./adapter/web_module";
 import { useRollup } from "./rollup";
 import { useGlobal } from "./utils/useGlobal";
 import { CacheConfig, ModuleCache } from "./Compiler/ModuleCache";
-import { fetchHook, hasForceBundle } from "./Compiler/fetchHook";
+import { fetchHook } from "./Compiler/fetchHook";
 import { Plugin } from "rollup-web";
 
 /* 
@@ -20,13 +20,16 @@ export class Compiler {
     constructor(
         /* input and output will be ignored */
         public options: RollupOptions,
-        /* config used in web_module */
+
+        /**
+         *  需要打包模块的解析配置
+         *  @property extraBundle 若为 true，将会把 远程代码下载并经过 rollup 打包;若为数组，将会打包区域内的代码; root 下的代码是必定被打包的，所以不用填;
+         *  @property useDataCache 使用 indexDB 进行打包代码缓存以提高速度
+         */
         public moduleConfig: ModuleConfig & {
-            /** 若为 true，将会把 远程代码下载并经过 rollup 打包，覆盖 bundleArea */
-            allBundle?: boolean;
+            extraBundle?: true | string[];
             /* 匹配到的区域都将使用 rollup 打包 */
-            bundleArea?: string[];
-            useDataCache?: boolean | CacheConfig;
+            useDataCache?: false | CacheConfig;
         }
     ) {
         if (!this.moduleConfig.root) {
@@ -56,22 +59,6 @@ export class Compiler {
             web_module({
                 ...this.moduleConfig,
                 forceDependenciesExternal: true,
-                /* 当 导入的包具有强制打包印记时，将会把所有依赖设置为强制打包 */
-                __modifyId(result, importer) {
-                    const isForce = hasForceBundle(importer);
-                    if (isForce) {
-                        if (typeof result === "object") {
-                            const url = new URL(result!.id, this.root);
-                            url.searchParams.set("__force_bundle", "true");
-                            result!.id = url.toString();
-                            return result;
-                        } else {
-                            const url = new URL(result as string, this.root);
-                            url.searchParams.set("__force_bundle", "true");
-                            return url.toString();
-                        }
-                    }
-                },
             })
         );
     }

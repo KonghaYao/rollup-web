@@ -4,13 +4,10 @@ import { isMatch } from "picomatch";
 import { ModuleCache } from "./ModuleCache";
 import { Compiler } from "../Compiler";
 
-export const hasForceBundle = (_url: string) => {
-    const Url = new URL(_url);
-    const params = Url.searchParams;
-    return params.has("__force_bundle");
-};
-
-/** 用于和 Systemjs 进行互动 */
+/** 用于和 Systemjs 进行互动,
+ * fetch 只与第一次打包有关，
+ * 如果后续再请求到同一个 url，那么会直接走缓存
+ * */
 export const fetchHook = (
     moduleCache: Compiler["moduleCache"],
     moduleConfig: Compiler["moduleConfig"],
@@ -31,26 +28,29 @@ export const fetchHook = (
         const [url] = args;
 
         let code: string;
-        /* 查找是否有强制打包参数 */
-        const isForce = hasForceBundle(url);
-        const isExist = await moduleCache.hasData(url);
-        if (!isForce && isExist) {
+        const cacheUrl = await moduleCache.hasData(url.replace(/\?.*/, ""));
+
+        /* 
+        缓存对内，allBundle 对外，allBundle 是扩展打包的领域，而缓存是针对已经打包的领域进行加速
+        */
+
+        if (cacheUrl) {
             /* 已经存在缓存 */
             console.log(
-                "%c Compiler | fetch | cache " + url,
+                "%c Compiler | fetch | cache " + cacheUrl,
                 "background-color:#00aa0011;"
             );
-            code = (await moduleCache.getData(url))!.code;
+            code = (await moduleCache.getData(cacheUrl))!.code;
         } else if (
-            moduleConfig.allBundle ||
+            moduleConfig.extraBundle === true ||
             /* 如果没有设置打包区域，那么将全部打包 */
-            typeof moduleConfig.bundleArea === "undefined" ||
-            /* 如果设置了打包区域，那么将会按照这些进行打包 */
-            isMatch(url, moduleConfig.bundleArea)
+            (moduleConfig.extraBundle instanceof Array &&
+                /* 如果设置了打包区域，那么将会按照这些进行打包 */
+                isMatch(url, moduleConfig.extraBundle)) ||
+            url.startsWith(moduleConfig.root!)
         ) {
             console.log(
-                `%c Compiler | fetch | ${isForce ? "force" : "first"} bundle ` +
-                    url,
+                `%c Compiler | fetch | bundle ` + url,
                 "background-color:#aa007711;"
             );
             /* 全打包或者被选中打包 */
@@ -97,12 +97,14 @@ async function LoadEsmModule(url: string) {
 */
 async function Bundle(
     url: string,
-    rollupCode: () => (code: string) => Promise<any>,
+    rollupCode: () => (code: string) => Promise<OutputChunk[]>,
     moduleCache: ModuleCache<string, OutputChunk>
 ) {
     /* 副作用： 打包，打包过后是会有缓存的 */
-    await rollupCode()(url);
+    const result = await rollupCode()(url);
 
     // 从缓存中取出这个代码
-    return moduleCache.get(url)!.code;
+    return result.find((i) => {
+        return i.facadeModuleId!.startsWith(url);
+    })!.code;
 }

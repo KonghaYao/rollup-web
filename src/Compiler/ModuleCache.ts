@@ -6,9 +6,10 @@ import { isMatch } from "picomatch";
 export class ModuleCache<T extends string, E> extends Map<T, E> {
     set(key: T, value: E): this {
         // 写入缓存不需要进行忽略
-        // if (this.isIgnore(key)) return this;
+        // 这是为了 模块同一性
+        if (this.isIgnore(key)) return this;
         if (this.store) {
-            this.store.setItem(key, value).then(() => {
+            this.store.setItem(key.replace(/\?.*/, ""), value).then(() => {
                 this.Keys.push(key);
             });
         }
@@ -35,13 +36,19 @@ export class ModuleCache<T extends string, E> extends Map<T, E> {
             ],
         });
     }
-    async hasData(key: T): Promise<boolean> {
+    /* 注意，这里的 key 不要携带 searchParams；如果携带，你必须按顺序携带 */
+    async hasData(key: T): Promise<false | T> {
         if (this.isIgnore(key)) return false;
         if (this.store) {
             if (this.Keys.length === 0) this.Keys = await this.store.keys();
-            return this.Keys.includes(key);
+            return (
+                this.Keys.find((i) => {
+                    // 如果相等，那么前面的部分必然是相等的，但是 后面的 searchParams 却可以是不相等的
+                    return i.startsWith(key);
+                }) || false
+            );
         }
-        return super.has.call(this, key);
+        return super.has.call(this, key) ? key : false;
     }
     async getData(key: T): Promise<E | undefined> {
         if (this.isIgnore(key)) return;
@@ -60,7 +67,11 @@ export class ModuleCache<T extends string, E> extends Map<T, E> {
         }
     }
 }
+/**
+ * 缓存配置项
+ */
 export type CacheConfig = {
     // 设置忽略缓存的文件
     ignore?: string[];
+    root?: string;
 };

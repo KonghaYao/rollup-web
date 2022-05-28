@@ -17,7 +17,7 @@ const config = {
     plugins: [
         json(),
         alias({
-            entries: [{ find: "@", replacement: "./" }],
+            entries: [{ find: "@", replacement: "." }],
         }),
         commonjs({
             extensions: [".cjs", ".js"],
@@ -38,6 +38,17 @@ const config = {
         sky_module({
             cdn: "https://cdn.skypack.dev/",
         }),
+        // 配合解析 ExtraBundle 的插件
+        {
+            resolveId(url) {
+                if (url.startsWith("http")) {
+                    return url;
+                }
+            },
+            load(url) {
+                return fetch(url).then((res) => res.text());
+            },
+        },
     ],
 };
 const compiler = new Compiler(config, {
@@ -47,7 +58,10 @@ const compiler = new Compiler(config, {
     log(url) {
         console.log("%c Download ==> " + url, "color:green");
     },
+    useDataCache: {
+        // ignore: ["**/dynamic.ts"],
+    },
     // 纳入打包的 url 地址，使用 picomatch 匹配
-    bundleArea: [window.location.origin + "/**"],
+    extraBundle: ["https://cdn.skypack.dev/**"],
 });
 export const module = await compiler.evaluate("./public/test.ts");
