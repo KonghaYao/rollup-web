@@ -8,7 +8,7 @@ import { Compiler } from "../Compiler";
 export const fetchHook = (
     moduleCache: Compiler["moduleCache"],
     moduleConfig: Compiler["moduleConfig"],
-    rollupCode: () => (code: string) => Promise<any>
+    rollupCode: () => (code: string, params: URLSearchParams) => Promise<any>
 ) => {
     const System = useGlobal<any>("System");
 
@@ -22,10 +22,18 @@ export const fetchHook = (
     System.constructor.prototype[hookName] = async function (
         ...args: [string, any]
     ) {
-        const [url] = args;
+        const [_url] = args;
+        const Url = new URL(_url);
+        const url = Url.href;
+        const params = Url.searchParams;
+
         let code: string;
         const isExist = await moduleCache.hasData(url);
-        if (isExist) {
+        if (
+            /* 查找是否有强制打包参数 */
+            !params.has("__force_bundle") &&
+            isExist
+        ) {
             /* 已经存在缓存 */
             console.log(
                 "%c Compiler | fetch | cache " + url,
@@ -44,7 +52,7 @@ export const fetchHook = (
                 "background-color:#77007711;"
             );
             /* 全打包或者被选中打包 */
-            code = await Bundle(url, rollupCode, moduleCache);
+            code = await Bundle(url, rollupCode, moduleCache, params);
         } else {
             /* 默认使用 esm import 方式导入代码 */
             console.log(
@@ -82,15 +90,17 @@ async function LoadEsmModule(url: string) {
                 }
             })`;
 }
-/* 内部没有缓存，但是使用了全打包方式，下载代码并进行 rollup 解析 */
-
+/* 
+    内部没有缓存，但是使用了全打包方式，下载代码并进行 rollup 解析
+*/
 async function Bundle(
     url: string,
-    rollupCode: () => (code: string) => Promise<any>,
-    moduleCache: ModuleCache<string, OutputChunk>
+    rollupCode: () => (code: string, params: URLSearchParams) => Promise<any>,
+    moduleCache: ModuleCache<string, OutputChunk>,
+    params: URLSearchParams
 ) {
     /* 副作用： 打包，打包过后是会有缓存的 */
-    await rollupCode()(url);
+    await rollupCode()(url, params);
 
     // 从缓存中取出这个代码
     return moduleCache.get(url)!.code;

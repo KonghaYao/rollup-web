@@ -4,7 +4,17 @@ import { useRollup } from "./rollup";
 import { useGlobal } from "./utils/useGlobal";
 import { CacheConfig, ModuleCache } from "./Compiler/ModuleCache";
 import { fetchHook } from "./Compiler/fetchHook";
+import { Plugin } from "rollup-web";
 
+/* 
+    备忘录：
+    1. 模块 id 系统： 
+        1. id 为 URL 形式，
+        2. 但是不能够填入 hash 值，
+        3. queryParams 可以作为参数传递信息，传递信息会算作 id 的一部分进行缓存
+*/
+
+/* Compiler 是一个浏览器打包环境，需要 systemjs 支持 */
 export class Compiler {
     System = useGlobal<any>("System");
     constructor(
@@ -36,6 +46,17 @@ export class Compiler {
         fetchHook(this.moduleCache, this.moduleConfig, () => {
             return this.CompileSingleFile.bind(this);
         });
+        this.refreshPlugin();
+    }
+    plugins: Plugin[] = [];
+    refreshPlugin() {
+        this.plugins = this.options.plugins as Plugin[];
+        this.plugins.push(
+            web_module({
+                ...this.moduleConfig,
+                forceDependenciesExternal: true,
+            })
+        );
     }
     /* 打包缓存，code import 被替换为指定的 url 标记 */
     moduleCache = new ModuleCache<string, OutputChunk>();
@@ -55,18 +76,11 @@ export class Compiler {
     }
 
     /* 编译单个代码，不宜单独使用 */
-    async CompileSingleFile(url: string) {
-        const plugins = this.options.plugins || [];
-        plugins.push(
-            web_module({
-                ...this.moduleConfig,
-                forceDependenciesExternal: true,
-            })
-        );
+    async CompileSingleFile(url: string, params = new URLSearchParams()) {
         return useRollup({
             ...this.options,
             input: url,
-            plugins,
+            plugins: this.plugins,
             output: {
                 format: "system",
             },
