@@ -60,6 +60,7 @@ const compiler = new Compiler(config, {
     },
     useDataCache: {
         // ignore: ["**/dynamic.ts"],
+        maxAge: 60,
     },
     // 纳入打包的 url 地址，使用 picomatch 匹配
     extraBundle: ["https://cdn.skypack.dev/**"],

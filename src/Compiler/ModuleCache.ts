@@ -80,7 +80,7 @@ export class ModuleCache<T extends string, E> extends Map<T, E> {
         const lastUpdate = await this.store.getItem<number>("__lastUpdateTime");
         const time = lastUpdate!;
         if (typeof time === "number") {
-            if (Date.now() - time < this.config.maxAge!) {
+            if (Date.now() - time < this.config.maxAge! * 1000) {
                 // 将会使用缓存
                 return false;
             }
