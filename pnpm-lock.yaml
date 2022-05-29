@@ -35,6 +35,7 @@ specifiers:
   rollup-plugin-styles: ^4.0.0
   rollup-plugin-visualizer: ^5.6.0
   style-inject: ^0.3.0
+  systemjs: ^6.12.1
   typescript: ^4.5.4
   yaml: ^2.0.1
 
@@ -58,6 +59,7 @@ dependencies:
   rollup-plugin-postcss: 4.0.2
   rollup-plugin-styles: 4.0.0_rollup@2.63.0
   style-inject: 0.3.0
+  systemjs: 6.12.1
 
 devDependencies:
   '@babel/core': 7.17.9
@@ -2559,6 +2561,10 @@ packages:
       csso: 4.2.0
       picocolors: 1.0.0
       stable: 0.1.8
+
+  /systemjs/6.12.1:
+    resolution: {integrity: sha512-hqTN6kW+pN6/qro6G9OZ7ceDQOcYno020zBQKpZQLsJhYTDMCMNfXi/Y8duF5iW+4WWZr42ry0MMkcRGpbwG2A==}
+    dev: false
 
   /to-fast-properties/2.0.0:
     resolution: {integrity: sha1-3F5pjL0HkmW8c+A3doGk5Og/YW4=}

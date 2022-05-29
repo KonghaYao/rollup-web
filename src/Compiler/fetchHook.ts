@@ -4,25 +4,26 @@ import { isMatch } from "picomatch";
 import { ModuleCache } from "./ModuleCache";
 import { Compiler } from "../Compiler";
 
-/** 用于和 Systemjs 进行互动,
+/**
+ * 用于和 Systemjs 进行互动,
  * fetch 只与第一次打包有关，
  * 如果后续再请求到同一个 url，那么会直接走缓存
- * */
+ */
 export const fetchHook = (
     moduleCache: Compiler["moduleCache"],
     moduleConfig: Compiler["moduleConfig"],
     rollupCode: () => (code: string) => Promise<any>
 ) => {
-    const System = useGlobal<any>("System");
+    const SystemJS = useGlobal<any>("System");
 
     // 记录 esm import 之后的 Module 的导入代码
-    System.constructor.prototype._esm_module_ = new Map<string, string>();
-    System.shouldFetch = () => true;
+    SystemJS.constructor.prototype._esm_module_ = new Map<string, any>();
+    SystemJS.shouldFetch = () => true;
 
     console.log("fetch hook 注入成功");
     const hookName = "fetch";
 
-    System.constructor.prototype[hookName] = async function (
+    SystemJS.constructor.prototype[hookName] = async function (
         ...args: [string, any]
     ) {
         const [url] = args;

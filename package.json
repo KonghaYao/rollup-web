@@ -61,7 +61,8 @@
         "rollup": "2.63.0",
         "rollup-plugin-postcss": "^4.0.2",
         "rollup-plugin-styles": "^4.0.0",
-        "style-inject": "^0.3.0"
+        "style-inject": "^0.3.0",
+        "systemjs": "^6.12.1"
     },
     "files": [
         "dist",
