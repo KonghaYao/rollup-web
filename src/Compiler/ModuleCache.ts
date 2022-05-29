@@ -71,7 +71,7 @@ export class ModuleCache<T extends string, E> extends Map<T, E> {
  * 缓存配置项
  */
 export type CacheConfig = {
-    // 设置忽略缓存的文件
+    /*  设置忽略缓存的域 */
     ignore?: string[];
     root?: string;
 };

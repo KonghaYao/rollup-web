@@ -4,13 +4,13 @@ import { BabelFileResult, TransformOptions } from "@babel/core";
 import { wrapPlugin } from "../utils/wrapPlugin";
 
 /** 在 Web 端全局加载一次 babel */
-export const initBabel = async () => {
+export const initBabel = async (babelURL?: string) => {
     return import(
-        /* @ts-ignore */
-        "https://fastly.jsdelivr.net/npm/@babel/standalone/babel.min.js"
+        babelURL ||
+            "https://fastly.jsdelivr.net/npm/@babel/standalone/babel.min.js"
     ).then(() => {
         /* @ts-ignore */
-        return window.Babel;
+        return globalThis.Babel;
     });
 };
 export const _babel = ({
