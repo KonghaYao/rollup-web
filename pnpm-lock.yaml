@@ -20,6 +20,7 @@ specifiers:
   builtin-modules: ^3.2.0
   chai: ^4.3.6
   cssnano: ^5.1.7
+  localforage: ^1.10.0
   lodash-es: ^4.17.21
   micromatch: ^4.0.5
   nv-browser-brotli: ^1.0.4
@@ -46,6 +47,7 @@ dependencies:
   '@swc/core': 1.2.171
   builtin-modules: 3.2.0
   chai: 4.3.6
+  localforage: 1.10.0
   lodash-es: 4.17.21
   micromatch: 4.0.5
   picomatch: 2.3.1
@@ -1334,6 +1336,10 @@ packages:
       postcss: 8.4.13
     dev: false
 
+  /immediate/3.0.6:
+    resolution: {integrity: sha1-nbHb0Pr43m++D13V5Wu2BigN5ps=}
+    dev: false
+
   /import-cwd/3.0.0:
     resolution: {integrity: sha512-4pnzH16plW+hgvRECbDWpQl3cqtvSofHWh44met7ESfZ8UZOWWddm8hEyDTqREJ9RbYHY8gi8DqmaelApoOGMg==}
     engines: {node: '>=8'}
@@ -1448,6 +1454,12 @@ packages:
       graceful-fs: 4.2.10
     dev: false
 
+  /lie/3.1.1:
+    resolution: {integrity: sha1-mkNrLMd0bKWd56QfpGmz77dr2H4=}
+    dependencies:
+      immediate: 3.0.6
+    dev: false
+
   /lilconfig/2.0.5:
     resolution: {integrity: sha512-xaYmXZtTHPAw5m+xLN8ab9C+3a8YmV3asNSPOATITbtwrfbwaLJj8h66H1WMIpALCkqsIzK3h7oQ+PdX+LQ9Eg==}
     engines: {node: '>=10'}
@@ -1459,6 +1471,12 @@ packages:
   /loader-utils/3.2.0:
     resolution: {integrity: sha512-HVl9ZqccQihZ7JM85dco1MvO9G+ONvxoGa9rkhzFsneGLKSUg1gJf9bWzhRhcvm2qChhWpebQhP44qxjKIUCaQ==}
     engines: {node: '>= 12.13.0'}
+    dev: false
+
+  /localforage/1.10.0:
+    resolution: {integrity: sha512-14/H1aX7hzBBmmh7sGPd+AOMkkIrHM3Z1PAyGgZigA1H1p5O5ANnMyWzvpAETtG68/dC4pC0ncy3+PPGzXZHPg==}
+    dependencies:
+      lie: 3.1.1
     dev: false
 
   /lodash-es/4.17.21:
