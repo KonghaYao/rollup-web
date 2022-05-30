@@ -10,6 +10,7 @@ function transformVueSFC(source: string, filename: string, sourceMap = false) {
     const { descriptor, errors } = parse(source, { filename });
     if (errors.length) throw new Error(errors.toString());
     const id = generateID();
+
     const hasScoped = descriptor.styles.some((e) => e.scoped);
     const scopeId = hasScoped ? `data-v-${id}` : undefined;
     const templateOptions = {

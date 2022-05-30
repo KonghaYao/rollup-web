@@ -10,7 +10,7 @@ import A from './global'
 console.warn("vue3 编译成功")
 </script>
 
-<style scoped>
+<style scoped >
 #vue3 {
     color: #ff0000
 }

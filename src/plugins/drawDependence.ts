@@ -3,7 +3,7 @@ import { ModuleTree, ModuleTreeLeaf } from "./drawDependence/types";
 import { ModuleMapper } from "./drawDependence/module-mapper";
 import { addLinks, buildTree } from "./drawDependence/data";
 import { Buffer } from "buffer";
-const ModuleLengths = async ({
+const ModuleLengths = ({
     id,
     renderedLength,
     code,
@@ -40,62 +40,67 @@ export const drawDependence = ({
         name: "draw-dependence",
         async generateBundle(_, outputBundle) {
             const roots: Array<ModuleTree | ModuleTreeLeaf> = [];
+
             // 构建 Mapper
             let mapper: ModuleMapper;
             if (MapperStore.has(mapperTag)) {
                 mapper = MapperStore.get(mapperTag)!;
             } else {
                 mapper = new ModuleMapper(projectRoot, mapperTag);
+                MapperStore.set(mapperTag, mapper);
             }
 
-            // collect trees
-            for (const [bundleId, bundle] of Object.entries(outputBundle)) {
-                if (bundle.type !== "chunk") continue; //only chunks
+            Object.entries(outputBundle)
+                // collect trees
+                .map(([bundleId, bundle]) => {
+                    if (bundle.type !== "chunk") return bundle; //only chunks
 
-                let tree: ModuleTree;
-
-                const modules = await Promise.all(
-                    Object.entries(bundle.modules).map(
+                    const modules = Object.entries(bundle.modules).map(
                         ([id, { renderedLength, code }]) =>
                             ModuleLengths({ id, renderedLength, code })
-                    )
-                );
-
-                tree = buildTree(bundleId, modules, mapper);
-
-                if (tree.children.length === 0) {
-                    const bundleSizes = await ModuleLengths({
-                        id: bundleId,
-                        renderedLength: bundle.code.length,
-                        code: bundle.code,
-                    });
-
-                    const facadeModuleId =
-                        bundle.facadeModuleId ?? `${bundleId}-unknown`;
-                    const bundleUid = mapper.setNodePart(
-                        bundleId,
-                        facadeModuleId,
-                        bundleSizes
                     );
-                    mapper.setNodeMeta(facadeModuleId, { isEntry: true });
-                    const leaf: ModuleTreeLeaf = {
-                        name: bundleId,
-                        uid: bundleUid,
-                    };
-                    roots.push(leaf);
-                } else {
-                    roots.push(tree);
-                }
-            }
-            for (const [, bundle] of Object.entries(outputBundle)) {
-                if (bundle.type !== "chunk" || bundle.facadeModuleId == null)
-                    continue; //only chunks
-                addLinks(
-                    bundle.facadeModuleId,
-                    this.getModuleInfo.bind(this),
-                    mapper
-                );
-            }
+
+                    let tree = buildTree(bundleId, modules, mapper);
+
+                    if (tree.children.length === 0) {
+                        const bundleSizes = ModuleLengths({
+                            id: bundleId,
+                            renderedLength: bundle.code.length,
+                            code: bundle.code,
+                        });
+
+                        const facadeModuleId =
+                            bundle.facadeModuleId ?? `${bundleId}`;
+                        const bundleUid = mapper.setNodePart(
+                            bundleId,
+                            facadeModuleId,
+                            bundleSizes
+                        );
+                        mapper.setNodeMeta(facadeModuleId, {
+                            isEntry: false,
+                        });
+                        const leaf: ModuleTreeLeaf = {
+                            name: bundleId,
+                            uid: bundleUid,
+                        };
+                        roots.push(leaf);
+                    } else {
+                        roots.push(tree);
+                    }
+                    return bundle;
+                })
+                .forEach((bundle) => {
+                    if (
+                        bundle.type !== "chunk" ||
+                        bundle.facadeModuleId == null
+                    )
+                        return; //only chunks
+                    addLinks(
+                        bundle.facadeModuleId,
+                        this.getModuleInfo.bind(this),
+                        mapper
+                    );
+                });
 
             // 直接向外部暴露而不进行操作
             log(mapperTag, mapper);
