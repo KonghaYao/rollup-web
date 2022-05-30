@@ -6,21 +6,34 @@ import {
     SFCDescriptor,
     SFCScriptBlock,
 } from "@vue/compiler-sfc";
+import { VueCompileConfig } from "../vue3";
 
 export type PreprocessLang = "less" | "sass" | "scss" | "styl" | "stylus";
+import Preprocess from "./preprocess";
 export function getStyle(
     descriptor: SFCDescriptor,
     id: string,
-    filename: string
+    filename: string,
+    config: VueCompileConfig["css"]
 ) {
     if (descriptor.styles) {
         const styled = descriptor.styles.map((style) => {
             return compileStyle({
                 id,
+
                 filename,
                 source: style.content,
                 scoped: style.scoped,
                 preprocessLang: style.lang as PreprocessLang | undefined,
+
+                ...config,
+                preprocessCustomRequire(id) {
+                    if (config?.preprocessCustomRequire)
+                        return config.preprocessCustomRequire(id);
+                    if (id in Preprocess)
+                        return Preprocess[id as PreprocessLang].require();
+                    return;
+                },
             });
         });
         if (styled.length) {

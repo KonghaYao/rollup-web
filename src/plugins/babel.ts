@@ -4,8 +4,9 @@ import { BabelFileResult, TransformOptions } from "@babel/core";
 import { wrapPlugin } from "../utils/wrapPlugin";
 import { loadScript } from "../utils/loadScript";
 
-/** 在 Web 端全局加载一次 babel */
+/** 兼容以前的项目 在 Web 端全局加载一次 babel */
 export const initBabel = async (babelURL?: string) => {
+    // 这一步会进行去重操作，所以可以重复操作
     return loadScript(
         babelURL ||
             "https://fastly.jsdelivr.net/npm/@babel/standalone/babel.min.js"
@@ -22,16 +23,22 @@ export const _babel = ({
     log,
 }: {
     babelrc?: TransformOptions;
-    Babel?: any;
+    Babel?: string | any;
     extensions?: string[];
     log?: (id: string) => void;
 } = {}) => {
-    if (!Babel) Babel = (window as any).Babel;
     return {
         name: "babel",
+
+        async buildStart() {
+            /* @ts-ignore */
+            await initBabel(typeof Babel === "string" && Babel);
+        },
         /** wrapPlugin 提供了 extensions 守护，id 必然是符合的 */
         transform(code: string, id: string) {
-            const result = Babel.transform(code, {
+            const result = (
+                typeof Babel === "object" ? Babel : (globalThis as any).Babel
+            ).transform(code, {
                 filename: id,
                 ...babelrc,
             }) as BabelFileResult;

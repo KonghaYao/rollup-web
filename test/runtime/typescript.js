@@ -1,17 +1,12 @@
 // 导入打包产物
 import { Compiler, sky_module } from "../../dist/index.js";
-import { initBabel, babel } from "../../dist/plugins/babel.js";
+import { babel } from "../../dist/plugins/babel.js";
 
 // 导入各种插件
 import json from "https://esm.sh/@rollup/plugin-json";
 import alias from "https://esm.sh/@rollup/plugin-alias";
 import commonjs from "https://esm.sh/@rollup/plugin-commonjs";
 import replace from "https://esm.sh/@rollup/plugin-replace";
-
-// swc, babel 需要先进行初始化
-// Babel 2-3M 体积明显小于 SWC 17-18M
-await initBabel();
-// await initSwc();
 
 const config = {
     plugins: [
@@ -28,7 +23,7 @@ const config = {
         }),
         babel({
             babelrc: {
-                presets: [Babel.availablePresets.typescript],
+                presets: ["typescript"],
             },
             extensions: [".ts"],
             log(id) {

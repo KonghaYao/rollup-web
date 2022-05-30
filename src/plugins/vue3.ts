@@ -1,12 +1,20 @@
-import { parse, SFCTemplateCompileOptions } from "@vue/compiler-sfc";
+import {
+    parse,
+    SFCStyleCompileOptions,
+    SFCTemplateCompileOptions,
+} from "@vue/compiler-sfc";
 import { Plugin } from "rollup-web";
 import { checkSuffix, wrapPlugin } from "../utils/wrapPlugin";
-import { getScript, getTemplate, getStyle } from "./vue3/splitSFC";
+import { getScript, getStyle, PreprocessLang } from "./vue3/splitSFC";
 
 function generateID() {
     return Math.random().toString(36).slice(2, 12);
 }
-function transformVueSFC(source: string, filename: string, sourceMap = false) {
+function transformVueSFC(
+    source: string,
+    filename: string,
+    config: VueCompileConfig = {}
+) {
     const { descriptor, errors } = parse(source, { filename });
     if (errors.length) throw new Error(errors.toString());
     const id = generateID();
@@ -25,8 +33,8 @@ function transformVueSFC(source: string, filename: string, sourceMap = false) {
             mode: "module",
         },
     } as SFCTemplateCompileOptions;
-    const script = getScript(descriptor, id, templateOptions, sourceMap);
-    let css = getStyle(descriptor, id, filename);
+    const script = getScript(descriptor, id, templateOptions, config.sourceMap);
+    let css = getStyle(descriptor, id, filename, config.css);
 
     return {
         script: script,
@@ -42,15 +50,36 @@ export default script;`;
     };
 }
 const suffix = ["?vue-script", "?vue-style"];
+
+export type VueCompileConfig = {
+    css?: SFCStyleCompileOptions;
+    sourceMap?: boolean;
+};
+import Preprocess from "./vue3/preprocess";
+
 export const vue = ({
+    css,
     log,
+    cssLang,
 }: {
-    extensions?: string[];
+    cssLang?: PreprocessLang | PreprocessLang[];
     log?: (id: string) => void;
-} = {}) => {
+} & VueCompileConfig = {}) => {
     return {
         name: "vue3",
 
+        async buildStart() {
+            if (!cssLang) return;
+            if (typeof cssLang === "string") {
+                cssLang = [cssLang];
+            }
+            for (const lang of cssLang) {
+                if (lang in Preprocess) {
+                    await Preprocess[lang as PreprocessLang].load();
+                }
+                console.warn(Preprocess, lang);
+            }
+        },
         resolveId(thisFile) {
             const isGen = checkSuffix(thisFile, suffix);
             return isGen ? thisFile : undefined;
@@ -67,7 +96,7 @@ export const vue = ({
                 script,
                 css: cssCode,
                 entry,
-            } = transformVueSFC(vueCode, id, false);
+            } = transformVueSFC(vueCode, id, { css });
             const tag = {
                 script: (id: string, ext = ".js") =>
                     id +
