@@ -12,14 +12,14 @@ Our plugins create bridge to use Ts, Tsx, Vue SFC, Babel ... in Our Project , ju
 
 -   [x] Dynamic Import
 -   [x] Babel Support
--   [x] Vue SFC Support
+-   [x] Vue SFC Support (partial)
 -   [x] Solidjs Support
 -   [x] Typescript Support
 -   [x] CSS Support
 -   [x] json Support
+-   [x] Less Support
 
 -   [ ] SWC Support
--   [ ] Less Support
 -   [ ] WASM Support
 -   [ ] Web Worker Support
 
@@ -68,13 +68,7 @@ We can load presets and plugins from [esm.sh](https://esm.sh). Like that:
 ```js
 // It's an example to load tsx (SolidJS)
 import SolidPresets from "https://esm.sh/babel-preset-solid@1.3.13";
-import {
-    initBabel,
-    babel,
-} from "https://fastly.jsdelivr.net/npm/rollup-web@3/dist/plugins/babel.js";
-
-// We need init Babel first！
-await initBabel();
+import { babel } from "https://fastly.jsdelivr.net/npm/rollup-web@3/dist/plugins/babel.js";
 
 const RollupConfig = {
     plugins: [

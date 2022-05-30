@@ -18,20 +18,28 @@ export function getStyle(
 ) {
     if (descriptor.styles) {
         const styled = descriptor.styles.map((style) => {
+            const lang = style.lang as PreprocessLang | undefined;
             return compileStyle({
                 id,
 
                 filename,
                 source: style.content,
                 scoped: style.scoped,
-                preprocessLang: style.lang as PreprocessLang | undefined,
+                preprocessLang: lang,
 
                 ...config,
+                preprocessOptions: lang
+                    ? Object.assign(
+                          Preprocess[lang].config(filename),
+                          config?.preprocessOptions
+                      )
+                    : config?.preprocessOptions,
                 preprocessCustomRequire(id) {
                     if (config?.preprocessCustomRequire)
                         return config.preprocessCustomRequire(id);
-                    if (id in Preprocess)
+                    if (id in Preprocess) {
                         return Preprocess[id as PreprocessLang].require();
+                    }
                     return;
                 },
             });
