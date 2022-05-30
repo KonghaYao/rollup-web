@@ -9,7 +9,10 @@ export const initBabel = async (babelURL?: string) => {
     // 这一步会进行去重操作，所以可以重复操作
     return loadScript(
         babelURL ||
-            "https://fastly.jsdelivr.net/npm/@babel/standalone/babel.min.js"
+            "https://fastly.jsdelivr.net/npm/@babel/standalone/babel.min.js",
+        {
+            cacheTag: "babel",
+        }
     ).then(() => {
         /* @ts-ignore */
         return globalThis.Babel;
@@ -23,7 +26,7 @@ export const _babel = ({
     log,
 }: {
     babelrc?: TransformOptions;
-    Babel?: string | any;
+    Babel?: object;
     extensions?: string[];
     log?: (id: string) => void;
 } = {}) => {
@@ -32,7 +35,7 @@ export const _babel = ({
 
         async buildStart() {
             /* @ts-ignore */
-            await initBabel(typeof Babel === "string" && Babel);
+            await initBabel();
         },
         /** wrapPlugin 提供了 extensions 守护，id 必然是符合的 */
         transform(code: string, id: string) {

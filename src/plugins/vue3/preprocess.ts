@@ -12,7 +12,9 @@ export const less: PreprocessHelper = {
         return useGlobal("less");
     },
     async load(url) {
-        return loadScript(url || "https://fastly.jsdelivr.net/npm/less");
+        return loadScript(url || "https://fastly.jsdelivr.net/npm/less", {
+            cacheTag: "less",
+        });
     },
 };
 export default { less } as { [key in PreprocessLang]: PreprocessHelper };

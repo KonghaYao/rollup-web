@@ -2,10 +2,14 @@ const successSet = new Set<string>();
 // 从 url 加载一个 script
 export const loadScript = async (
     url: string,
-    attr: any = {},
-    to = document.body
+    {
+        attr,
+        to = document.body,
+        /* cacheTag 是去重的标签 */
+        cacheTag = url,
+    }: { attr?: any; to?: HTMLElement; cacheTag?: string } = {}
 ) => {
-    if (successSet.has(url)) return true;
+    if (successSet.has(cacheTag)) return true;
 
     return new Promise((resolve, reject) => {
         const script = document.createElement("script");
@@ -14,7 +18,7 @@ export const loadScript = async (
             script.setAttribute(key, value as string);
         });
         script.onload = () => {
-            successSet.add(url);
+            successSet.add(cacheTag);
             resolve(true);
         };
         script.onerror = (e) => {

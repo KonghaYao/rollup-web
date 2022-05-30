@@ -3,10 +3,10 @@ import { loadScript } from "../utils/loadScript";
 import { useGlobal } from "../utils/useGlobal";
 import { wrapPlugin } from "../utils/wrapPlugin";
 
-export const initLess = async (lessUrl: string) => {
-    return loadScript(lessUrl || "https://fastly.jsdelivr.net/npm/less").then(
-        () => globalThis.less
-    );
+export const initLess = async (lessUrl?: string) => {
+    return loadScript(lessUrl || "https://fastly.jsdelivr.net/npm/less", {
+        cacheTag: "less",
+    }).then(() => globalThis.less);
 };
 export const _less = ({
     less: lessOptions,
@@ -18,6 +18,9 @@ export const _less = ({
     const less = useGlobal<typeof import("less")>("less");
     return {
         name: "less",
+        async buildStart() {
+            await initLess();
+        },
         async transform(input, id) {
             const { css, map, imports } = await less.render(input, {
                 ...lessOptions,
