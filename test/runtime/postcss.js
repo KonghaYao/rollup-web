@@ -1,14 +1,22 @@
 // 导入打包产物
 import { Compiler, sky_module } from "../../dist/index.js";
 import { postcss } from "../../dist/plugins/postcss.js";
-// import styles from "../../dist/plugins/styles.js";
+import { less, initLess } from "../../dist/plugins/less.js";
+await initLess();
 const config = {
     plugins: [
-        // styles(),
+        less({
+            log(id) {
+                console.log("less ", id);
+            },
+        }),
         postcss({
             plugins: [],
             options(css, id) {
                 return { from: id, to: id };
+            },
+            log(id, code) {
+                console.log(id, code);
             },
             extensions: [".css", ".less"],
         }),
@@ -31,4 +39,4 @@ const compiler = new Compiler(config, {
         console.log("%cDownload " + url, "color:green");
     },
 });
-export const module = await compiler.evaluate("./public/css/index.css");
+export const module = await compiler.evaluate("./public/css/index.less");

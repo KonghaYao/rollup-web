@@ -4,10 +4,9 @@ import { useGlobal } from "../utils/useGlobal";
 import { wrapPlugin } from "../utils/wrapPlugin";
 
 export const initLess = async (lessUrl: string) => {
-    return loadScript(
-        lessUrl ||
-            "https://fastly.jsdelivr.net/npm/@babel/standalone/babel.min.js"
-    ).then(() => globalThis.less);
+    return loadScript(lessUrl || "https://fastly.jsdelivr.net/npm/less").then(
+        () => globalThis.less
+    );
 };
 export const _less = ({
     less: lessOptions,
@@ -21,11 +20,12 @@ export const _less = ({
         name: "less",
         async transform(input, id) {
             const { css, map, imports } = await less.render(input, {
-                filename: id,
                 ...lessOptions,
+                filename: id,
+                rootpath: id.replace(/\/[^\/]*?$/, ""),
             });
             imports.forEach((i) => {
-                this.addWatchFile(i);
+                this.resolve(i, id);
             });
             log && log(id, css);
             return { code: css, map };

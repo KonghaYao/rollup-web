@@ -5,22 +5,25 @@ import Postcss, { AcceptedPlugin } from "postcss";
 export const _postcss = ({
     plugins = [],
     options,
+    log,
 }: {
     plugins?: AcceptedPlugin[];
     options?: (css: string, id: string) => any;
+
+    log?: (id: string, code: string) => void;
 } = {}) => {
     const converter = Postcss(plugins);
     return {
         name: "postcss",
-        transform(css, id) {
-            const finalCss = converter.process(
-                css,
-                options ? options(css, id) : { from: id, to: id }
-            ).css;
-            console.log(finalCss);
+        transform(input, id) {
+            const { css } = converter.process(
+                input,
+                options ? options(input, id) : { from: id, to: id }
+            );
+            log && log(id, css);
             return `
             import styleInject from 'style-inject'
-            styleInject(\`${finalCss}\`)
+            styleInject(\`${css}\`)
             `;
         },
     } as Plugin;
