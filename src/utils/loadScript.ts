@@ -3,7 +3,7 @@ const successSet = new Set<string>();
 export const loadScript = async (
     url: string,
     {
-        attr,
+        attr = {},
         to = document.body,
         /* cacheTag 是去重的标签 */
         cacheTag = url,

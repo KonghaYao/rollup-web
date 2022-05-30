@@ -3,7 +3,7 @@ import { Plugin } from "rollup-web";
 import { BabelFileResult, TransformOptions } from "@babel/core";
 import { wrapPlugin } from "../utils/wrapPlugin";
 import { loadScript } from "../utils/loadScript";
-import { Setting } from "src/Setting";
+import { Setting } from "../Setting";
 
 /** 兼容以前的项目 在 Web 端全局加载一次 babel */
 export const initBabel = async (babelURL?: string) => {

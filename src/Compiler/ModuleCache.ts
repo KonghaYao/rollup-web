@@ -1,7 +1,7 @@
 import { useGlobal } from "../utils/useGlobal";
 import { loadScript } from "../utils/loadScript";
 import { isMatch } from "picomatch";
-import { Setting } from "src/Setting";
+import { Setting } from "../Setting";
 
 /** 模块缓存类，被打包的代码将不会被更新 */
 export class ModuleCache<T extends string, E> extends Map<T, E> {

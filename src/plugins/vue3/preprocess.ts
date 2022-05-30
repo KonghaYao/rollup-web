@@ -1,4 +1,4 @@
-import { Setting } from "src/Setting";
+import { Setting } from "../../Setting";
 import { loadScript } from "../../utils/loadScript";
 import { useGlobal } from "../../utils/useGlobal";
 import { PreprocessLang } from "./splitSFC";
