@@ -1,3 +1,4 @@
+import { Setting } from "src/Setting";
 import { loadScript } from "../../utils/loadScript";
 import { useGlobal } from "../../utils/useGlobal";
 import { PreprocessLang } from "./splitSFC";
@@ -12,7 +13,7 @@ export const less: PreprocessHelper = {
         return useGlobal("less");
     },
     async load(url) {
-        return loadScript(url || "https://fastly.jsdelivr.net/npm/less", {
+        return loadScript(url || Setting.NPM("less"), {
             cacheTag: "less",
         });
     },

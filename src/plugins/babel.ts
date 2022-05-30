@@ -3,13 +3,13 @@ import { Plugin } from "rollup-web";
 import { BabelFileResult, TransformOptions } from "@babel/core";
 import { wrapPlugin } from "../utils/wrapPlugin";
 import { loadScript } from "../utils/loadScript";
+import { Setting } from "src/Setting";
 
 /** 兼容以前的项目 在 Web 端全局加载一次 babel */
 export const initBabel = async (babelURL?: string) => {
     // 这一步会进行去重操作，所以可以重复操作
     return loadScript(
-        babelURL ||
-            "https://fastly.jsdelivr.net/npm/@babel/standalone/babel.min.js",
+        babelURL || Setting.NPM("@babel/standalone/babel.min.js"),
         {
             cacheTag: "babel",
         }

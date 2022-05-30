@@ -1,6 +1,7 @@
 import { useGlobal } from "../utils/useGlobal";
 import { loadScript } from "../utils/loadScript";
 import { isMatch } from "picomatch";
+import { Setting } from "src/Setting";
 
 /** 模块缓存类，被打包的代码将不会被更新 */
 export class ModuleCache<T extends string, E> extends Map<T, E> {
@@ -28,9 +29,9 @@ export class ModuleCache<T extends string, E> extends Map<T, E> {
     }
     forceUpdate = false;
     async registerCache() {
-        await loadScript(
-            "https://fastly.jsdelivr.net/npm/localforage/dist/localforage.min.js"
-        );
+        await loadScript(Setting.NPM("localforage/dist/localforage.min.js"), {
+            cacheTag: "localforage",
+        });
         const localforage = useGlobal<any>("localforage");
         // Feel free to change the drivers order :)
         this.store = localforage.createInstance({

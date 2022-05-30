@@ -1,10 +1,11 @@
 import { Plugin } from "rollup-web";
+import { Setting } from "src/Setting";
 import { loadScript } from "../utils/loadScript";
 import { useGlobal } from "../utils/useGlobal";
 import { wrapPlugin } from "../utils/wrapPlugin";
 
 export const initLess = async (lessUrl?: string) => {
-    return loadScript(lessUrl || "https://fastly.jsdelivr.net/npm/less", {
+    return loadScript(lessUrl || Setting.NPM("less"), {
         cacheTag: "less",
     }).then(() => globalThis.less);
 };
