@@ -1,0 +1,38 @@
+import { Plugin } from "rollup-web";
+import { loadScript } from "../utils/loadScript";
+import { useGlobal } from "../utils/useGlobal";
+import { wrapPlugin } from "../utils/wrapPlugin";
+
+export const initLess = async (lessUrl: string) => {
+    return loadScript(
+        lessUrl ||
+            "https://fastly.jsdelivr.net/npm/@babel/standalone/babel.min.js"
+    ).then(() => globalThis.less);
+};
+export const _less = ({
+    less: lessOptions,
+    log,
+}: {
+    less?: Less.Options;
+    log?: (id: string, code: string) => void;
+} = {}) => {
+    const less = useGlobal<typeof import("less")>("less");
+    return {
+        name: "less",
+        async transform(input, id) {
+            const { css, map, imports } = await less.render(input, {
+                filename: id,
+                ...lessOptions,
+            });
+            imports.forEach((i) => {
+                this.addWatchFile(i);
+            });
+            log && log(id, css);
+            return { code: css, map };
+        },
+    } as Plugin;
+};
+/* 简单 CSS 插件，没有进行任何的操作  */
+export const less = wrapPlugin(_less, {
+    extensions: [".less"],
+});

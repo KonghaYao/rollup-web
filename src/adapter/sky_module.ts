@@ -31,6 +31,7 @@ export const sky_module = ({
 } = {}) => {
     return {
         name: "sky_module",
+
         resolveId(thisFile, importer = "") {
             // 当有前缀时，进行 ignore
             if (/[^:]*?:/.test(thisFile)) return;

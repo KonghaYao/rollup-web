@@ -6,6 +6,7 @@ export const loadScript = async (
     to = document.body
 ) => {
     if (successSet.has(url)) return true;
+
     return new Promise((resolve, reject) => {
         const script = document.createElement("script");
         script.src = url;

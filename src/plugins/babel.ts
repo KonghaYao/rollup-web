@@ -2,10 +2,11 @@ import "../shim/process";
 import { Plugin } from "rollup-web";
 import { BabelFileResult, TransformOptions } from "@babel/core";
 import { wrapPlugin } from "../utils/wrapPlugin";
+import { loadScript } from "../utils/loadScript";
 
 /** 在 Web 端全局加载一次 babel */
 export const initBabel = async (babelURL?: string) => {
-    return import(
+    return loadScript(
         babelURL ||
             "https://fastly.jsdelivr.net/npm/@babel/standalone/babel.min.js"
     ).then(() => {
