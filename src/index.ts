@@ -1,5 +1,4 @@
 export { Setting } from "./Setting";
-
 export * from "./adapter/adapter";
 export * from "./rollup";
 export * from "./utils/ModuleEval";

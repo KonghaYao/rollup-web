@@ -25,7 +25,7 @@ export const paths = {
     postcss: "https://esm.sh/postcss",
     "postcss-import": "https://esm.sh/postcss-import",
     "@vue/compiler-sfc": "https://cdn.skypack.dev/@vue/compiler-sfc",
-
+    "@babel/core": "https://esm.sh/@babel/core",
     // uncheck
     "postcss-selector-parser": "https://esm.sh/postcss-selector-parser",
 

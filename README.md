@@ -6,18 +6,23 @@ Like Vite in Nodejs! We want to create a brand new bundle environment in browser
 
 We have Rollup and Systemjs in browser and already create some website bundling in browser!
 
+Rollup-web is also a suitable tool to build playground plugin!
+
 Our plugins create bridge to use Ts, Tsx, Vue SFC, Babel ... in Our Project , just like in Nodejs!
 
 # Target
 
 -   [x] Dynamic Import
 -   [x] Babel Support
--   [x] Vue SFC Support (partial)
+-   [x] Babel-Core Support
+-   [x] Vue SFC Support
 -   [x] Solidjs Support
 -   [x] Typescript Support
 -   [x] CSS Support
--   [x] json Support
 -   [x] Less Support
+-   [x] Sass Support
+-   [x] Postcss Support
+-   [x] json Support
 
 -   [ ] SWC Support
 -   [ ] WASM Support

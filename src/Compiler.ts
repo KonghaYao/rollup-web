@@ -23,7 +23,7 @@ export class Compiler {
 
         /**
          *  需要打包模块的解析配置
-         *  @property extraBundle 若为 true，将会把 远程代码下载并经过 rollup 打包;若为数组，将会打包区域内的代码; root 下的代码是必定被打包的，所以不用填;
+         *  @property extraBundle 若为 true，将会把 远程代码下载并经过 rollup 打包;若为 Array，将会打包区域内的代码; root 下的代码是必定被打包的，所以不用填;
          *  @property useDataCache 使用 indexDB 进行打包代码缓存以提高速度
          */
         public moduleConfig: ModuleConfig & {

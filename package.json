@@ -1,17 +1,17 @@
 {
     "name": "rollup-web",
     "version": "3.2.1",
-    "description": "Use Rollup in Browser to compile your code!",
+    "description": "Compile your project all in browser!",
     "main": "./src/index.ts",
     "browser": "./dist/index.js",
     "scripts": {
         "dev": "rollup -c rollup.config.js --watch",
         "build": "rollup -c rollup.config.js",
-        "draw": "madge src/index.js --image dist/index.svg"
+        "draw": "madge src/index.ts --image dist/index.svg"
     },
     "repository": {
         "type": "git",
-        "url": "https://gitee.com/dongzhongzhidong/js-judge.git"
+        "url": "https://github.com/KonghaYao/rollup-web"
     },
     "author": "Konghayao<dongzhongzhidong@qq.com>",
     "license": "Apache-2.0",
@@ -21,7 +21,9 @@
         "browserify",
         "plugin",
         "plugins",
-        "rollup-plugin"
+        "rollup-plugin",
+        "playground",
+        "compiler"
     ],
     "devDependencies": {
         "@babel/core": "^7.17.9",

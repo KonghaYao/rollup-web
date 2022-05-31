@@ -1,4 +1,4 @@
-import { OutputChunk } from "rollup";
+import type { OutputChunk } from "rollup";
 import { useGlobal } from "../utils/useGlobal";
 import { isMatch } from "picomatch";
 import { ModuleCache } from "./ModuleCache";
@@ -39,7 +39,7 @@ export const fetchHook = (
             /* 已经存在缓存 */
             console.log(
                 "%c Compiler | fetch | cache " + cacheUrl,
-                "background-color:#00aa0011;"
+                "background-color:#bbf7d0;"
             );
             code = (await moduleCache.getData(cacheUrl))!.code;
         } else if (
@@ -52,7 +52,7 @@ export const fetchHook = (
         ) {
             console.log(
                 `%c Compiler | fetch | bundle ` + url,
-                "background-color:#aa007711;"
+                "background-color:#ede9fe;"
             );
             /* 全打包或者被选中打包 */
             code = await Bundle(url, rollupCode, moduleCache);
@@ -60,7 +60,7 @@ export const fetchHook = (
             /* 默认使用 esm import 方式导入代码 */
             console.log(
                 "%c Compiler | fetch | import " + url,
-                "background-color:#00007711;"
+                "background-color:#cffafe;"
             );
             code = await LoadEsmModule(url);
         }
