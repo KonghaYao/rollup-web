@@ -1,8 +1,9 @@
 // 导入打包产物
 import { Compiler, sky_module } from "../../dist/index.js";
 import { postcss } from "../../dist/plugins/postcss.js";
-import { less, initLess } from "../../dist/plugins/less.js";
-await initLess();
+import { less } from "../../dist/plugins/less.js";
+import { sass } from "../../dist/plugins/sass.js";
+
 const config = {
     plugins: [
         less({
@@ -10,15 +11,16 @@ const config = {
                 console.log("less ", id);
             },
         }),
+        sass(),
         postcss({
             plugins: [],
             options(css, id) {
                 return { from: id, to: id };
             },
             log(id, code) {
-                console.log(id, code);
+                console.warn(id, code);
             },
-            extensions: [".css", ".less"],
+            extensions: [".css", ".less", ".sass"],
         }),
         sky_module({
             cdn: (name) => `https://fastly.jsdelivr.net/npm/${name}/+esm`,
@@ -34,9 +36,9 @@ const config = {
 };
 
 const compiler = new Compiler(config, {
-    extensions: [".css", ".less", "sass", ".scss", ".stylus"],
+    extensions: [".css", ".less", ".sass", ".scss", ".stylus"],
     log(url) {
         console.log("%cDownload " + url, "color:green");
     },
 });
-export const module = await compiler.evaluate("./public/css/index.less");
+export const module = await compiler.evaluate("./public/css/postcss.css");

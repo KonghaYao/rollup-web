@@ -1,0 +1,6 @@
+@import "./index.less";
+@import "./index.sass";
+
+body {
+    background-color: blue;
+}

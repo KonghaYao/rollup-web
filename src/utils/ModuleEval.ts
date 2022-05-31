@@ -5,6 +5,11 @@ export const createModule = (str: string, fileName: string) => {
     );
 };
 
+/* 创建 ESM 代码的 URL */
+export const createCSSModule = (str: string, fileName: string) => {
+    return URL.createObjectURL(new File([str], fileName, { type: "text/css" }));
+};
+
 /** 解析 ESM 文本为 模块并导入的方式 */
 export const ModuleEval = async (str: string, fileName = "index.js") => {
     const url = createModule(str, fileName);

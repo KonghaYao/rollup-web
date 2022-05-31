@@ -7,7 +7,8 @@ export const loadScript = async (
         to = document.body,
         /* cacheTag 是去重的标签 */
         cacheTag = url,
-    }: { attr?: any; to?: HTMLElement; cacheTag?: string } = {}
+    }: { attr?: any; to?: HTMLElement; cacheTag?: string } = {},
+    loadCallback?: () => void
 ) => {
     if (successSet.has(cacheTag)) return true;
 
@@ -25,7 +26,7 @@ export const loadScript = async (
             reject(e);
         };
         to.appendChild(script);
-    });
+    }).then(loadCallback);
 };
 
 // 从 url 加载一个 link

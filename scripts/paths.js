@@ -23,6 +23,7 @@ export const paths = {
     "source-map": "https://esm.sh/source-map",
 
     postcss: "https://esm.sh/postcss",
+    "postcss-import": "https://esm.sh/postcss-import",
     "@vue/compiler-sfc": "https://cdn.skypack.dev/@vue/compiler-sfc",
 
     // uncheck
