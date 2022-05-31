@@ -5,7 +5,7 @@ import { babel } from "../../dist/plugins/babel.js";
 
 import { less } from "../../dist/plugins/less.js";
 import { sass } from "../../dist/plugins/sass.js";
-import { css } from "../../dist/plugins/css.js";
+import { postcss } from "../../dist/plugins/postcss.js";
 // 导入各种插件
 import json from "https://esm.sh/@rollup/plugin-json";
 import alias from "https://esm.sh/@rollup/plugin-alias";
@@ -25,12 +25,17 @@ const config = {
             __buildDate__: () => JSON.stringify(3434),
             __buildVersion: "15",
         }),
+
+        sass({
+            log(id, code) {
+                console.log("sass ", id);
+            },
+        }),
         less({
             log(id, code) {
                 console.log("less ", id, code);
             },
         }),
-        sass(),
         babel({
             babelrc: {
                 presets: [
@@ -51,8 +56,11 @@ const config = {
         }),
 
         vue({}),
-        css({
-            extensions: [".css", ".less"],
+        postcss({
+            log(id, code) {
+                console.log("postcss ", id, code);
+            },
+            extensions: [".css", ".less", ".scss"],
         }),
         sky_module({
             cdn: (name) => `https://fastly.jsdelivr.net/npm/${name}/+esm`,

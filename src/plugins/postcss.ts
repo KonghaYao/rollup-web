@@ -1,4 +1,4 @@
-import { Plugin, PluginCache } from "rollup-web";
+import { Plugin, PluginCache, PluginContext } from "rollup-web";
 import { wrapPlugin } from "../utils/wrapPlugin";
 import Postcss, { AcceptedPlugin } from "postcss";
 import atImport from "postcss-import";
@@ -14,13 +14,14 @@ export const _postcss = ({
     log?: (id: string, code: string) => void;
 } = {}) => {
     let resolve: any;
-    let load: any;
+    let load: (url: string) => ReturnType<PluginContext["load"]>;
     let cache: PluginCache;
     const converter = Postcss(
         plugins.concat(
             atImport({
                 resolve(id, basedir, importOptions) {
                     const url = new URL(id, basedir + "/index.css").toString();
+                    console.warn(url);
                     return "//" + encodeURIComponent(url);
                 },
                 async load(p) {
@@ -39,6 +40,7 @@ export const _postcss = ({
             resolve = (source: string) => this.resolve(source, id);
             load = (id: string) => this.load({ id });
             cache = this.cache;
+            console.log(input);
             const { css } = await converter.process(
                 input,
                 options ? options(input, id) : { from: id, to: id }

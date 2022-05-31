@@ -1,18 +1,17 @@
 import { Plugin } from "rollup-web";
 import { useGlobal } from "../utils/useGlobal";
-import { wrapPlugin } from "../utils/wrapPlugin";
+import { checkExtension, wrapPlugin } from "../utils/wrapPlugin";
 import { sass as SASS } from "./vue3/preprocess";
 export const initSass = SASS.load;
-type Done = (result?: { content: string }) => void;
-type Callback = (
-    request: {
-        path?: string;
-        current?: string;
-        previous?: string;
-    },
-    done: Done
-) => void;
-type Result = { text: string };
+type Done = (result?: Request & Partial<{ content: string }>) => void;
+type Request = {
+    path?: string;
+    current?: string;
+    previous?: string;
+    options?: boolean;
+};
+type Callback = (request: Request, done: Done) => void;
+type Result = { text: string; formatted?: string };
 interface SassStatic {
     new (workerUrl?: string): this;
     importer: (Callback: Callback) => void;
@@ -22,7 +21,9 @@ interface SassStatic {
 export const _sass = ({
     sass: sassOptions,
     log,
+    extensions,
 }: {
+    extensions?: string[];
     sass?: any;
     log?: (id: string, code: string) => void;
 } = {}) => {
@@ -32,23 +33,35 @@ export const _sass = ({
         async buildStart() {
             await initSass();
             const Sass = useGlobal<SassStatic>("Sass");
-            if (this.cache.has("sass")) sass = this.cache.get("sass");
-            sass = new Sass();
-            this.cache.set("sass", sass);
+            if (this.cache.has("sass")) {
+                sass = this.cache.get("sass");
+            } else {
+                sass = new Sass();
+                this.cache.set("sass", sass);
+            }
+            sass.options("defaults");
+
             // 使用一个回调函数直接获取代码并传递给 sass 处理器
             const cb: Callback = (request, done) => {
                 if (request.path) {
                     done();
                 } else if (request.current && request.previous) {
                     const baseURL = request.previous.replace(/\?.+/, "");
-                    console.log(request);
                     const url = new URL(request.current, baseURL).toString();
                     request.path = url;
-                    fetch(url)
-                        .then((res) => res.text())
-                        .then((content) => {
-                            done({ content });
-                        });
+                    const ext = checkExtension(url, extensions!);
+                    if (ext) {
+                        fetch(url)
+                            .then((res) => res.text())
+                            .then((content) => {
+                                done(Object.assign(request, { content }));
+                            });
+                    } else {
+                        request.options = true;
+                        // 这样是为了
+                        request.path = `"${request.path}"`;
+                        done(request);
+                    }
                 } else {
                     done();
                 }
@@ -93,8 +106,7 @@ export const _sass = ({
                         )
                 );
             });
-
-            if (!result.text) throw new Error("scss compiler Error");
+            if (!result.text) throw new Error(result.formatted);
             log && log(id, result.text);
             return { code: result.text };
         },

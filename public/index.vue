@@ -12,7 +12,9 @@ console.warn("vue3 编译成功")
 
 <style scoped lang="scss">
 @import './css/index.css';
+
 @import './css/index.less';
+
 @import "./css/index.scss";
 
 #vue3 {
