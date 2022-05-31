@@ -17,6 +17,7 @@ interface SassStatic {
     new (workerUrl?: string): this;
     importer: (Callback: Callback) => void;
     compile: (code: string, options: any, cb: (result: Result) => void) => void;
+    options: (all: any, cb?: () => void) => void;
 }
 export const _sass = ({
     sass: sassOptions,
@@ -31,15 +32,19 @@ export const _sass = ({
         async buildStart() {
             await initSass();
             const Sass = useGlobal<SassStatic>("Sass");
-
+            if (this.cache.has("sass")) sass = this.cache.get("sass");
             sass = new Sass();
-
+            this.cache.set("sass", sass);
             // 使用一个回调函数直接获取代码并传递给 sass 处理器
             const cb: Callback = (request, done) => {
                 if (request.path) {
                     done();
-                } else if (request.current) {
-                    fetch(new URL(request.current, request.previous))
+                } else if (request.current && request.previous) {
+                    const baseURL = request.previous.replace(/\?.+/, "");
+                    console.log(request);
+                    const url = new URL(request.current, baseURL).toString();
+                    request.path = url;
+                    fetch(url)
                         .then((res) => res.text())
                         .then((content) => {
                             done({ content });
@@ -52,10 +57,8 @@ export const _sass = ({
         },
         async transform(input, id) {
             const result = await new Promise<Result>((resolve) => {
-                sass.compile(
-                    input,
+                sass.options(
                     {
-                        ...sassOptions,
                         indentedSyntax: !/\.scss/.test(id),
                         // Path to source map file
                         // Enables the source map generating
@@ -80,7 +83,14 @@ export const _sass = ({
                         // Disable sourceMappingUrl in css output
                         sourceMapOmitUrl: true,
                     },
-                    (result) => resolve(result)
+                    () =>
+                        sass.compile(
+                            input,
+                            {
+                                ...sassOptions,
+                            },
+                            (result) => resolve(result)
+                        )
                 );
             });
 

@@ -78,7 +78,10 @@ export class Compiler {
     isLocalFile(url: string) {
         return url.startsWith(this.moduleConfig.root!);
     }
-
+    RollupCache = {
+        modules: [],
+        plugins: {},
+    };
     /* 编译单个代码，不宜单独使用 */
     async CompileSingleFile(url: string) {
         return useRollup({
@@ -88,6 +91,7 @@ export class Compiler {
             output: {
                 format: "system",
             },
+            cache: this.RollupCache,
         }).then((res) => {
             (res.output as OutputChunk[]).forEach((i) => {
                 this.moduleCache.set(i.facadeModuleId!, i);

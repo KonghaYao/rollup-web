@@ -77,4 +77,6 @@ export const sass: PreprocessHelper = {
         return {};
     },
 };
-export default { less } as { [key in PreprocessLang]: PreprocessHelper };
+export default { less, sass, scss: sass } as {
+    [key in PreprocessLang]: PreprocessHelper;
+};

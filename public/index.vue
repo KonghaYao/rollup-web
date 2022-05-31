@@ -10,9 +10,10 @@ import A from './global'
 console.warn("vue3 编译成功")
 </script>
 
-<style scoped lang="less">
+<style scoped lang="scss">
 @import './css/index.css';
 @import './css/index.less';
+@import "./css/index.scss";
 
 #vue3 {
     color: #ff0000

@@ -4,6 +4,7 @@ import { vue } from "../../dist/plugins/vue3.js";
 import { babel } from "../../dist/plugins/babel.js";
 
 import { less } from "../../dist/plugins/less.js";
+import { sass } from "../../dist/plugins/sass.js";
 import { css } from "../../dist/plugins/css.js";
 // 导入各种插件
 import json from "https://esm.sh/@rollup/plugin-json";
@@ -29,6 +30,7 @@ const config = {
                 console.log("less ", id, code);
             },
         }),
+        sass(),
         babel({
             babelrc: {
                 presets: [
