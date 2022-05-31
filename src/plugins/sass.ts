@@ -1,25 +1,23 @@
 import { Plugin } from "rollup-web";
 import { useGlobal } from "../utils/useGlobal";
-import { Setting } from "../Setting";
-import { loadScript } from "../utils/loadScript";
 import { wrapPlugin } from "../utils/wrapPlugin";
-import { createModule } from "../utils/ModuleEval";
-
-export const initSass = async (sassUrl?: string) => {
-    return loadScript(
-        sassUrl || Setting.NPM("sass.js/dist/sass.js"),
-        {
-            cacheTag: "sass",
-        },
-        /* 这个代码将只会执行一次 */
-        async () => {
-            const src = Setting.NPM("sass.js/dist/sass.worker.js");
-            const code = await fetch(src).then((res) => res.text());
-            return useGlobal<any>("Sass").setWorkerUrl(createModule(code, src));
-        }
-    );
-};
-
+import { sass as SASS } from "./vue3/preprocess";
+export const initSass = SASS.load;
+type Done = (result?: { content: string }) => void;
+type Callback = (
+    request: {
+        path?: string;
+        current?: string;
+        previous?: string;
+    },
+    done: Done
+) => void;
+type Result = { text: string };
+interface SassStatic {
+    new (workerUrl?: string): this;
+    importer: (Callback: Callback) => void;
+    compile: (code: string, options: any, cb: (result: Result) => void) => void;
+}
 export const _sass = ({
     sass: sassOptions,
     log,
@@ -27,36 +25,33 @@ export const _sass = ({
     sass?: any;
     log?: (id: string, code: string) => void;
 } = {}) => {
-    let sass: any;
+    let sass: SassStatic;
     return {
         name: "sass",
         async buildStart() {
             await initSass();
-            const Sass = useGlobal<any>("Sass");
+            const Sass = useGlobal<SassStatic>("Sass");
 
             sass = new Sass();
-            console.log(sass);
-            // We define the importer funcion to try to load the source files using fetch
-            sass.importer((request, done) => {
+
+            // 使用一个回调函数直接获取代码并传递给 sass 处理器
+            const cb: Callback = (request, done) => {
                 if (request.path) {
-                    // Sass.js already found a file, we probably want to just load that
                     done();
                 } else if (request.current) {
-                    console.log(request);
-
                     fetch(new URL(request.current, request.previous))
                         .then((res) => res.text())
                         .then((content) => {
                             done({ content });
                         });
                 } else {
-                    // let libsass handle the import
                     done();
                 }
-            });
+            };
+            sass.importer(cb);
         },
         async transform(input, id) {
-            const result: any = await new Promise((resolve) => {
+            const result = await new Promise<Result>((resolve) => {
                 sass.compile(
                     input,
                     {
@@ -84,15 +79,12 @@ export const _sass = ({
                         sourceMapEmbed: false,
                         // Disable sourceMappingUrl in css output
                         sourceMapOmitUrl: true,
-                    } as object,
-                    (result: any) => resolve(result)
+                    },
+                    (result) => resolve(result)
                 );
             });
 
             if (!result.text) throw new Error("scss compiler Error");
-            result.stats?.includedFiles.forEach((i: string) => {
-                this.resolve(i, id);
-            });
             log && log(id, result.text);
             return { code: result.text };
         },

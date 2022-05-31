@@ -1,13 +1,7 @@
 import { Plugin } from "rollup-web";
-import { Setting } from "../Setting";
-import { loadScript } from "../utils/loadScript";
 import { wrapPlugin } from "../utils/wrapPlugin";
-
-export const initLess = async (lessUrl?: string) => {
-    return loadScript(lessUrl || Setting.NPM("less"), {
-        cacheTag: "less",
-    }).then(() => globalThis.less);
-};
+import { less as LESS } from "./vue3/preprocess";
+export const initLess = LESS.load;
 export const _less = ({
     less: lessOptions,
     log,
