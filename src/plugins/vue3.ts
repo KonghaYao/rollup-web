@@ -55,31 +55,15 @@ export type VueCompileConfig = {
     css?: SFCStyleCompileOptions;
     sourceMap?: boolean;
 };
-import Preprocess from "./vue3/preprocess";
 
 export const vue = ({
     css,
     log,
-    cssLang,
 }: {
-    cssLang?: PreprocessLang | PreprocessLang[];
     log?: (id: string) => void;
 } & VueCompileConfig = {}) => {
     return {
         name: "vue3",
-
-        async buildStart() {
-            if (!cssLang) return;
-            if (typeof cssLang === "string") {
-                cssLang = [cssLang];
-            }
-            for (const lang of cssLang) {
-                if (lang in Preprocess) {
-                    await Preprocess[lang as PreprocessLang].load();
-                }
-                console.warn(Preprocess, lang);
-            }
-        },
         resolveId(thisFile) {
             const isGen = checkSuffix(thisFile, suffix);
             return isGen ? thisFile : undefined;
@@ -98,21 +82,16 @@ export const vue = ({
                 entry,
             } = transformVueSFC(vueCode, id, { css });
             const tag = {
-                script: (id: string, ext = ".js") =>
-                    id +
-                    (ext.startsWith(".") ? ext : "." + ext) +
-                    "?vue-script",
-                css: (id: string, index: number, ext = ".css") =>
-                    id +
-                    index.toString() +
-                    (ext.startsWith(".") ? ext : "." + ext) +
-                    "?vue-style",
+                script: (id: string, ext = "js") =>
+                    id + ("." + ext) + "?vue-script",
+                css: (id: string, index: number, ext = "css") =>
+                    id + index.toString() + ("." + ext) + "?vue-style",
             };
             const result = entry(
                 tag.script(id, script.lang),
                 cssCode && cssCode.length
                     ? cssCode.map((i, index) => {
-                          return tag.css(id, index);
+                          return tag.css(id, index, i.lang);
                       })
                     : undefined
             );
@@ -123,7 +102,9 @@ export const vue = ({
             });
             if (cssCode && cssCode.length) {
                 cssCode.forEach((i, index) => {
-                    this.cache.set(tag.css(id, index), { code: i });
+                    this.cache.set(tag.css(id, index, i.lang), {
+                        code: i.style.code,
+                    });
                 });
             }
             this.cache.set(id, result);

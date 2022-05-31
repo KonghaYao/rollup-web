@@ -1,7 +1,6 @@
 import { Plugin } from "rollup-web";
 import { Setting } from "../Setting";
 import { loadScript } from "../utils/loadScript";
-import { useGlobal } from "../utils/useGlobal";
 import { wrapPlugin } from "../utils/wrapPlugin";
 
 export const initLess = async (lessUrl?: string) => {
@@ -16,18 +15,18 @@ export const _less = ({
     less?: Less.Options;
     log?: (id: string, code: string) => void;
 } = {}) => {
-    const less = useGlobal<typeof import("less")>("less");
     return {
         name: "less",
         async buildStart() {
             await initLess();
         },
         async transform(input, id) {
-            const { css, map, imports } = await less.render(input, {
+            const { css, map, imports } = await globalThis.less.render(input, {
                 ...lessOptions,
                 filename: id,
-                rootpath: id.replace(/\/[^\/]*?$/, ""),
-            });
+                rewriteUrls: true,
+                rootpath: id.replace(/\/[^\/]*?$/, "/"),
+            } as object);
             imports.forEach((i) => {
                 this.resolve(i, id);
             });

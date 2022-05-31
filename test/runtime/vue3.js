@@ -3,6 +3,7 @@ import { Compiler, sky_module } from "../../dist/index.js";
 import { vue } from "../../dist/plugins/vue3.js";
 import { babel } from "../../dist/plugins/babel.js";
 
+import { less } from "../../dist/plugins/less.js";
 import { css } from "../../dist/plugins/css.js";
 // 导入各种插件
 import json from "https://esm.sh/@rollup/plugin-json";
@@ -23,6 +24,11 @@ const config = {
             __buildDate__: () => JSON.stringify(3434),
             __buildVersion: "15",
         }),
+        less({
+            log(id, code) {
+                console.log("less ", id, code);
+            },
+        }),
         babel({
             babelrc: {
                 presets: [
@@ -42,11 +48,10 @@ const config = {
             },
         }),
 
-        vue({
-            css: {},
-            cssLang: "less",
+        vue({}),
+        css({
+            extensions: [".css", ".less"],
         }),
-        css(),
         sky_module({
             cdn: (name) => `https://fastly.jsdelivr.net/npm/${name}/+esm`,
             rename: {

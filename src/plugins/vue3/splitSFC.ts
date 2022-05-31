@@ -17,36 +17,39 @@ export function getStyle(
     config: VueCompileConfig["css"]
 ) {
     if (descriptor.styles) {
-        const styled = descriptor.styles.map((style) => {
+        return descriptor.styles.map((style) => {
             const lang = style.lang as PreprocessLang | undefined;
-            return compileStyle({
-                id,
+            return {
+                lang: style.lang,
+                style: compileStyle({
+                    id,
 
-                filename,
-                source: style.content,
-                scoped: style.scoped,
-                preprocessLang: lang,
+                    filename,
+                    source: style.content,
+                    scoped: style.scoped,
+                    preprocessLang: lang,
 
-                ...config,
-                preprocessOptions: lang
-                    ? Object.assign(
-                          Preprocess[lang].config(filename),
-                          config?.preprocessOptions
-                      )
-                    : config?.preprocessOptions,
-                preprocessCustomRequire(id) {
-                    if (config?.preprocessCustomRequire)
-                        return config.preprocessCustomRequire(id);
-                    if (id in Preprocess) {
-                        return Preprocess[id as PreprocessLang].require();
-                    }
-                    return;
-                },
-            });
+                    ...config,
+                    preprocessOptions: lang
+                        ? Object.assign(
+                              Preprocess[lang].config(filename),
+                              config?.preprocessOptions
+                          )
+                        : config?.preprocessOptions,
+                    /* 通过自定义头替换掉 less，sass 同步读取的 BUG */
+                    preprocessCustomRequire(id) {
+                        if (config?.preprocessCustomRequire)
+                            return config.preprocessCustomRequire(id);
+                        if (id in Preprocess) {
+                            return Preprocess[
+                                id as PreprocessLang
+                            ].innerRequire();
+                        }
+                        return;
+                    },
+                }),
+            };
         });
-        if (styled.length) {
-            return styled.map((s) => s.code);
-        }
     }
 }
 export function getTemplate(

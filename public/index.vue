@@ -12,6 +12,7 @@ console.warn("vue3 编译成功")
 
 <style scoped lang="less">
 @import './css/index.css';
+@import './css/index.less';
 
 #vue3 {
     color: #ff0000
