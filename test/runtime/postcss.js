@@ -11,16 +11,20 @@ const config = {
                 console.log("less ", id);
             },
         }),
-        sass(),
+        sass({
+            log(id, code) {
+                console.log(code);
+            },
+        }),
         postcss({
             plugins: [],
             options(css, id) {
                 return { from: id, to: id };
             },
             log(id, code) {
-                console.warn(id, code);
+                console.warn(id);
             },
-            extensions: [".css", ".less", ".sass"],
+            extensions: [".css", ".less", ".sass", ".scss"],
         }),
         sky_module({
             cdn: (name) => `https://fastly.jsdelivr.net/npm/${name}/+esm`,

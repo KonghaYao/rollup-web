@@ -11,13 +11,15 @@ export const initSass = async (sassUrl?: string) => {
         {
             cacheTag: "sass",
         },
+        /* 这个代码将只会执行一次 */
         async () => {
             const src = Setting.NPM("sass.js/dist/sass.worker.js");
             const code = await fetch(src).then((res) => res.text());
-            useGlobal<any>("Sass").setWorkerUrl(createModule(code, src));
+            return useGlobal<any>("Sass").setWorkerUrl(createModule(code, src));
         }
     );
 };
+
 export const _sass = ({
     sass: sassOptions,
     log,
@@ -31,18 +33,68 @@ export const _sass = ({
         async buildStart() {
             await initSass();
             const Sass = useGlobal<any>("Sass");
+
             sass = new Sass();
+            console.log(sass);
+            // We define the importer funcion to try to load the source files using fetch
+            sass.importer((request, done) => {
+                if (request.path) {
+                    // Sass.js already found a file, we probably want to just load that
+                    done();
+                } else if (request.current) {
+                    console.log(request);
+
+                    fetch(new URL(request.current, request.previous))
+                        .then((res) => res.text())
+                        .then((content) => {
+                            done({ content });
+                        });
+                } else {
+                    // let libsass handle the import
+                    done();
+                }
+            });
         },
         async transform(input, id) {
-            const { css, map, stats } = await sass.compile(input, {
-                ...sassOptions,
-                indentedSyntax: /\.scss/.test(id),
-            } as object);
-            stats.includedFiles.forEach((i: string) => {
+            const result: any = await new Promise((resolve) => {
+                sass.compile(
+                    input,
+                    {
+                        ...sassOptions,
+                        indentedSyntax: !/\.scss/.test(id),
+                        // Path to source map file
+                        // Enables the source map generating
+                        // Used to create sourceMappingUrl
+                        sourceMapFile: "file",
+                        // Pass-through as sourceRoot property
+                        sourceMapRoot: "root",
+                        // The input path is used for source map generation.
+                        // It can be used to define something with string
+                        // compilation or to overload the input file path.
+                        // It is set to "stdin" for data contexts
+                        // and to the input file on file contexts.
+                        inputPath: id,
+                        // The output path is used for source map generation.
+                        // Libsass will not write to this file, it is just
+                        // used to create information in source-maps etc.
+                        outputPath: "stdout",
+                        // Embed included contents in maps
+                        sourceMapContents: true,
+                        // Embed sourceMappingUrl as data uri
+                        sourceMapEmbed: false,
+                        // Disable sourceMappingUrl in css output
+                        sourceMapOmitUrl: true,
+                    } as object,
+                    (result: any) => resolve(result)
+                );
+            });
+
+            if (!result.text) throw new Error("scss compiler Error");
+            result.stats?.includedFiles.forEach((i: string) => {
                 this.resolve(i, id);
             });
-            log && log(id, css);
-            return { code: css, map };
+            log && log(id, result.text);
+            return { code: result.text };
         },
     } as Plugin;
 };

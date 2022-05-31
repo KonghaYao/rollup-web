@@ -1,19 +1,17 @@
-@mixin button-base() {
-  @include typography(button);
-  @include ripple-surface;
-  @include ripple-radius-bounded;
+/* index.sass */
+$nav-color: #F90;
+nav {
+  $width: 100px;
+  width: $width;
+  color: $nav-color;
+}
 
-  display: inline-flex;
-  position: relative;
-  height: $button-height;
-  border: none;
-  vertical-align: middle;
-
-  &:hover { cursor: pointer; }
-
-  &:disabled {
-    color: $mdc-button-disabled-ink-color;
-    cursor: default;
-    pointer-events: none;
+article {
+  ~ article { border-top: 1px dashed #ccc }
+  > section { background: #eee }
+  dl > {
+    dt { color: #333 }
+    dd { color: #555 }
   }
+  nav + & { margin-top: 0 }
 }

@@ -1,0 +1,18 @@
+/* index.scss */
+@import "./index.sass";
+$highlight-color: #f90;
+$basic-border: 1px solid black;
+
+#app {
+    background-color: $highlight-color;
+    border: $basic-border;
+    .container {
+        font-size: 30px;
+    }
+    a {
+        color: blue;
+        &:hover {
+            color: red;
+        }
+    }
+}
