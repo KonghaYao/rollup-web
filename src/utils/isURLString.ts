@@ -3,3 +3,6 @@ export const isURLString = (url: string) => {
         url
     );
 };
+export const URLResolve = (relative: string, baseURL: string) => {
+    return new URL(relative, baseURL.replace(/\?.*$/, "")).toString();
+};

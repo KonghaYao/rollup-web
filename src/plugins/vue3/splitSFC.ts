@@ -9,7 +9,7 @@ import {
 import { VueCompileConfig } from "../vue3";
 
 export type PreprocessLang = "less" | "sass" | "scss" | "styl" | "stylus";
-import Preprocess from "./preprocess";
+import Preprocess from "../postcss/preprocess";
 export function getStyle(
     descriptor: SFCDescriptor,
     id: string,

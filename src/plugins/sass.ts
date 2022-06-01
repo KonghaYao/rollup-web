@@ -1,7 +1,7 @@
 import { Plugin } from "rollup-web";
 import { useGlobal } from "../utils/useGlobal";
 import { checkExtension, wrapPlugin } from "../utils/wrapPlugin";
-import { sass as SASS } from "./vue3/preprocess";
+import { sass as SASS } from "./postcss/preprocess";
 export const initSass = SASS.load;
 type Done = (result?: Request & Partial<{ content: string }>) => void;
 type Request = {

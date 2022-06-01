@@ -1,6 +1,6 @@
 import { Plugin } from "rollup-web";
 import { wrapPlugin } from "../utils/wrapPlugin";
-import { less as LESS } from "./vue3/preprocess";
+import { less as LESS } from "./postcss/preprocess";
 export const initLess = LESS.load;
 export const _less = ({
     less: lessOptions,

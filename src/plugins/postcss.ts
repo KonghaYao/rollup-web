@@ -1,8 +1,26 @@
-import { Plugin, PluginCache, PluginContext } from "rollup-web";
+import {
+    Plugin,
+    PluginCache,
+    PluginContext,
+    TransformPluginContext,
+} from "rollup-web";
 import { wrapPlugin } from "../utils/wrapPlugin";
 import Postcss, { AcceptedPlugin } from "postcss";
 import atImport from "postcss-import";
+import importURL from "./postcss/import-url";
 
+/* atImport 与 Rollup 的交接 */
+const loadFromRollupCache = async function (
+    this: TransformPluginContext,
+    url: string,
+    Info: { id: string }
+) {
+    const result = await this.resolve(url, Info.id);
+    if (!result) return;
+    await this.load(result);
+    /* 从缓存中读取源文件 */
+    return this.cache.get(result.id) as string;
+};
 export const _postcss = ({
     plugins = [],
     options,
@@ -10,12 +28,11 @@ export const _postcss = ({
 }: {
     plugins?: AcceptedPlugin[];
     options?: (css: string, id: string) => any;
-
     log?: (id: string, code: string) => void;
 } = {}) => {
-    let resolve: any;
-    let load: (url: string) => ReturnType<PluginContext["load"]>;
-    let cache: PluginCache;
+    let Context: TransformPluginContext;
+    let Info: { id: string };
+
     const converter = Postcss(
         plugins.concat(
             atImport({
@@ -26,10 +43,17 @@ export const _postcss = ({
                 },
                 async load(p) {
                     if (p.startsWith("//")) p = decodeURIComponent(p.slice(2));
-                    const { id } = await resolve(p);
-                    await load(id);
-                    /* 从缓存中读取源文件 */
-                    return cache.get(id);
+                    return loadFromRollupCache.call(
+                        Context,
+                        p,
+                        Info
+                    ) as Promise<string>;
+                },
+            }),
+
+            importURL({
+                async load(url, options) {
+                    return await loadFromRollupCache.call(Context, url, Info);
                 },
             })
         )
@@ -37,9 +61,8 @@ export const _postcss = ({
     return {
         name: "postcss",
         async transform(input, id) {
-            resolve = (source: string) => this.resolve(source, id);
-            load = (id: string) => this.load({ id });
-            cache = this.cache;
+            Context = this;
+            Info = { id };
             console.log(input);
             const { css } = await converter.process(
                 input,

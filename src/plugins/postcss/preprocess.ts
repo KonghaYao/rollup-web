@@ -2,7 +2,7 @@ import { createModule } from "../../utils/ModuleEval";
 import { Setting } from "../../Setting";
 import { loadScript } from "../../utils/loadScript";
 import { useGlobal } from "../../utils/useGlobal";
-import { PreprocessLang } from "./splitSFC";
+import { PreprocessLang } from "../vue3/splitSFC";
 interface PreprocessHelper {
     /* 返回对应的 预处理器 */
     require: () => any;
