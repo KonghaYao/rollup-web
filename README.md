@@ -1,5 +1,7 @@
 # Rollup in Browser!
 
+[![Rate this package](https://badges.openbase.com/js/rating/rollup-web.svg?token=wXaeU/WNjI4arFZ57urey3yM3dt5S5jEGK5pg7R1Rzo=)](https://openbase.com/js/rollup-web?utm_source=embedded&utm_medium=badge&utm_campaign=rate-badge)
+
 Simply use rollup to bundle **esm or commonjs or typescript code** in browser!
 
 Like Vite in Nodejs! We want to create a brand new bundle environment in browser!
@@ -14,6 +16,7 @@ We already create some website bundling just in browser!
 
     - [x] SystemJS module
     - [x] Dynamic Import
+    - [ ] Config Loader
 
 2. Plugin Provide
     1. Vanilla JS and TS Part
