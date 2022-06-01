@@ -26,7 +26,7 @@ const isExist = async (url: string) => {
     }
 };
 
-/* 后缀名缓存器 */
+/* 后缀名缓存器，用于下载不知道后缀名的文件 */
 export class ExtensionCache {
     store = new Map<string, string>();
     constructor(public tag: string) {
@@ -62,7 +62,7 @@ export interface ModuleConfig {
     cache?: string | false;
 }
 
-/* 最后返回一个值 */
+/* 最终 resolve 的返回值 */
 const returnResult = (
     forceDependenciesExternal: boolean,
     result: string,

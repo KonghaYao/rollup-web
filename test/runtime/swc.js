@@ -25,7 +25,7 @@ const config = {
             swcrc: {},
             extensions: [".ts"],
             log(id) {
-                console.log("%cBabel typescript > " + id, "color:orange");
+                console.log("%cSWC typescript > " + id, "color:orange");
             },
         }),
         sky_module({

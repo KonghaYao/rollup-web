@@ -16,10 +16,7 @@ export const sky_module = ({
      */
     dependencies,
     ignore,
-    /** ! 极度不推荐使用 ! 模块会被解析，需要有具有 load 功能的插件 */
-    bundle = [],
 }: {
-    bundle?: string[];
     rename?: {
         [keys: string]: string;
     };
@@ -34,7 +31,7 @@ export const sky_module = ({
 
         resolveId(thisFile, importer = "") {
             // 当有前缀时，进行 ignore
-            if (/[^:]*?:/.test(thisFile)) return;
+            if (isURLString(thisFile)) return;
             if (
                 thisFile[0] !== "." &&
                 thisFile[0] !== "/" &&
@@ -48,7 +45,7 @@ export const sky_module = ({
                 // 全解析
                 return {
                     // 当模块需要被在线获取并解析时
-                    external: !(thisFile in bundle),
+                    external: true,
                     id:
                         typeof cdn === "function"
                             ? cdn(thisFile)
