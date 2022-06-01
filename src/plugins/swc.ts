@@ -43,13 +43,13 @@ const _swcPlugin = ({
     log?: (id: string, code: string) => void;
 } = {}) => {
     return {
+        name: "swc",
         async buildStart(this, options) {
             if (initialized) return;
             Log.lime("Downloading SWC ...");
             await initSwc();
             initialized = true;
         },
-        name: "swc",
         /** wrapPlugin 进行了守护 */
         transform(code: string, id: string) {
             const result = transformSync(

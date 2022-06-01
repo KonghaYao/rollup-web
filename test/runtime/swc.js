@@ -31,17 +31,6 @@ const config = {
         sky_module({
             cdn: "https://cdn.skypack.dev/",
         }),
-        // 配合解析 ExtraBundle 的插件
-        {
-            resolveId(url) {
-                if (url.startsWith("http")) {
-                    return url;
-                }
-            },
-            load(url) {
-                return fetch(url).then((res) => res.text());
-            },
-        },
     ],
 };
 const compiler = new Compiler(config, {

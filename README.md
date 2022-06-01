@@ -25,6 +25,7 @@ We already create some website bundling just in browser!
         - [x] CSS Support
         - [x] Less Support
         - [x] Sass Support
+        - [ ] Tailwindcss Support (Partial)
     3. Framework Part
         - [x] Vue SFC Support
         - [x] Solidjs Support
@@ -32,6 +33,7 @@ We already create some website bundling just in browser!
         - [ ] Svelte Support
     4. Special File Part
         - [x] json Support
+        - [x] MDX Support
         - [ ] WASM Support
         - [ ] Web Worker Support
     5. Info
@@ -64,7 +66,7 @@ const compiler = new Compiler(RollupConfig, {
     // 4. And try to Download them!
     extensions: [".tsx", ".ts", ".js", ".json", ".css"],
 
-    // if you want to see which file load，it could be helpful.
+    // If you want to see which file load，it could be helpful.
     log(url) {
         console.log("%c Download ==> " + url, "color:green");
     },
