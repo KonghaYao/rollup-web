@@ -1,50 +1,53 @@
 import "../shim/process";
 import { Plugin } from "rollup-web";
 
-import { Options, transformSync } from "@swc/core";
-import { merge } from "lodash-es";
+import type { Options } from "@swc/core";
+import merge from "lodash-es/merge";
 
-// 导出所有的 Swc 选项
-import initSwc from "@swc/core";
+import initSwc, { transformSync } from "@swc/wasm-web";
 import { wrapPlugin } from "../utils/wrapPlugin";
 export { initSwc };
-export * from "@swc/core";
+const defaultConfig = {
+    jsc: {
+        parser: {
+            syntax: "typescript",
+            tsx: true,
+            decorators: true,
+            dynamicImport: true,
+        },
+        transform: {
+            legacyDecorator: true,
+            decoratorMetadata: true,
+        },
+        target: "es2022",
+        keepClassNames: true,
+        loose: true,
+    },
+    module: {
+        type: "es6",
+        strict: false,
+        strictMode: true,
+        lazy: false,
+        noInterop: false,
+    },
+    sourceMaps: false,
+};
 
-export const _swcPlugin = ({
+let initialized = false;
+const _swcPlugin = ({
     /** 写入配置文件 */
     swcrc = {},
     log,
 }: {
     swcrc?: Options;
-    extensions?: string[];
     log?: (id: string) => void;
 } = {}) => {
-    const defaultConfig = {
-        jsc: {
-            parser: {
-                syntax: "typescript",
-                tsx: true,
-                decorators: true,
-                dynamicImport: true,
-            },
-            transform: {
-                legacyDecorator: true,
-                decoratorMetadata: true,
-            },
-            target: "es2022",
-            keepClassNames: true,
-            loose: true,
-        },
-        module: {
-            type: "es6",
-            strict: false,
-            strictMode: true,
-            lazy: false,
-            noInterop: false,
-        },
-        sourceMaps: false,
-    };
     return {
+        async buildStart(this, options) {
+            if (initialized) return;
+            await initSwc();
+            initialized = true;
+        },
         name: "swc",
         /** wrapPlugin 进行了守护 */
         transform(code: string, id: string) {
@@ -58,6 +61,6 @@ export const _swcPlugin = ({
 };
 
 /** 使用 swc 前请 initSwc  */
-export const swcPlugin = wrapPlugin(_swcPlugin, {
+export const swc = wrapPlugin(_swcPlugin, {
     extensions: [".js", ".ts", ".jsx", ".es6", ".es", ".mjs"],
 });

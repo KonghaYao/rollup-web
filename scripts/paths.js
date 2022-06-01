@@ -5,6 +5,7 @@ const npmCDN = "https://fastly.jsdelivr.net/npm/";
 export const paths = {
     "rollup-web": npmCDN + "rollup/dist/es/rollup.browser.js",
     "@swc/core": npmCDN + "@swc/wasm-web/wasm-web.js",
+    "@swc/wasm-web": npmCDN + "@swc/wasm-web/wasm-web.js",
     "process-bundle": npmCDN + "process/browser.js/+esm",
     "magic-string": npmCDN + "magic-string/+esm",
     util: npmCDN + "util/+esm",
@@ -14,6 +15,7 @@ export const paths = {
     "zlib-bundle": npmCDN + "pako/+esm",
     "nv-browser-brotli": npmCDN + "nv-browser-brotli/+esm",
     "safe-identifier-bundle": npmCDN + "safe-identifier/+esm",
+    "lodash-es/merge": npmCDN + "lodash-es/merge.js",
 
     assert: "https://cdn.skypack.dev/assert",
     "url-bundle": "https://cdn.skypack.dev/url",

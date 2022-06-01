@@ -53,6 +53,7 @@
         "@rollup/plugin-node-resolve": "^13.2.1",
         "@rollup/plugin-replace": "^4.0.0",
         "@swc/core": "^1.2.171",
+        "@swc/wasm-web": "^1.2.196",
         "builtin-modules": "^3.2.0",
         "chai": "^4.3.6",
         "localforage": "^1.10.0",

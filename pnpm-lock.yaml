@@ -10,6 +10,7 @@ specifiers:
   '@rollup/plugin-replace': ^4.0.0
   '@rollup/pluginutils': ^4.2.1
   '@swc/core': ^1.2.171
+  '@swc/wasm-web': ^1.2.196
   '@types/babel__core': ^7.1.19
   '@types/brotli': ^1.3.1
   '@types/glob': ^7.2.0
@@ -50,6 +51,7 @@ dependencies:
   '@rollup/plugin-node-resolve': 13.2.1_rollup@2.63.0
   '@rollup/plugin-replace': 4.0.0_rollup@2.63.0
   '@swc/core': 1.2.171
+  '@swc/wasm-web': 1.2.196
   builtin-modules: 3.2.0
   chai: 4.3.6
   localforage: 1.10.0
@@ -635,6 +637,10 @@ packages:
       '@swc/core-win32-arm64-msvc': 1.2.171
       '@swc/core-win32-ia32-msvc': 1.2.171
       '@swc/core-win32-x64-msvc': 1.2.171
+    dev: false
+
+  /@swc/wasm-web/1.2.196:
+    resolution: {integrity: sha512-CHs3FdC+6k0FBWDJlfosEtrpByt5D5ukozAV2zSA013GYqcCgcemXvua2xw+1TGUbe+0ct9D6nK8ktZeOqUzLw==}
     dev: false
 
   /@trysound/sax/0.2.0:
