@@ -67,13 +67,16 @@ export class Compiler {
 
     /* 执行代码 */
     async evaluate(path: string) {
+        console.group("Bundling Code");
         const System = useGlobal<any>("System");
         const url = new URL(path, this.moduleConfig.root).toString();
         const isExist = this.moduleCache.hasData(url);
         if (!isExist) {
             await this.CompileSingleFile(url);
         }
-        return System.import(url);
+        const result = await System.import(url);
+        console.groupCollapsed("Bundling Code");
+        return result;
     }
     isLocalFile(url: string) {
         return url.startsWith(this.moduleConfig.root!);

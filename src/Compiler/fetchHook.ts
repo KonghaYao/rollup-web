@@ -1,8 +1,9 @@
 import type { OutputChunk } from "rollup";
-import { useGlobal } from "../utils/useGlobal";
 import { isMatch } from "picomatch";
+import { useGlobal } from "../utils/useGlobal";
 import { ModuleCache } from "./ModuleCache";
 import { Compiler } from "../Compiler";
+import { log } from "../utils/ColorConsole";
 
 /**
  * 用于和 Systemjs 进行互动,
@@ -20,7 +21,6 @@ export const fetchHook = (
     SystemJS.constructor.prototype._esm_module_ = new Map<string, any>();
     SystemJS.shouldFetch = () => true;
 
-    console.log("fetch hook 注入成功");
     const hookName = "fetch";
 
     SystemJS.constructor.prototype[hookName] = async function (
@@ -37,10 +37,7 @@ export const fetchHook = (
 
         if (cacheUrl) {
             /* 已经存在缓存 */
-            console.log(
-                "%c Compiler | fetch | cache " + cacheUrl,
-                "background-color:#bbf7d0;"
-            );
+            log.green("Compiler | fetch | cache " + cacheUrl);
             code = (await moduleCache.getData(cacheUrl))!.code;
         } else if (
             moduleConfig.extraBundle === true ||
@@ -50,18 +47,12 @@ export const fetchHook = (
                 isMatch(url, moduleConfig.extraBundle)) ||
             url.startsWith(moduleConfig.root!)
         ) {
-            console.log(
-                `%c Compiler | fetch | bundle ` + url,
-                "background-color:#ede9fe;"
-            );
+            log.pink(` Compiler | fetch | bundle ` + url);
             /* 全打包或者被选中打包 */
             code = await Bundle(url, rollupCode, moduleCache);
         } else {
             /* 默认使用 esm import 方式导入代码 */
-            console.log(
-                "%c Compiler | fetch | import " + url,
-                "background-color:#cffafe;"
-            );
+            log.blue(" Compiler | fetch | import " + url);
             code = await LoadEsmModule(url);
         }
         return new Response(
