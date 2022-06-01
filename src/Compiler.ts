@@ -75,7 +75,7 @@ export class Compiler {
             await this.CompileSingleFile(url);
         }
         const result = await System.import(url);
-        console.groupCollapsed("Bundling Code");
+        console.groupEnd();
         return result;
     }
     isLocalFile(url: string) {

@@ -5,7 +5,7 @@ import {
 } from "@vue/compiler-sfc";
 import { Plugin } from "rollup-web";
 import { checkSuffix, wrapPlugin } from "../utils/wrapPlugin";
-import { getScript, getStyle, PreprocessLang } from "./vue3/splitSFC";
+import { getScript, getStyle } from "./vue3/splitSFC";
 
 function generateID() {
     return Math.random().toString(36).slice(2, 12);

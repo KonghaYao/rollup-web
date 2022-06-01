@@ -1,4 +1,3 @@
-import "../shim/process";
 import { Plugin } from "rollup-web";
 import type { BabelFileResult, TransformOptions } from "@babel/core";
 import { transform } from "@babel/core";

@@ -50,6 +50,7 @@ export const _sass = ({
                     const url = new URL(request.current, baseURL).toString();
                     request.path = url;
                     const ext = checkExtension(url, extensions!);
+                    // 当后缀名符合时，直接下载并转化
                     if (ext) {
                         fetch(url)
                             .then((res) => res.text())
@@ -58,7 +59,7 @@ export const _sass = ({
                             });
                     } else {
                         request.options = true;
-                        // 这样是为了
+                        // 这样是为了保证 @import "" 字符串
                         request.path = `"${request.path}"`;
                         done(request);
                     }

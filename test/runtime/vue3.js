@@ -1,7 +1,7 @@
 // 导入打包产物
 import { Compiler, sky_module } from "../../dist/index.js";
 import { vue } from "../../dist/plugins/vue3.js";
-import { babel } from "../../dist/plugins/babel.js";
+import { babelCore } from "../../dist/plugins/babel.core.js";
 
 import { less } from "../../dist/plugins/less.js";
 import { sass } from "../../dist/plugins/sass.js";
@@ -11,6 +11,7 @@ import json from "https://esm.sh/@rollup/plugin-json";
 import alias from "https://esm.sh/@rollup/plugin-alias";
 import commonjs from "https://esm.sh/@rollup/plugin-commonjs";
 import replace from "https://esm.sh/@rollup/plugin-replace";
+import typescript from "https://esm.sh/@babel/preset-typescript";
 
 const config = {
     plugins: [
@@ -36,11 +37,11 @@ const config = {
                 console.log("less ", id);
             },
         }),
-        babel({
+        babelCore({
             babelrc: {
                 presets: [
                     [
-                        "typescript",
+                        typescript,
                         {
                             // 需要使用这种方式兼容 solid 配置
                             isTSX: true,
