@@ -33,7 +33,7 @@ const config = {
         }),
         less({
             log(id, code) {
-                console.log("less ", id, code);
+                console.log("less ", id);
             },
         }),
         babel({
@@ -58,7 +58,7 @@ const config = {
         vue({}),
         postcss({
             log(id, code) {
-                console.log("postcss ", id, code);
+                console.log("postcss ", id);
             },
             extensions: [".css", ".less", ".scss"],
         }),
@@ -76,7 +76,7 @@ const config = {
 };
 
 const compiler = new Compiler(config, {
-    extensions: [".vue", ".ts", ".cjs", ".json"],
+    extensions: [".vue", ".ts", ".cjs", ".json", ".css", ".less", ".sass"],
     log(url) {
         console.log("%cDownload " + url, "color:green");
     },

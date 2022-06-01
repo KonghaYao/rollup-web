@@ -13,7 +13,7 @@ const config = {
         }),
         sass({
             log(id, code) {
-                console.warn("sass ", code);
+                console.warn("sass ", id);
             },
         }),
         postcss({
@@ -22,7 +22,7 @@ const config = {
                 return { from: id, to: id };
             },
             log(id, code) {
-                console.warn("postcss ", id, code);
+                console.warn("postcss ", id);
             },
             extensions: [".css", ".less", ".sass", ".scss"],
         }),
