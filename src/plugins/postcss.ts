@@ -38,7 +38,6 @@ export const _postcss = ({
             atImport({
                 resolve(id, basedir, importOptions) {
                     const url = new URL(id, basedir + "/index.css").toString();
-                    console.warn(url);
                     return "//" + encodeURIComponent(url);
                 },
                 async load(p) {
@@ -50,7 +49,6 @@ export const _postcss = ({
                     ) as Promise<string>;
                 },
             }),
-
             importURL({
                 async load(url, options) {
                     return await loadFromRollupCache.call(Context, url, Info);
@@ -63,7 +61,6 @@ export const _postcss = ({
         async transform(input, id) {
             Context = this;
             Info = { id };
-            console.log(input);
             const { css } = await converter.process(
                 input,
                 options ? options(input, id) : { from: id, to: id }

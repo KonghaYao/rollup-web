@@ -1,5 +1,5 @@
 /* index.scss */
-@import "./index.sass";
+
 $highlight-color: #f90;
 $basic-border: 1px solid black;
 
@@ -16,3 +16,4 @@ $basic-border: 1px solid black;
         }
     }
 }
+@import "./index.sass";

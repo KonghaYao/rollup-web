@@ -8,12 +8,12 @@ const config = {
     plugins: [
         less({
             log(id) {
-                console.log("less ", id);
+                console.warn("less ", id);
             },
         }),
         sass({
             log(id, code) {
-                console.log(code);
+                console.warn("sass ", code);
             },
         }),
         postcss({
@@ -22,7 +22,7 @@ const config = {
                 return { from: id, to: id };
             },
             log(id, code) {
-                console.warn(id);
+                console.warn("postcss ", id, code);
             },
             extensions: [".css", ".less", ".sass", ".scss"],
         }),
