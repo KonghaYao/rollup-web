@@ -1,63 +1,53 @@
-import {
-    Plugin,
-    PluginCache,
-    PluginContext,
-    TransformPluginContext,
-} from "rollup-web";
+import { Plugin, TransformPluginContext } from "rollup-web";
 import { wrapPlugin } from "../utils/wrapPlugin";
 import Postcss, { AcceptedPlugin } from "postcss";
 import atImport from "postcss-import";
 import importURL from "./postcss/import-url";
+import { loadFromRollupCache } from "./postcss/loadFromRollupCache";
 
-/* atImport 与 Rollup 的交接 */
-const loadFromRollupCache = async function (
-    this: TransformPluginContext,
-    url: string,
-    Info: { id: string }
-) {
-    const result = await this.resolve(url, Info.id);
-    if (!result) return;
-    await this.load(result);
-    /* 从缓存中读取源文件 */
-    return this.cache.get(result.id) as string;
-};
 export const _postcss = ({
     plugins = [],
     options,
     log,
+    filter,
 }: {
     plugins?: AcceptedPlugin[];
     options?: (css: string, id: string) => any;
     log?: (id: string, code: string) => void;
+    filter?: (url: string) => boolean;
 } = {}) => {
+    // Rollup 内置环境
     let Context: TransformPluginContext;
     let Info: { id: string };
 
-    const converter = Postcss(
-        plugins.concat(
-            atImport({
-                resolve(id, basedir, importOptions) {
-                    const url = new URL(id, basedir + "/index.css").toString();
-                    return "//" + encodeURIComponent(url);
-                },
-                async load(p) {
-                    if (p.startsWith("//")) p = decodeURIComponent(p.slice(2));
-                    return loadFromRollupCache.call(
-                        Context,
-                        p,
-                        Info
-                    ) as Promise<string>;
-                },
-            }),
-            importURL({
-                async load(url, options) {
-                    return await loadFromRollupCache.call(Context, url, Info);
-                },
-            })
-        )
-    );
+    /* Postcss 内置插件 */
+    const innerPlugin = [
+        atImport({
+            resolve(id, basedir, importOptions) {
+                const url = new URL(id, basedir + "/index.css").toString();
+                return "//" + encodeURIComponent(url);
+            },
+            load(p) {
+                if (p.startsWith("//")) p = decodeURIComponent(p.slice(2));
+                if (filter && filter(p)) return p;
+                return loadFromRollupCache.call(
+                    Context,
+                    p,
+                    Info
+                ) as Promise<string>;
+            },
+        }),
+        importURL({
+            async load(url, options) {
+                if (filter && filter(url)) return;
+                return await loadFromRollupCache.call(Context, url, Info);
+            },
+        }),
+    ];
+    const converter = Postcss(plugins.concat(innerPlugin));
     return {
         name: "postcss",
+        /* Postcss 最终将会被写为 CSS-In-JS 的形式 */
         async transform(input, id) {
             Context = this;
             Info = { id };
@@ -74,7 +64,7 @@ export const _postcss = ({
         },
     } as Plugin;
 };
-/* 简单 CSS 插件，没有进行任何的操作  */
+/* Postcss 插件，内置 css 模块解析，如果需要 sass，less 解析，需要使用额外插件，并配置 extensions 属性  */
 export const postcss = wrapPlugin(_postcss, {
     extensions: [".css"],
 });
