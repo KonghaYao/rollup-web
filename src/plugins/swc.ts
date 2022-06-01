@@ -3,7 +3,7 @@ import { Plugin } from "rollup-web";
 
 import type { Options } from "@swc/core";
 import merge from "lodash-es/merge";
-
+import { log as Log } from "../utils/ColorConsole";
 import initSwc, { transformSync } from "@swc/wasm-web";
 import { wrapPlugin } from "../utils/wrapPlugin";
 export { initSwc };
@@ -40,22 +40,24 @@ const _swcPlugin = ({
     log,
 }: {
     swcrc?: Options;
-    log?: (id: string) => void;
+    log?: (id: string, code: string) => void;
 } = {}) => {
     return {
         async buildStart(this, options) {
             if (initialized) return;
+            Log.lime("Downloading SWC ...");
             await initSwc();
             initialized = true;
         },
         name: "swc",
         /** wrapPlugin 进行了守护 */
         transform(code: string, id: string) {
-            log && log(id);
-            return transformSync(
+            const result = transformSync(
                 code,
                 merge({ filename: id }, defaultConfig, swcrc)
             );
+            log && log(id, result);
+            return result;
         },
     } as Plugin;
 };

@@ -18,6 +18,7 @@ interface SassStatic {
     compile: (code: string, options: any, cb: (result: Result) => void) => void;
     options: (all: any, cb?: () => void) => void;
 }
+import { log as Log } from "../utils/ColorConsole";
 export const _sass = ({
     sass: sassOptions,
     log,
@@ -31,6 +32,7 @@ export const _sass = ({
     return {
         name: "sass",
         async buildStart() {
+            Log.lime("Downloading Sass.js ...");
             await initSass();
             const Sass = useGlobal<SassStatic>("Sass");
             if (this.cache.has("sass")) {

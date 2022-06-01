@@ -1,6 +1,8 @@
 import { Plugin } from "rollup-web";
 import { wrapPlugin } from "../utils/wrapPlugin";
 import { less as LESS } from "./postcss/preprocess";
+import { log as Log } from "../utils/ColorConsole";
+
 export const initLess = LESS.load;
 export const _less = ({
     less: lessOptions,
@@ -12,6 +14,7 @@ export const _less = ({
     return {
         name: "less",
         async buildStart() {
+            Log.lime("Downloading less.js ...");
             await initLess();
         },
         async transform(input, id) {

@@ -2,14 +2,20 @@ import { createModule } from "../../utils/ModuleEval";
 import { Setting } from "../../Setting";
 import { loadScript } from "../../utils/loadScript";
 import { useGlobal } from "../../utils/useGlobal";
-import { PreprocessLang } from "../vue3/splitSFC";
+
+export type PreprocessLang = "less" | "sass" | "scss" | "styl" | "stylus";
 interface PreprocessHelper {
     /* 返回对应的 预处理器 */
     require: () => any;
+    /* 给 Vue3 内部的假对象 */
     innerRequire: () => any;
+    /* 通过 load 加载预处理器 */
     load: (url?: string) => Promise<any>;
+    /* 默认配置 */
     config: (filename: string) => any;
 }
+
+/* Less 相关的配置 */
 export const less: PreprocessHelper = {
     require() {
         return useGlobal("less");

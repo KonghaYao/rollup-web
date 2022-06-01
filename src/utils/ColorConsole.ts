@@ -28,4 +28,5 @@ const inner = Object.entries(colors).reduce(
 const _log = (...args: any[]) => {
     return console.log(...args);
 };
+
 export const log = Object.assign(_log, inner);

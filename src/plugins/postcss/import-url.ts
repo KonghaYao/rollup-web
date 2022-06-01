@@ -1,11 +1,4 @@
-import postcss, {
-    AtRule,
-    Helpers,
-    Transformer,
-    Root,
-    Processor,
-    AcceptedPlugin,
-} from "postcss";
+import postcss, { AtRule, Helpers, Root, AcceptedPlugin } from "postcss";
 import { isURLString, URLResolve } from "../../utils/isURLString";
 
 const defaults = {

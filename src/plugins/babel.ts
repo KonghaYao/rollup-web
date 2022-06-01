@@ -4,7 +4,7 @@ import { BabelFileResult, TransformOptions } from "@babel/core";
 import { wrapPlugin } from "../utils/wrapPlugin";
 import { loadScript } from "../utils/loadScript";
 import { Setting } from "../Setting";
-
+import { log as Log } from "../utils/ColorConsole";
 /** 兼容以前的项目 在 Web 端全局加载一次 babel */
 export const initBabel = async (babelURL?: string) => {
     // 这一步会进行去重操作，所以可以重复操作
@@ -34,6 +34,7 @@ export const _babel = ({
         name: "babel",
 
         async buildStart() {
+            Log.lime("Downloading Babel.standalone.js ...");
             /* @ts-ignore */
             await initBabel();
         },
