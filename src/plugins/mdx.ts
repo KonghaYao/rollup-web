@@ -22,6 +22,7 @@ export const _mdx = ({
                     baseUrl: id,
                 } as CompileOptions)
             );
+            log && log(id, file.value);
             return { code: file.value, map: file.map };
         },
     } as Plugin;

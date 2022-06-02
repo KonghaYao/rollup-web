@@ -13,10 +13,11 @@ They include `@mdx-js/mdx`, which is our core compiler; `remark-mdx`, which is
 the remark plugin to support the MDX syntax; and several integrations with
 bundlers and frontend frameworks.
 
+DOM Render
 {
 (() => {
 const category = {
-children:[...Array(10).keys()].map(i=><div>{i}</div>)
+children:[...Array(10).keys()].map(i=>({name:i}))
 }
 
     return (
