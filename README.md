@@ -16,12 +16,12 @@ We already create some website bundling just in browser!
 
     - [x] SystemJS module
     - [x] Dynamic Import
-    - [ ] Config Loader
+    - [ ] Config File Loader
 
 2. Plugin Provide
     1. Vanilla JS and TS Part
         - [x] Babel-Core Support
-        - [x] Babel-plugins Support
+        - [x] Babel-plugins Support ( use esm.sh! )
         - [x] SWC Support
     2. Style Part
         - [x] Postcss Support
@@ -37,9 +37,9 @@ We already create some website bundling just in browser!
     4. Special File Part
         - [x] json Support
         - [x] MDX Support
-        - [ ] WASM Support
+        - [x] WASM Support ([Vite](https://vitejs.dev/guide/features.html#webassembly) and [ESM Integration](https://github.com/WebAssembly/esm-integration))
         - [ ] Web Worker Support
-    5. Info
+    5. Polyfill
         - [ ] Node Builtins Polyfill
 
 # Get Start
@@ -47,7 +47,7 @@ We already create some website bundling just in browser!
 ## Normal Bundle
 
 ```js
-// load System.js before
+// load System.js first
 import "https://fastly.jsdelivr.net/npm/systemjs@6.12.1/dist/system.min.js";
 import { Compiler } from "https://fastly.jsdelivr.net/npm/rollup-web@3/dist/index.js";
 
