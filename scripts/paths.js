@@ -17,6 +17,7 @@ export const paths = {
     "safe-identifier-bundle": npmCDN + "safe-identifier/+esm",
     "lodash-es/merge": npmCDN + "lodash-es/merge.js",
     comlink: npmCDN + "comlink/dist/esm/comlink.mjs",
+    "@mdx-js/mdx": "https://cdn.skypack.dev/@mdx-js/mdx",
 
     assert: "https://cdn.skypack.dev/assert",
     "url-bundle": "https://cdn.skypack.dev/url",

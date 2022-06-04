@@ -2,6 +2,7 @@ import { Compiler } from "./Compiler";
 import { fetchHook } from "./Compiler/fetchHook";
 import { useGlobal } from "./utils/useGlobal";
 import { proxy } from "comlink";
+import { Setting } from "./Setting";
 
 /** 一个单独的 Compiler 执行环境, 专门用于 适配 执行 的环境 */
 export class Evaluator {
@@ -11,9 +12,7 @@ export class Evaluator {
         this.Compiler = Compiler;
         let system = useGlobal("System");
         if (!system) {
-            await import(
-                "https://fastly.jsdelivr.net/npm/systemjs@6.12.1/dist/system.min.js"
-            );
+            await import(Setting.NPM("systemjs@6.12.1/dist/system.min.js"));
             system = useGlobal("System");
         }
 
@@ -27,12 +26,15 @@ export class Evaluator {
     /* 执行代码 */
     async evaluate(path: string) {
         const System = useGlobal<any>("System");
-        let result = await this.Compiler.evaluate(
-            path,
-            proxy(async (url: string) => {
-                result = await System.import(url);
-            })
-        );
+
+        const resultCollection = [];
+        const cb = async (url: string) => {
+            await System.import(url).then((res: any) =>
+                resultCollection.push(res)
+            );
+        };
+        console.log({ cb });
+        let result = await this.Compiler.evaluate(path, proxy(cb));
         return result;
     }
 }

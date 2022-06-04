@@ -22,6 +22,6 @@ const compiler = new Compiler(config, {
         console.log("%c Download ==> " + url, "color:green");
     },
 
-    extraBundle: ["https://fastly.jsdelivr.net/npm/**"],
+    extraBundle: ["https://fastly.jsdelivr.net/npm/brotli-wasm*/**"],
 });
 Comlink.expose(compiler);
