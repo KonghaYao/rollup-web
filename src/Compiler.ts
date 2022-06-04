@@ -72,13 +72,16 @@ export class Compiler {
     }
 
     /* 执行代码 */
-    async evaluate(path: string) {
+    async evaluate(path: string, importTool?: (url: string) => void) {
         console.group("Bundling Code");
         const System = useGlobal<any>("System");
         const url = new URL(path, this.moduleConfig.root).toString();
+
         const isExist = this.moduleCache.hasData(url);
         if (!isExist) await this.CompileSingleFile(url);
-        const result = await System.import(url);
+        const runtime = importTool ? importTool : System.import.bind(System);
+
+        const result = await runtime(url);
         console.groupEnd();
         return result;
     }

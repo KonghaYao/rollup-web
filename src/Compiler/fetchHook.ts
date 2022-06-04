@@ -36,7 +36,7 @@ export const fetchHook = (
 
         if (cacheUrl) {
             /* 已经存在缓存 */
-            log.green("Compiler | fetch | cache " + cacheUrl);
+            log.green("System fetch | cache " + cacheUrl);
             code = (await moduleCache.getData(cacheUrl))!.code;
         } else if (
             moduleConfig.extraBundle === true ||
@@ -44,14 +44,14 @@ export const fetchHook = (
             (moduleConfig.extraBundle instanceof Array &&
                 /* 如果设置了打包区域，那么将会按照这些进行打包 */
                 isMatch(url, moduleConfig.extraBundle)) ||
-            url.startsWith(moduleConfig.root!)
+            url.startsWith(new URL(moduleConfig.root!).origin)
         ) {
-            log.pink(` Compiler | fetch | bundle ` + url);
+            log.pink(` System fetch | bundle ` + url);
             /* 全打包或者被选中打包 */
             code = await Bundle(url, rollupCode);
         } else {
             /* 默认使用 esm import 方式导入代码 */
-            log.blue(" Compiler | fetch | import " + url);
+            log.blue(" System fetch | import " + url);
             code = await LoadEsmModule(url);
         }
         return new Response(

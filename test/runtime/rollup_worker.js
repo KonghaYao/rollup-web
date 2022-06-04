@@ -10,4 +10,6 @@ console.log(Eval, compiler);
 await Eval.createEnv({
     Compiler: compiler,
 });
-export const module = await Eval.evaluate("./public/wasm/wasm.js");
+export const module = await Eval.evaluate(
+    "http://localhost:8888/package/rollup-web/public/wasm/wasm.js"
+);

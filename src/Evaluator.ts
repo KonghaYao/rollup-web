@@ -1,7 +1,7 @@
 import { Compiler } from "./Compiler";
 import { fetchHook } from "./Compiler/fetchHook";
 import { useGlobal } from "./utils/useGlobal";
-
+import { proxy } from "comlink";
 /** 一个单独的 Compiler 执行环境 */
 export class Evaluator {
     Compiler!: Compiler;
@@ -25,15 +25,13 @@ export class Evaluator {
     }
     /* 执行代码 */
     async evaluate(path: string) {
-        console.group("Bundling Code");
         const System = useGlobal<any>("System");
-        const root = this.moduleConfig.root;
-        const url = new URL(path, root).toString();
-        console.log(root);
-        const isExist = this.Compiler.moduleCache.hasData(url);
-        if (!isExist) await this.Compiler.CompileSingleFile(url);
-        const result = await System.import(url);
-        console.groupEnd();
+        let result = await this.Compiler.evaluate(
+            path,
+            proxy(async (url: string) => {
+                result = await System.import(url);
+            })
+        );
         return result;
     }
 }

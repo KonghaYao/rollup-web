@@ -16,6 +16,7 @@ export const paths = {
     "nv-browser-brotli": npmCDN + "nv-browser-brotli/+esm",
     "safe-identifier-bundle": npmCDN + "safe-identifier/+esm",
     "lodash-es/merge": npmCDN + "lodash-es/merge.js",
+    comlink: npmCDN + "comlink/dist/esm/comlink.mjs",
 
     assert: "https://cdn.skypack.dev/assert",
     "url-bundle": "https://cdn.skypack.dev/url",
