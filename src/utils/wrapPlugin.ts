@@ -55,54 +55,10 @@ export const wrapPlugin = <T>(
             resolve: "/",
         });
         if (origin.resolveId) {
-            p.resolveId = function (this, source, importer, options) {
-                // importer 不存在说明是顶层文件，不能忽略
-                if (
-                    importer &&
-                    !isURLString(importer) &&
-                    !filter(relativeResolve(importer, source, "/"))
-                )
-                    return;
-
-                const result = origin.resolveId!.call(
-                    this,
-                    source,
-                    importer,
-                    options
-                );
-
-                // 添加修改 id 的操作
-                if (Options.__modifyId && result) {
-                    return Promise.resolve(result).then((result) => {
-                        return Options.__modifyId!(result, importer || "");
-                    });
-                }
-                return result;
-            } as ResolveIdHook;
+            p.resolveId = WrapResolveId<T>(filter, origin, Options);
         }
         if (origin.load) {
-            p.load = async function (id) {
-                if (!isURLString(id) && !filter(id)) return;
-
-                //! 前缀和后缀有一个符合即可
-                if (
-                    Options._prefix &&
-                    Options._prefix.length &&
-                    checkPrefix(id, Options._prefix) &&
-                    Options._suffix &&
-                    Options._suffix.length &&
-                    checkSuffix(id, Options._suffix)
-                ) {
-                    // 前缀名检查
-                    console.warn("通过前缀测试", id);
-                } else if (Options.extensions) {
-                    // 后缀名检查
-                    const result = checkExtension(id, Options.extensions);
-                    // console.log(id, extname(id), options, p);
-                    if (result === false) return;
-                }
-                return origin.load!.call(this, id);
-            } as LoadHook;
+            p.load = WrapLoad<T>(filter, Options, origin);
         }
         if (origin.transform) {
             p.transform = function (code, id) {
@@ -121,3 +77,58 @@ export const wrapPlugin = <T>(
         return p;
     };
 };
+
+function WrapResolveId<T>(
+    filter: (id: unknown) => boolean,
+    origin: Plugin,
+    Options: T & ExtraOptions
+) {
+    return function (this, source, importer, options) {
+        // importer 不存在说明是顶层文件，不能忽略
+        if (
+            importer &&
+            !isURLString(importer) &&
+            !filter(relativeResolve(importer, source, "/"))
+        )
+            return;
+
+        const result = origin.resolveId!.call(this, source, importer, options);
+
+        // 添加修改 id 的操作
+        if (Options.__modifyId && result) {
+            return Promise.resolve(result).then((result) => {
+                return Options.__modifyId!(result, importer || "");
+            });
+        }
+        return result;
+    } as ResolveIdHook;
+}
+
+function WrapLoad<T>(
+    filter: (id: unknown) => boolean,
+    Options: T & ExtraOptions,
+    origin: Plugin
+) {
+    return async function (id) {
+        if (!isURLString(id) && !filter(id)) return;
+
+        //! 前缀和后缀有一个符合即可
+        if (
+            Options._prefix &&
+            Options._prefix.length &&
+            checkPrefix(id, Options._prefix) &&
+            Options._suffix &&
+            Options._suffix.length &&
+            checkSuffix(id, Options._suffix)
+        ) {
+            // 前缀名检查
+            console.warn("通过前缀测试", id);
+        } else if (Options.extensions) {
+            // 后缀名检查
+            const result = checkExtension(id, Options.extensions);
+            if (result === false) return;
+            console.log(result);
+        }
+        return origin.load!.call(this, id);
+    } as LoadHook;
+}

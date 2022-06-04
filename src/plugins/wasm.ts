@@ -24,6 +24,7 @@ const _wasm = (config: Config): Plugin => {
             return;
         },
         async load(id) {
+            console.log(id);
             const mode = config.mode
                 ? typeof config.mode === "string"
                     ? config.mode
