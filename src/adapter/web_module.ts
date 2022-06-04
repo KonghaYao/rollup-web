@@ -88,10 +88,6 @@ const _web_module = ({
 
     logExternal = () => {},
 }: ModuleConfig = {}) => {
-    let Cache: ExtensionCache | undefined;
-    if (cache) {
-        Cache = new ExtensionCache(cache);
-    }
     return {
         name: "web_module",
         /** 现在这里进行文件获取，load 的时候直接获取缓存文件 */
@@ -109,23 +105,23 @@ const _web_module = ({
 
                 if (extname(url) === "") {
                     /* 解析后缀名 */
-                    if (Cache) {
-                        const current = Cache.get(url);
 
-                        if (current) {
-                            await isExist(current);
-                            return returnResult(
-                                forceDependenciesExternal,
-                                current,
-                                isEntry,
-                                logExternal
-                            );
-                        }
+                    const current = this.cache.get(url);
+
+                    if (current) {
+                        await isExist(current);
+                        return returnResult(
+                            forceDependenciesExternal,
+                            current,
+                            isEntry,
+                            logExternal
+                        );
                     }
+
                     for (let ext of extensions) {
                         const result = await isExist(addExtension(url, ext));
                         if (result) {
-                            Cache && Cache.add(url, result);
+                            this.cache.set(url, result);
                             return returnResult(
                                 forceDependenciesExternal,
                                 result,

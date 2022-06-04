@@ -1,7 +1,6 @@
 import type { OutputChunk } from "rollup";
 import { isMatch } from "picomatch";
 import { useGlobal } from "../utils/useGlobal";
-import { ModuleCache } from "./ModuleCache";
 import { Compiler } from "../Compiler";
 import { log } from "../utils/ColorConsole";
 
@@ -49,7 +48,7 @@ export const fetchHook = (
         ) {
             log.pink(` Compiler | fetch | bundle ` + url);
             /* 全打包或者被选中打包 */
-            code = await Bundle(url, rollupCode, moduleCache);
+            code = await Bundle(url, rollupCode);
         } else {
             /* 默认使用 esm import 方式导入代码 */
             log.blue(" Compiler | fetch | import " + url);
@@ -89,8 +88,7 @@ async function LoadEsmModule(url: string) {
 */
 async function Bundle(
     url: string,
-    rollupCode: () => (code: string) => Promise<OutputChunk[]>,
-    moduleCache: ModuleCache<string, OutputChunk>
+    rollupCode: () => (code: string) => Promise<OutputChunk[]>
 ) {
     /* 副作用： 打包，打包过后是会有缓存的 */
     const result = await rollupCode()(url);

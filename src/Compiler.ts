@@ -30,6 +30,7 @@ export class Compiler {
             extraBundle?: true | string[];
             /* 匹配到的区域都将使用 rollup 打包 */
             useDataCache?: false | CacheConfig;
+            autoBuildFetchHook?: boolean;
         }
     ) {
         if (!this.moduleConfig.root) {
@@ -46,9 +47,10 @@ export class Compiler {
             );
             this.moduleCache.registerCache();
         }
-        fetchHook(this.moduleCache, this.moduleConfig, () => {
-            return this.CompileSingleFile.bind(this);
-        });
+        if (moduleConfig.autoBuildFetchHook ?? true)
+            fetchHook(this.moduleCache, this.moduleConfig, () => {
+                return this.CompileSingleFile.bind(this);
+            });
         this.refreshPlugin();
     }
     plugins: Plugin[] = [];
@@ -65,19 +67,22 @@ export class Compiler {
     /* 打包缓存，code import 被替换为指定的 url 标记 */
     moduleCache = new ModuleCache<string, OutputChunk>();
 
+    getModuleConfig() {
+        return JSON.stringify(this.moduleConfig);
+    }
+
     /* 执行代码 */
     async evaluate(path: string) {
         console.group("Bundling Code");
         const System = useGlobal<any>("System");
         const url = new URL(path, this.moduleConfig.root).toString();
         const isExist = this.moduleCache.hasData(url);
-        if (!isExist) {
-            await this.CompileSingleFile(url);
-        }
+        if (!isExist) await this.CompileSingleFile(url);
         const result = await System.import(url);
         console.groupEnd();
         return result;
     }
+
     isLocalFile(url: string) {
         return url.startsWith(this.moduleConfig.root!);
     }

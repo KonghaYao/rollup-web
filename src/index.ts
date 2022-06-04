@@ -4,3 +4,4 @@ export * from "./rollup";
 export * from "./utils/ModuleEval";
 export * from "./utils/loadScript";
 export * from "./Compiler";
+export { Evaluator } from "./Evaluator";
