@@ -34,7 +34,7 @@ export const _babel = ({
         name: "babel",
 
         async buildStart() {
-            Log.lime("Downloading Babel.standalone.js ...");
+            Log.lime("Loading Babel.standalone.js ...");
             /* @ts-ignore */
             await initBabel();
         },

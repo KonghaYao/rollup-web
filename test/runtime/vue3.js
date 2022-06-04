@@ -81,7 +81,5 @@ const compiler = new Compiler(config, {
     log(url) {
         console.log("%cDownload " + url, "color:green");
     },
-    // 纳入打包的 url 地址，使用 picomatch 匹配
-    bundleArea: [window.location.origin + "/**"],
 });
 export const module = await compiler.evaluate("./public/vue-main.ts");

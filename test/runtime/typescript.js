@@ -33,23 +33,12 @@ const config = {
         sky_module({
             cdn: "https://cdn.skypack.dev/",
         }),
-        // 配合解析 ExtraBundle 的插件
-        {
-            resolveId(url) {
-                if (url.startsWith("http")) {
-                    return url;
-                }
-            },
-            load(url) {
-                return fetch(url).then((res) => res.text());
-            },
-        },
     ],
 };
 const compiler = new Compiler(config, {
     // 用于为相对地址添加绝对地址
     // 为没有后缀名的 url 添加后缀名
-    extensions: [".ts", ".cjs", ".json"],
+    extensions: ["", ".ts", ".cjs", ".json", ".js"],
     log(url) {
         console.log("%c Download ==> " + url, "color:green");
     },
