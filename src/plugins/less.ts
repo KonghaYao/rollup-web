@@ -14,7 +14,7 @@ export const _less = ({
     return {
         name: "less",
         async buildStart() {
-            Log.lime("Downloading less.js ...");
+            Log.lime("Loading less.js ...");
             await initLess();
         },
         async transform(input, id) {

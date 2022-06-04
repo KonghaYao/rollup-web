@@ -32,7 +32,7 @@ export const _sass = ({
     return {
         name: "sass",
         async buildStart() {
-            Log.lime("Downloading Sass.js ...");
+            Log.lime("Loading Sass.js ...");
             await initSass();
             const Sass = useGlobal<SassStatic>("Sass");
             if (this.cache.has("sass")) {
