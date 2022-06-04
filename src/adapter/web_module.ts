@@ -5,20 +5,19 @@ import { extname } from "../shim/_/path";
 import { wrapPlugin } from "../utils/wrapPlugin";
 
 /* 文件缓存器 */
-const fileCache = new Map<string, string>();
+const fileCache = new Set<string>();
 const isExist = async (url: string) => {
     if (fileCache.has(url)) {
         return url;
     } else {
         try {
-            const file = await fetch(url).then((res) => {
+            await fetch(url).then((res) => {
                 if (res.ok) {
-                    return res.text();
                 } else {
                     throw new Error("错误");
                 }
             });
-            fileCache.set(url, file);
+            fileCache.add(url);
             return url;
         } catch (e) {
             return;
@@ -152,7 +151,9 @@ const _web_module = ({
         },
         // wrapPlugin 进行了一层过滤
         async load(id: string) {
-            const code = fileCache.get(id);
+            const code = await fetch(id, { cache: "force-cache" }).then((res) =>
+                res.text()
+            );
             log && log(id);
             return { code };
         },

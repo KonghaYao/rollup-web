@@ -4,6 +4,7 @@
     "description": "Compile your project all in browser!",
     "main": "./src/index.ts",
     "browser": "./dist/index.js",
+    "type": "module",
     "scripts": {
         "dev": "rollup -c rollup.config.js --watch",
         "build": "rollup -c rollup.config.js",
