@@ -16,7 +16,7 @@ import { relativeResolve } from "./pathUtils";
  * */
 export const checkExtension = (path: string, extensions: string[]) => {
     const ext = extname(path.replace(/[#|?][^\/]*/, ""));
-    // console.log(extensions, ext, extensions.includes(ext));
+    // 空字符串视为 false
     return extensions.includes(ext) && ext;
 };
 
@@ -79,14 +79,10 @@ function WrapResolveId<T>(
     origin: Plugin,
     Options: T & ExtraOptions
 ) {
+    // resolve 不对 extensions 进行限制
     return function (this, source, importer, options) {
         // importer 不存在说明是顶层文件，不能忽略
-        if (
-            importer &&
-            !isURLString(importer) &&
-            !filter(relativeResolve(importer, source, "/"))
-        )
-            return;
+        if (importer && !filter(relativeResolve(importer, source, "/"))) return;
 
         const result = origin.resolveId!.call(this, source, importer, options);
 

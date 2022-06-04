@@ -27,7 +27,6 @@ export class Compiler {
          *  @property useDataCache 使用 indexDB 进行打包代码缓存以提高速度
          */
         public moduleConfig: ModuleConfig & {
-            extraBundle?: true | string[];
             /* 匹配到的区域都将使用 rollup 打包 */
             useDataCache?: false | CacheConfig;
             autoBuildFetchHook?: boolean;

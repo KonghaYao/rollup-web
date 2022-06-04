@@ -3,6 +3,7 @@ import { Plugin } from "rollup";
 import { isURLString } from "../utils/isURLString";
 import { extname } from "../shim/_/path";
 import { wrapPlugin } from "../utils/wrapPlugin";
+import { isMatch } from "picomatch";
 
 /* 文件缓存器 */
 const fileCache = new Set<string>();
@@ -25,30 +26,6 @@ const isExist = async (url: string) => {
     }
 };
 
-/* 后缀名缓存器，用于下载不知道后缀名的文件 */
-export class ExtensionCache {
-    store = new Map<string, string>();
-    constructor(public tag: string) {
-        this.refresh();
-    }
-    refresh() {
-        const text = globalThis.localStorage.getItem(this.tag);
-        if (text) {
-            const data: [string, string][] = JSON.parse(text);
-            data.forEach(([key, value]) => this.store.set(key, value));
-        }
-    }
-    add(path: string, url: string) {
-        this.store.set(path, url);
-        globalThis.localStorage.setItem(
-            this.tag,
-            JSON.stringify([...this.store.entries()])
-        );
-    }
-    get(path: string) {
-        return this.store.get(path);
-    }
-}
 export interface ModuleConfig {
     /* 本地引用强制设置为忽略解析 */
     forceDependenciesExternal?: boolean;
@@ -59,6 +36,8 @@ export interface ModuleConfig {
     extensions?: string[];
     /* 不缓存文件 */
     cache?: string | false;
+    /* 额外的打包区域，使用 picomatch 进行 url 匹配 */
+    extraBundle?: true | string[];
 }
 
 /* 最终 resolve 的返回值 */
@@ -82,10 +61,8 @@ const _web_module = ({
     /** 在 load 之前进行 log */
     log,
     extensions = [],
-    /* 使用后缀名缓存，不缓存文件,默认是全局都是采用这个标记的缓存区间 */
-    cache = "module_info",
+    extraBundle,
     forceDependenciesExternal = false,
-
     logExternal = () => {},
 }: ModuleConfig = {}) => {
     return {
@@ -93,7 +70,12 @@ const _web_module = ({
         /** 现在这里进行文件获取，load 的时候直接获取缓存文件 */
         async resolveId(thisFile, importer = "", { isEntry }) {
             const first = thisFile.charAt(0);
-            if (isURLString(thisFile) || first === "." || first === "/") {
+            const isInArea =
+                isURLString(thisFile) &&
+                (thisFile.startsWith(root) ||
+                    extraBundle === true ||
+                    isMatch(thisFile, extraBundle!));
+            if (isInArea || first === "." || first === "/") {
                 /* 相对位置解析为相对于 root 的 URL 地址 */
                 const importerWeb = new URL(importer, root);
                 let resolved = new URL(thisFile, importerWeb);
@@ -143,6 +125,7 @@ const _web_module = ({
         },
         // wrapPlugin 进行了一层过滤
         async load(id: string) {
+            console.log(id);
             const code = await fetch(id, { cache: "force-cache" }).then((res) =>
                 res.text()
             );
