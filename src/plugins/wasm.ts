@@ -1,31 +1,41 @@
 import type { Plugin } from "rollup";
 import { isURLString } from "../utils/isURLString";
-import { wasmHelper } from "./wasm/wasmHelper";
-import { setGlobal } from "../utils/useGlobal";
-import { wrapPlugin } from "../utils/wrapPlugin";
+export { wasmHelper } from "./wasm/wasmHelper";
+import { checkExtension, wrapPlugin } from "../utils/wrapPlugin";
 import { parseWasm } from "./wasm/wasmParse";
 
-const _wasm = (config: {
-    /* 向全局注入的一个 wasm 转接器 */
-    globalName?: string;
-    mode?: "vite" | "node";
-}): Plugin => {
-    const globalName = config.globalName || "__rollup_web_wasm_helper__";
-    setGlobal(globalName, wasmHelper);
+type Mode = "vite" | "node";
+type ModeCreator = (url: string) => Mode;
+type Config = { mode?: Mode | ModeCreator; extensions?: string[] };
+
+/**
+ * wasm 插件
+ * @param mode vite 模式需要自己初始化；node 模式可以自动初始化，但是可能会导致错误
+ */
+const _wasm = (config: Config): Plugin => {
     return {
         name: "wasm",
         resolveId(thisFile, importer) {
+            const ext = checkExtension(thisFile, config.extensions!);
             // 只对 绝对路径进行拦截解析
-            if (isURLString(thisFile)) {
+            if (isURLString(thisFile) && ext !== false) {
                 return thisFile;
             }
+            return;
         },
         async load(id) {
-            switch (config.mode) {
+            const mode = config.mode
+                ? typeof config.mode === "string"
+                    ? config.mode
+                    : config.mode(id)
+                : "vite";
+            switch (mode) {
                 case "node":
-                    return await toNodeMode(id, globalName);
+                    return await toNodeMode(id);
                 default:
-                    return `export default opts => globalThis.${globalName}(opts, "${id}")`;
+                    return `
+                    import { wasmHelper } from '${import.meta.url}'
+                    export default opts => wasmHelper(opts, "${id}")`;
             }
         },
     } as Plugin;
@@ -39,13 +49,14 @@ export const wasm = wrapPlugin(_wasm, {
     extensions: [".wasm"],
 });
 
-/*  以 nodejs 的方式解析 wasm 模块 */
-async function toNodeMode(id: string, globalName: string) {
+/*  以 nodejs 的方式自动解析 wasm 模块 */
+async function toNodeMode(id: string) {
     const buffer = await fetch(id, { cache: "force-cache" }).then((res) =>
         res.arrayBuffer()
     );
+    console.log(id);
     const { imports, exports } = await parseWasm(buffer);
-    // console.log(imports, exports);
+    /** 获取 wasm 中的所需要的导入项 */
     const ImportFromWasm = imports
         .map(
             ({ from, names }, i) =>
@@ -55,6 +66,17 @@ async function toNodeMode(id: string, globalName: string) {
         )
         .join("\n");
 
+    /** 自动导入并初始化 wasm 程序 */
+    const connectToWasm = `  import {wasmHelper} from '${import.meta.url}';
+        const __wasm_module__ = await wasmHelper({ ${imports
+            .map(
+                ({ from, names }, i) =>
+                    `${JSON.stringify(from)}: { ${names
+                        .map((name, j) => `${name}: _import_${i}_${j}`)
+                        .join(", ")} }`
+            )
+            .join(", ")} }, ${JSON.stringify(id)}).then(res=>res.exports);`;
+    /**  导出 wasm 所包含的数据 */
     const ExportAsModule = exports
         .map(
             (name) =>
@@ -64,16 +86,10 @@ async function toNodeMode(id: string, globalName: string) {
         )
         .join("\n");
     const result = `${ImportFromWasm}
-
-        const __wasm_module__ = await globalThis.${globalName}({ ${imports
-        .map(
-            ({ from, names }, i) =>
-                `${JSON.stringify(from)}: { ${names
-                    .map((name, j) => `${name}: _import_${i}_${j}`)
-                    .join(", ")} }`
-        )
-        .join(", ")} }, ${JSON.stringify(id)}).then(res=>res.exports);
-        ${ExportAsModule} `;
+        
+    ${connectToWasm}
+    
+    ${ExportAsModule}`;
     console.log(result);
     return result;
 }

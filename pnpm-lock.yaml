@@ -23,6 +23,7 @@ specifiers:
   '@vue/compiler-sfc': ^3.2.33
   builtin-modules: ^3.2.0
   chai: ^4.3.6
+  comlink: ^4.3.1
   cssnano: ^5.1.7
   localforage: ^1.10.0
   lodash-es: ^4.17.21
@@ -56,6 +57,7 @@ dependencies:
   '@swc/wasm-web': 1.2.196
   builtin-modules: 3.2.0
   chai: 4.3.6
+  comlink: 4.3.1
   localforage: 1.10.0
   lodash-es: 4.17.21
   micromatch: 4.0.5
@@ -1055,6 +1057,10 @@ packages:
 
   /colord/2.9.2:
     resolution: {integrity: sha512-Uqbg+J445nc1TKn4FoDPS6ZZqAvEDnwrH42yo8B40JSOgSLxMZ/gt3h4nmCtPLQeXhjJJkqBx7SCY35WnIixaQ==}
+
+  /comlink/4.3.1:
+    resolution: {integrity: sha512-+YbhUdNrpBZggBAHWcgQMLPLH1KDF3wJpeqrCKieWQ8RL7atmgsgTQko1XEBK6PsecfopWNntopJ+ByYG1lRaA==}
+    dev: false
 
   /comma-separated-tokens/2.0.2:
     resolution: {integrity: sha512-G5yTt3KQN4Yn7Yk4ed73hlZ1evrFKXeUW3086p3PRFNp7m2vIjI6Pg+Kgb+oyzhd9F2qdcoj67+y3SdxL5XWsg==}

@@ -2,7 +2,8 @@ import { Compiler } from "./Compiler";
 import { fetchHook } from "./Compiler/fetchHook";
 import { useGlobal } from "./utils/useGlobal";
 import { proxy } from "comlink";
-/** 一个单独的 Compiler 执行环境 */
+
+/** 一个单独的 Compiler 执行环境, 专门用于 适配 执行 的环境 */
 export class Evaluator {
     Compiler!: Compiler;
     moduleConfig!: Compiler["moduleConfig"];

@@ -93,11 +93,7 @@ const _web_module = ({
         /** 现在这里进行文件获取，load 的时候直接获取缓存文件 */
         async resolveId(thisFile, importer = "", { isEntry }) {
             const first = thisFile.charAt(0);
-            if (
-                (isURLString(thisFile) && thisFile.startsWith(root)) ||
-                first === "." ||
-                first === "/"
-            ) {
+            if (isURLString(thisFile) || first === "." || first === "/") {
                 /* 相对位置解析为相对于 root 的 URL 地址 */
                 const importerWeb = new URL(importer, root);
                 let resolved = new URL(thisFile, importerWeb);
