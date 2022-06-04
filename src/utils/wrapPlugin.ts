@@ -17,11 +17,7 @@ import { relativeResolve } from "./pathUtils";
 export const checkExtension = (path: string, extensions: string[]) => {
     const ext = extname(path.replace(/[#|?][^\/]*/, ""));
     // console.log(extensions, ext, extensions.includes(ext));
-    if (ext) {
-        return extensions.includes(ext) && ext;
-    } else {
-        return "";
-    }
+    return extensions.includes(ext) && ext;
 };
 
 export const checkPrefix = (path: string, prefix: string[]) => {
@@ -127,7 +123,6 @@ function WrapLoad<T>(
             // 后缀名检查
             const result = checkExtension(id, Options.extensions);
             if (result === false) return;
-            console.log(result);
         }
         return origin.load!.call(this, id);
     } as LoadHook;
