@@ -16,6 +16,7 @@ We already create some website bundling just in browser!
 
     - [x] SystemJS module
     - [x] Dynamic Import
+    - [x] Compiler Worker and Environment Worker
     - [ ] Config File Loader
     - [ ] Plugin Loader (dynamic import plugin easier)
 

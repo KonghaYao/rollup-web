@@ -70,17 +70,24 @@ export class Compiler {
         return JSON.stringify(this.moduleConfig);
     }
 
-    /* 执行代码 */
-    async evaluate(path: string, importTool?: (url: string) => void) {
+    /**
+     * 执行代码
+     * @param importTool 用于线程调用的额外选项，可以替换与 systemjs 的交互
+     * */
+    async evaluate<T = any>(
+        path: string,
+        importTool?: (url: string) => void
+    ): Promise<T> {
         console.group("Bundling Code");
         const System = useGlobal<any>("System");
         const url = new URL(path, this.moduleConfig.root).toString();
 
         const isExist = this.moduleCache.hasData(url);
         if (!isExist) await this.CompileSingleFile(url);
-        const runtime = importTool ? importTool : System.import.bind(System);
 
-        const result = await runtime(url);
+        const runtime = importTool ? importTool : System.import.bind(System);
+        // 注意，线程中由于 环境与打包分离，runtime 不会返回结果
+        const result: T = await runtime(url);
         console.groupEnd();
         return result;
     }

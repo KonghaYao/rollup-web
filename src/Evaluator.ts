@@ -24,19 +24,18 @@ export class Evaluator {
         return this;
     }
     /* 执行代码 */
-    async evaluate(path: string) {
+    async evaluate<T>(path: string) {
         const System = useGlobal<any>("System");
 
         // 不需要跨线程进行环境数据传输，所以用一个数组承接即可
-        const resultCollection: any[] = [];
+        // 需要这样子进行一次初始化
+        let result = undefined as T;
+
         const cb = async (url: string) => {
-            await System.import(url).then((res: any) =>
-                resultCollection.push(res)
-            );
+            await System.import(url).then((res: T) => (result = res));
         };
-        console.log(resultCollection);
         await this.Compiler.evaluate(path, proxy(cb));
 
-        return resultCollection[0];
+        return result;
     }
 }
