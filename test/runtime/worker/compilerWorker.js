@@ -13,6 +13,7 @@ const config = {
     ],
 };
 const compiler = new Compiler(config, {
+    root: "http://localhost:8888/package/rollup-web/",
     autoBuildFetchHook: false,
 
     // 用于为相对地址添加绝对地址
