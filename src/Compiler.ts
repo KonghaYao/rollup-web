@@ -13,7 +13,11 @@ import { Plugin } from "rollup-web";
         2. 但是不能够填入 hash 值，
         3. queryParams 可以作为参数传递信息，传递信息会算作 id 的一部分进行缓存
 */
-
+export type CompilerModuleConfig = ModuleConfig & {
+    /* 匹配到的区域都将使用 rollup 打包 */
+    useDataCache?: false | CacheConfig;
+    autoBuildFetchHook?: boolean;
+};
 /* Compiler 是一个浏览器打包环境，需要 systemjs 支持 */
 export class Compiler {
     System = useGlobal<any>("System");
@@ -26,11 +30,7 @@ export class Compiler {
          *  @property extraBundle 若为 true，将会把 远程代码下载并经过 rollup 打包;若为 Array，将会打包区域内的代码; root 下的代码是必定被打包的，所以不用填;
          *  @property useDataCache 使用 indexDB 进行打包代码缓存以提高速度
          */
-        public moduleConfig: ModuleConfig & {
-            /* 匹配到的区域都将使用 rollup 打包 */
-            useDataCache?: false | CacheConfig;
-            autoBuildFetchHook?: boolean;
-        }
+        public moduleConfig: CompilerModuleConfig
     ) {
         if (!this.moduleConfig.root) {
             this.moduleConfig.root = globalThis.location.href.replace(
