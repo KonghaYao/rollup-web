@@ -33,7 +33,6 @@ export class Evaluator {
                 resultCollection.push(res)
             );
         };
-        console.log({ cb });
         let result = await this.Compiler.evaluate(path, proxy(cb));
         return result;
     }

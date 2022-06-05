@@ -10,7 +10,7 @@ true && emptyDir("./dist");
 const pluginInput = "*";
 export default [
     {
-        external: ["rollup-web", "process-bundle", "picomatch"],
+        external: ["rollup-web", "process-bundle", "picomatch", "comlink"],
         input: "./src/index.ts",
         output: {
             file: "./dist/index.js",
