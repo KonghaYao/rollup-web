@@ -1,10 +1,19 @@
 import { Evaluator } from "../../dist/index.js";
 import { wrap } from "https://fastly.jsdelivr.net/npm/comlink/dist/esm/comlink.mjs";
-const compiler = wrap(
-    new Worker("./test/runtime/worker/compilerWorker.js", {
+
+// 需要使用这种方式等候 线程结束初始化
+const worker = await new Promise((res) => {
+    const worker = new Worker("./test/runtime/worker/compilerWorker.js", {
         type: "module",
-    })
-);
+    });
+    const cb = (e) => {
+        if (e.data === "init") res(worker);
+        worker.removeEventListener("message", cb);
+    };
+    worker.addEventListener("message", cb);
+});
+const compiler = wrap(worker);
+
 const Eval = new Evaluator();
 console.log(Eval, compiler);
 await Eval.createEnv({

@@ -1,27 +1,28 @@
 import { Setting } from "../Setting";
 import { log } from "../utils/ColorConsole";
-
+// 必须为 内置，这样才能够直接判断并加载
+const extraRollupPlugins = [
+    {
+        name: "plugin-json",
+        url: "https://esm.sh/@rollup/plugin-json",
+    },
+    {
+        name: "plugin-alias",
+        url: "https://esm.sh/@rollup/plugin-alias",
+    },
+    {
+        name: "plugin-commonjs",
+        url: "https://esm.sh/@rollup/plugin-commonjs",
+    },
+    {
+        name: "plugin-replace",
+        url: "https://esm.sh/@rollup/plugin-replace",
+    },
+];
 export const PluginLoader = {
     versions: [] as string[],
     pluginList: [] as string[],
-    extraRollupPlugins: [
-        {
-            name: "plugin-json",
-            url: "https://esm.sh/@rollup/plugin-json",
-        },
-        {
-            name: "plugin-alias",
-            url: "https://esm.sh/@rollup/plugin-alias",
-        },
-        {
-            name: "plugin-commonjs",
-            url: "https://esm.sh/@rollup/plugin-commonjs",
-        },
-        {
-            name: "plugin-replace",
-            url: "https://esm.sh/@rollup/plugin-replace",
-        },
-    ],
+    extraRollupPlugins,
     async init() {
         this.versions = await fetch(
             "https://data.jsdelivr.com/v1/package/npm/rollup-web"
