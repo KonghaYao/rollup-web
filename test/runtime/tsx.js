@@ -1,10 +1,11 @@
 // 导入打包产物
-import { sky_module } from "../../dist/index.js";
+import { sky_module, PluginLoader, Compiler } from "../../dist/index.js";
 
 // 导入各种插件
-import { babel } from "../../dist/plugins/babel.js";
+// import { babel } from "../../dist/plugins/babel.js";
+const { babel } = await PluginLoader.load("babel");
+
 import SolidPresets from "https://esm.sh/babel-preset-solid@1.3.13";
-import { Compiler } from "../../dist/index.js";
 
 const config = {
     plugins: [

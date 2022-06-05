@@ -1,12 +1,12 @@
 // 导入打包产物
-import { Compiler, sky_module } from "../../dist/index.js";
+import { Compiler, sky_module, PluginLoader } from "../../dist/index.js";
 import { babel } from "../../dist/plugins/babel.js";
 
 // 导入各种插件
-import json from "https://esm.sh/@rollup/plugin-json";
-import alias from "https://esm.sh/@rollup/plugin-alias";
-import commonjs from "https://esm.sh/@rollup/plugin-commonjs";
-import replace from "https://esm.sh/@rollup/plugin-replace";
+const { default: json } = await PluginLoader.load("plugin-json");
+const { default: alias } = await PluginLoader.load("plugin-alias");
+const { default: commonjs } = await PluginLoader.load("plugin-commonjs");
+const { default: replace } = await PluginLoader.load("plugin-replace");
 
 const config = {
     plugins: [

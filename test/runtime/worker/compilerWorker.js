@@ -1,7 +1,6 @@
 import * as Comlink from "https://fastly.jsdelivr.net/npm/comlink/dist/esm/comlink.mjs";
 import { Compiler, sky_module } from "../../../dist/index.js";
 import { wasm } from "../../../dist/plugins/wasm.js";
-
 const config = {
     plugins: [
         wasm({
