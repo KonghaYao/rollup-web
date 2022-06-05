@@ -6,3 +6,4 @@ export * from "./utils/loadScript";
 export * from "./Compiler";
 export * from "./Evaluator";
 export * from "./Helper/PluginLoader";
+export { createWorker } from "./utils/createWorker";

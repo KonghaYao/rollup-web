@@ -1,9 +1,9 @@
 import * as Comlink from "https://fastly.jsdelivr.net/npm/comlink/dist/esm/comlink.mjs";
 import { Compiler, PluginLoader, sky_module } from "../../../dist/index.js";
-// import { wasm } from "../../../dist/plugins/wasm.js";
 
 // ! 线程中如果使用异步操作，会导致 comlink 无法及时构建联系，导致主线程的 comlink 请求持续无反应
-const { wasm } = await PluginLoader.load("wasm");
+// 所以可以采用线程主动返回 init 的方式来进行初始化完成识别
+const { wasm } = await PluginLoader.load("wasm", "3.5.0");
 const config = {
     plugins: [
         wasm({
@@ -29,4 +29,6 @@ const compiler = new Compiler(config, {
     extraBundle: ["https://fastly.jsdelivr.net/npm/brotli-wasm*/**"],
 });
 Comlink.expose(compiler);
-postMessage("init");
+
+// 通知线程初始化结束
+postMessage("ready");
