@@ -29,7 +29,7 @@ export class Evaluator {
 
         // 不需要跨线程进行环境数据传输，所以用一个数组承接即可
         // 需要这样子进行一次初始化
-        let result = undefined as T;
+        let result = undefined as any as T;
 
         const cb = async (url: string) => {
             await System.import(url).then((res: T) => (result = res));

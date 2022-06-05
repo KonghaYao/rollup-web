@@ -1,6 +1,6 @@
 import type { RollupOptions, OutputChunk } from "rollup";
 import { web_module, ModuleConfig } from "./adapter/web_module";
-import { useRollup } from "./rollup";
+import { useRollup } from "./Compiler/rollup";
 import { useGlobal } from "./utils/useGlobal";
 import { CacheConfig, ModuleCache } from "./Compiler/ModuleCache";
 import { fetchHook } from "./Compiler/fetchHook";

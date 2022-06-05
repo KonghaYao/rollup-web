@@ -1,9 +1,9 @@
-import { addExtension } from "@rollup/pluginutils";
 import { Plugin } from "rollup";
+import { isMatch } from "picomatch";
+import { addExtension } from "@rollup/pluginutils";
 import { isURLString } from "../utils/isURLString";
 import { extname } from "../shim/_/path";
 import { wrapPlugin } from "../utils/wrapPlugin";
-import { isMatch } from "picomatch";
 
 /* 文件缓存器 */
 const fileCache = new Set<string>();

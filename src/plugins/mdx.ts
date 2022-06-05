@@ -9,7 +9,7 @@ export const _mdx = ({
 }: {
     options?: CompileOptions;
     extensions?: string[];
-    log?: (id: string) => void;
+    log?: (id: string, code: string) => void;
 } = {}) => {
     return {
         name: "mdx",
@@ -22,8 +22,9 @@ export const _mdx = ({
                     baseUrl: id,
                 } as CompileOptions)
             );
-            log && log(id, file.value);
-            return { code: file.value, map: file.map };
+            const Code = file.value.toString();
+            log && log(id, Code);
+            return { code: Code, map: file.map };
         },
     } as Plugin;
 };
