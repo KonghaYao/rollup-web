@@ -7,6 +7,22 @@ importScripts("http://localhost:8888/package/rollup-web/dist/Evaluator.umd.js");
 const Evaluator = globalThis.Evaluator.Evaluator;
 const Eval = new Evaluator();
 
+async function fakeImport(url) {
+    return System.fetch(url)
+        .then((res) => {
+            return res.text();
+        })
+        .then((i) => {
+            // ! 非常危险的将 system 模块转化为异步，并将 importScripts 转化为异步锁定
+            const code = i
+                .replace("execute: (function", "execute: (async function")
+                .replace(/^\s*importScripts/gm, "await importScripts");
+            console.log(code);
+            return eval(code);
+        });
+}
+
+// importScripts 转变成了 异步操作，导致运行操作失败
 globalThis.addEventListener(
     "message",
     (e) => {
@@ -17,21 +33,11 @@ globalThis.addEventListener(
                 root: e.data.localURL,
             })
                 .then(() => {
-                    async function fakeImport(url) {
-                        return System.fetch(url)
-                            .then((res) => {
-                                return res.text();
-                            })
-                            .then((i) => {
-                                console.log(i);
-                                return eval(i);
-                            });
-                    }
                     globalThis.__importScripts = globalThis.importScripts;
                     globalThis.importScripts = (...urls) => {
                         return urls.reduce((col, cur) => {
                             return col.then(() => {
-                                System.import(
+                                return System.import(
                                     new URL(cur, e.data.localURL).toString()
                                 );
                             });
@@ -41,10 +47,7 @@ globalThis.addEventListener(
                         var loader = this;
                         return Promise.resolve().then(async function () {
                             await fakeImport(url);
-                            const result = loader.getRegister(url);
-                            console.log(result[1]);
-                            return result;
-                            // return result;
+                            return loader.getRegister(url);
                         });
                     };
                 })
