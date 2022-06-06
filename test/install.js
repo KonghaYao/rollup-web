@@ -5,10 +5,11 @@ mocha.setup("bdd");
 mocha.checkLeaks();
 
 const paths = window.location.hash.replace("#", "").split("|");
-await Promise.all(
-    paths.map((path) => {
-        return import(`./${path}.js`);
-    })
-);
-
+if (paths) {
+    await Promise.all(
+        paths.map((path) => {
+            return import(`./${path}.js`);
+        })
+    );
+}
 mocha.run();

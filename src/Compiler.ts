@@ -4,7 +4,7 @@ import { useRollup } from "./Compiler/rollup";
 import { useGlobal } from "./utils/useGlobal";
 import { CacheConfig, ModuleCache } from "./Compiler/ModuleCache";
 import { fetchHook } from "./Compiler/fetchHook";
-import { Plugin } from "rollup-web";
+import { Plugin, RollupCache } from "rollup-web";
 
 /* 
     备忘录：
@@ -95,7 +95,7 @@ export class Compiler {
     isLocalFile(url: string) {
         return url.startsWith(this.moduleConfig.root!);
     }
-    RollupCache = {
+    RollupCache: RollupCache = {
         modules: [],
         plugins: {},
     };

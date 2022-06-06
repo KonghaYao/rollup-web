@@ -89,6 +89,10 @@ export class ModuleCache<T extends string, E> extends Map<T, E> {
         this.store.setItem<number>("__lastUpdateTime", Date.now());
         return true;
     }
+    clear(): void {
+        super.clear.call(this);
+        this.store.clear();
+    }
 }
 /**
  * 缓存配置项

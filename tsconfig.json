@@ -29,6 +29,7 @@
         "src/shim/url.js",
         "src/shim/errors.ts",
         "src/shim/brotli.js",
-        "src/shim/loader-utils/lib/interpolateName.js"
+        "src/shim/loader-utils/lib/interpolateName.js",
+        "src/plugins/worker/worker.module.js"
     ]
 }

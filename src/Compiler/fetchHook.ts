@@ -1,7 +1,7 @@
 import type { OutputChunk } from "rollup";
 import { isMatch } from "picomatch";
 import { useGlobal } from "../utils/useGlobal";
-import { Compiler } from "../Compiler";
+import type { Compiler } from "../Compiler";
 import { log } from "../utils/ColorConsole";
 
 /**
