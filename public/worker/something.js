@@ -1,0 +1,3 @@
+globalThis.data = {
+    info: "bundler",
+};

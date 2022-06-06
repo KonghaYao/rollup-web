@@ -9,7 +9,7 @@ globalThis.addEventListener(
         if (e.data && e.data.password === "__rollup_init__" && e.data.port) {
             Eval.createEnv({
                 Compiler: Comlink.wrap(e.data.port),
-                worker: "module",
+                worker: "classic",
             }).then(() => {
                 // 必须要返回一个值来表示完成了加载
                 postMessage("__rollup_ready__");

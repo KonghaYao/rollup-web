@@ -11,9 +11,6 @@ const worker = await createWorker(
         type: "module",
     }
 );
-worker.addEventListener("error", (e) => {
-    console.error(e);
-});
 const compiler = wrap(worker);
 
 // 提供 Message Port 给 Worker 线程
@@ -28,5 +25,8 @@ await Eval.createEnv({
 });
 console.log("环境布置完成");
 export const module = await Eval.evaluate(
-    "http://localhost:8888/package/rollup-web/public/worker/worker.js"
+    "http://localhost:8888/package/rollup-web/public/worker/worker_module.js"
+);
+export const classic = await Eval.evaluate(
+    "http://localhost:8888/package/rollup-web/public/worker/worker_classic.js"
 );
