@@ -13,7 +13,7 @@ async function fakeImport(url) {
             return res.text();
         })
         .then((i) => {
-            // ! 非常危险的将 system 模块转化为异步，并将 importScripts 转化为异步锁定
+            // ! 非常危险地将 system 模块转化为异步，并将 importScripts 转化为异步锁定
             const code = i
                 .replace("execute: (function", "execute: (async function")
                 .replace(/^\s*importScripts/gm, "await importScripts");

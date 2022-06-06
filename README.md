@@ -20,6 +20,7 @@ We already create some website bundling just in browser!
     - [x] Plugin Loader (dynamic import plugin easier)
     - [ ] Config File Loader
     - [ ] Unified Cache System
+    - [ ] Iframe Sandbox
 
 2. Plugin Provide
     1. Vanilla JS and TS Part
@@ -38,10 +39,14 @@ We already create some website bundling just in browser!
         - [ ] React Support
         - [ ] Svelte Support
     4. Special File Part
+        - [ ] HTML Support
         - [x] json Support
         - [x] MDX Support
         - [x] WASM Support ([Vite](https://vitejs.dev/guide/features.html#webassembly) and [ESM Integration](https://github.com/WebAssembly/esm-integration))
-        - [ ] Web Worker Support
+        - [x] Dedicated Worker Support
+            - [x] classic type worker
+            - [x] module type worker (recommend)
+        - [ ] Shared Worker
     5. Polyfill
         - [ ] Node Builtins Polyfill
 3. Documents
