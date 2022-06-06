@@ -1,5 +1,5 @@
 import { Plugin } from "rollup-web";
-import { createLocalModule, createModule } from "src/utils/ModuleEval";
+import { createLocalModule, createModule } from "../utils/ModuleEval";
 import { wrapPlugin } from "../utils/wrapPlugin";
 
 // TODO 专用线程
@@ -9,14 +9,14 @@ export const _worker = ({}: {} = {}) => {
     const tag = ["worker", "sharedworker"];
     return {
         name: "worker",
-        transform(code, id) {
+        load(id) {
             const workerType = tag.find((i) => new URL(id).searchParams.has(i));
             if (workerType) {
                 switch (workerType) {
                     case "worker":
-                        return WorkerWrapper(code);
-                    case "sharedworker":
-                        return SharedWorkerWrapper(code);
+                        return WorkerWrapper(id);
+                    // case "sharedworker":
+                    //     return SharedWorkerWrapper(code);
                 }
             }
         },
@@ -27,27 +27,53 @@ export const worker = wrapPlugin(_worker, {
     extensions: [".js"],
 });
 
-/*  用于字符串化的函数，故而只能是一个比较封闭的形式 */
-const WorkerWrapperCode = function (
-    this: { url: { classic: string; module: string } },
-    options?: WorkerOptions
-) {
-    const url = this.url;
-    return new Worker(url[options?.type || "classic"], options);
+/*  用于字符串化的函数，故而只能是一个比较封闭的形式，代码在主线程执行 */
+const WorkerWrapperCode = function (options?: WorkerOptions) {
+    /* @ts-ignore */
+    const { url, port, initUrl } = info;
+    const worker = new Worker(url[options?.type || "classic"], options);
+    console.log(port);
+    port.then((port: MessagePort) => {
+        worker.postMessage(
+            {
+                password: "__rollup_init__",
+                port: port,
+            },
+            [port]
+        );
+    });
+    worker.addEventListener(
+        "message",
+        (e) => {
+            if (e.data === "init") {
+                worker.postMessage({
+                    password: "__rollup_evaluate__",
+                    url: initUrl,
+                });
+            }
+        },
+        { once: true }
+    );
+    return worker;
 };
 const moduleWorker = await createLocalModule(
-    "./src/plugins/worker/worker.module.js",
+    "http://localhost:8888/package/rollup-web/src/plugins/worker/worker.module.js",
     "worker.module.js"
 );
 
-const WorkerWrapper = (code: string) => {
+const WorkerWrapper = (initUrl: string) => {
+    // 这个代码将会在 主线程执行
     return `
-    export default ${WorkerWrapperCode.toString()}.bind({
+    const info = {
         url:${JSON.stringify({
             classic: "",
             module: moduleWorker,
-        })}
-    })
+        })},
+        port:globalThis.__create_compiler_port__(),
+        initUrl:"${initUrl}"
+    }
+    const wrapper = ${WorkerWrapperCode.toString()}
+    export default wrapper
     `;
 };
 const SharedWorkerWrapper = (code: string) => {};

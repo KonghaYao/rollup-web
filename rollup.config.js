@@ -28,6 +28,7 @@ export default [
             }),
         ],
     },
+
     {
         // 必须要使用这种方式保证 rollup 能够识别 paths
         external: [

@@ -29,9 +29,7 @@ export class ModuleCache<T extends string, E> extends Map<T, E> {
     }
     forceUpdate = false;
     async registerCache() {
-        await loadScript(Setting.NPM("localforage/dist/localforage.min.js"), {
-            cacheTag: "localforage",
-        });
+        await import(Setting.NPM("localforage/dist/localforage.min.js"));
         const localforage = useGlobal<any>("localforage");
         // Feel free to change the drivers order :)
         this.store = localforage.createInstance({
