@@ -56,11 +56,19 @@ const WorkerWrapperCode = function (options?: WorkerOptions) {
     );
     return worker;
 };
-const moduleWorker = await createLocalModule(
-    Setting.NPM("src/plugins/worker/worker.module.js"),
+const isOnline = false;
+const moduleWorkerURL = await createLocalModule(
+    isOnline
+        ? Setting.NPM("/rollup-web/src/plugins/worker/worker.module.js")
+        : "http://localhost:8888/package/rollup-web/src/plugins/worker/worker.module.js",
     "worker.module.js"
 );
-
+const classicWorkerURL = await createLocalModule(
+    isOnline
+        ? Setting.NPM("/rollup-web/src/plugins/worker/worker.classic.js")
+        : "http://localhost:8888/package/rollup-web/src/plugins/worker/worker.classic.js",
+    "worker.classic.js"
+);
 const WorkerWrapper = (initUrl: string) => {
     // 删除 worker 参数，保证不会循环
     const url = new URL(initUrl);
@@ -69,8 +77,8 @@ const WorkerWrapper = (initUrl: string) => {
     return `
     const info = {
         url:${JSON.stringify({
-            classic: "",
-            module: moduleWorker,
+            classic: classicWorkerURL,
+            module: moduleWorkerURL,
         })},
         port:globalThis.__create_compiler_port__(),
         initUrl:"${url.toString()}"
