@@ -9,6 +9,7 @@ const config = {
         wasm({
             mode: "node",
         }),
+
         sky_module({
             cdn: "https://fastly.jsdelivr.net/npm/",
         }),

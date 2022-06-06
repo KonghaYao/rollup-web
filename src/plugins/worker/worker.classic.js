@@ -2,9 +2,12 @@
 globalThis.module = {};
 importScripts("https://fastly.jsdelivr.net/npm/process/browser.js");
 importScripts("https://unpkg.com/comlink/dist/umd/comlink.js");
-importScripts("http://localhost:8888/package/rollup-web/dist/Evaluator.umd.js");
-
+importScripts(
+    "https://fastly.jsdelivr.net/npm/rollup-web@3.7.0/dist/Evaluator.umd.js"
+);
+const { wrap } = globalThis.Comlink;
 const Evaluator = globalThis.Evaluator.Evaluator;
+delete globalThis.Evaluator;
 const Eval = new Evaluator();
 
 async function fakeImport(url) {
@@ -28,7 +31,7 @@ globalThis.addEventListener(
     (e) => {
         if (e.data && e.data.password === "__rollup_init__" && e.data.port) {
             Eval.createEnv({
-                Compiler: Comlink.wrap(e.data.port),
+                Compiler: wrap(e.data.port),
                 worker: "classic",
                 root: e.data.localURL,
             })

@@ -57,7 +57,7 @@ const WorkerWrapperCode = function (options?: WorkerOptions) {
     );
     return worker;
 };
-const isOnline = false;
+const isOnline = true;
 const moduleWorkerURL = await createLocalModule(
     isOnline
         ? Setting.NPM("/rollup-web/src/plugins/worker/worker.module.js")
