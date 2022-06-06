@@ -1,5 +1,4 @@
 import { useGlobal } from "../utils/useGlobal";
-import { loadScript } from "../utils/loadScript";
 import { isMatch } from "picomatch";
 import { Setting } from "../Setting";
 

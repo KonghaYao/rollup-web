@@ -1,14 +1,21 @@
 import { Compiler } from "./Compiler";
 import { fetchHook } from "./Compiler/fetchHook";
 import { useGlobal } from "./utils/useGlobal";
-import { proxy } from "comlink";
 import { Setting } from "./Setting";
+import { ModuleWorkerInit } from "./Evaluator/systemWorker";
+import { proxy } from "comlink";
 
 /** 一个单独的 Compiler 执行环境, 专门用于 适配 执行 的环境 */
 export class Evaluator {
     Compiler!: Compiler;
     moduleConfig!: Compiler["moduleConfig"];
-    async createEnv({ Compiler }: { Compiler: Compiler }) {
+    async createEnv({
+        Compiler,
+        worker,
+    }: {
+        Compiler: Compiler;
+        worker?: "module" | "classic";
+    }) {
         this.Compiler = Compiler;
         let system = useGlobal("System");
         if (!system) {
@@ -21,8 +28,20 @@ export class Evaluator {
         fetchHook(Compiler.moduleCache, this.moduleConfig, () =>
             Compiler.CompileSingleFile.bind(Compiler)
         );
+
+        // 在 worker 中需要对 systemjs 初始化进行一些处理
+        console.warn("worker 类型", worker);
+        if (worker) {
+            switch (worker) {
+                case "module":
+                    // module worker, 需要复写 system 的 fetch-loader
+                    ModuleWorkerInit();
+                    console.log("重置 systemjs");
+            }
+        }
         return this;
     }
+
     /* 执行代码 */
     async evaluate<T>(path: string) {
         const System = useGlobal<any>("System");

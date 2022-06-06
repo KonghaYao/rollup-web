@@ -1,4 +1,5 @@
 import { Plugin } from "rollup-web";
+import { Setting } from "../Setting";
 import { createLocalModule, createModule } from "../utils/ModuleEval";
 import { wrapPlugin } from "../utils/wrapPlugin";
 
@@ -32,7 +33,6 @@ const WorkerWrapperCode = function (options?: WorkerOptions) {
     /* @ts-ignore */
     const { url, port, initUrl } = info;
     const worker = new Worker(url[options?.type || "classic"], options);
-    console.log(port);
     port.then((port: MessagePort) => {
         worker.postMessage(
             {
@@ -45,7 +45,7 @@ const WorkerWrapperCode = function (options?: WorkerOptions) {
     worker.addEventListener(
         "message",
         (e) => {
-            if (e.data === "init") {
+            if (e.data === "__rollup_ready__") {
                 worker.postMessage({
                     password: "__rollup_evaluate__",
                     url: initUrl,
@@ -57,7 +57,7 @@ const WorkerWrapperCode = function (options?: WorkerOptions) {
     return worker;
 };
 const moduleWorker = await createLocalModule(
-    "http://localhost:8888/package/rollup-web/src/plugins/worker/worker.module.js",
+    Setting.NPM("src/plugins/worker/worker.module.js"),
     "worker.module.js"
 );
 
