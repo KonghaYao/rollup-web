@@ -24,10 +24,10 @@ const compiler = new Compiler(config, {
     log(url) {
         console.log("%c Download ==> " + url, "color:green");
     },
-    useDataCache: {
-        // ignore: ["**/dynamic.ts"],
-        maxAge: 60,
-    },
+    // useDataCache: {
+    //     // ignore: ["**/dynamic.ts"],
+    //     maxAge: 60,
+    // },
     extraBundle: ["https://fastly.jsdelivr.net/npm/brotli-wasm*/**"],
 });
 Comlink.expose(compiler);

@@ -62,6 +62,9 @@ const moduleWorker = await createLocalModule(
 );
 
 const WorkerWrapper = (initUrl: string) => {
+    // 删除 worker 参数，保证不会循环
+    const url = new URL(initUrl);
+    url.searchParams.delete("worker");
     // 这个代码将会在 主线程执行
     return `
     const info = {
@@ -70,7 +73,7 @@ const WorkerWrapper = (initUrl: string) => {
             module: moduleWorker,
         })},
         port:globalThis.__create_compiler_port__(),
-        initUrl:"${initUrl}"
+        initUrl:"${url.toString()}"
     }
     const wrapper = ${WorkerWrapperCode.toString()}
     export default wrapper
