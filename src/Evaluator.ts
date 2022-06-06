@@ -1,4 +1,4 @@
-import { Compiler } from "./Compiler";
+import type { Compiler } from "./Compiler";
 import { fetchHook } from "./Compiler/fetchHook";
 import { useGlobal } from "./utils/useGlobal";
 import { Setting } from "./Setting";
@@ -9,12 +9,15 @@ import { proxy } from "comlink";
 export class Evaluator {
     Compiler!: Compiler;
     moduleConfig!: Compiler["moduleConfig"];
+    root = location.href;
     async createEnv({
         Compiler,
         worker,
+        root,
     }: {
         Compiler: Compiler;
         worker?: "module" | "classic";
+        root?: string;
     }) {
         this.Compiler = Compiler;
         let system = useGlobal("System");
@@ -22,7 +25,7 @@ export class Evaluator {
             await import(Setting.NPM("systemjs@6.12.1/dist/system.min.js"));
             system = useGlobal("System");
         }
-
+        if (root) this.root = root;
         this.moduleConfig = JSON.parse(await Compiler.getModuleConfig());
         // 联系 systemjs
         fetchHook(Compiler.moduleCache, this.moduleConfig, () =>
@@ -36,7 +39,6 @@ export class Evaluator {
                 case "module":
                     // module worker, 需要复写 system 的 fetch-loader
                     ModuleWorkerInit();
-                    console.log("重置 systemjs");
             }
         }
         return this;
@@ -53,7 +55,10 @@ export class Evaluator {
         const cb = async (url: string) => {
             await System.import(url).then((res: T) => (result = res));
         };
-        await this.Compiler.evaluate(path, proxy(cb));
+        await this.Compiler.evaluate(
+            new URL(path, this.root).toString(),
+            proxy(cb)
+        );
 
         return result;
     }

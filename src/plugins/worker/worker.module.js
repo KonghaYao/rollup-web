@@ -10,10 +10,10 @@ globalThis.addEventListener(
             Eval.createEnv({
                 Compiler: wrap(e.data.port),
                 worker: "module",
+                root: e.data.localURL,
             }).then(() => {
                 // 必须要返回一个值来表示完成了加载
                 postMessage("__rollup_ready__");
-                console.log("环境初始化完成", System);
             });
         }
     },
@@ -22,7 +22,7 @@ globalThis.addEventListener(
 globalThis.addEventListener("message", (e) => {
     if (e.data && e.data.password === "__rollup_evaluate__" && e.data.url) {
         Eval.evaluate(e.data.url).then((res) => {
-            console.warn("worker receive: ", res);
+            console.warn("module worker receive: ", res);
         });
     }
 });

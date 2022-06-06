@@ -4,7 +4,7 @@ import json from "@rollup/plugin-json";
 import { writeFileSync } from "fs";
 import { emptyDir } from "./scripts/emptyDir.js";
 import { plugins } from "./scripts/plugins.js";
-import { paths } from "./scripts/paths.js";
+import { npmCDN, paths } from "./scripts/paths.js";
 
 true && emptyDir("./dist");
 const pluginInput = "*";
@@ -25,6 +25,28 @@ export default [
             analyze({
                 summaryOnly: true,
                 writeTo: (str) => writeFileSync("dist/index.analyze.txt", str),
+            }),
+        ],
+    },
+    {
+        external: ["process-bundle", "comlink"],
+        input: "./src/Evaluator.ts",
+        output: {
+            file: "./dist/Evaluator.umd.js",
+            format: "umd",
+            name: "Evaluator",
+            globals: {
+                "process-bundle": "process",
+                comlink: "Comlink",
+            },
+        },
+        plugins: [
+            ...plugins,
+
+            analyze({
+                summaryOnly: true,
+                writeTo: (str) =>
+                    writeFileSync("dist/Evaluator.analyze.txt", str),
             }),
         ],
     },

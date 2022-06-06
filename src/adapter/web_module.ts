@@ -125,7 +125,6 @@ const _web_module = ({
         },
         // wrapPlugin 进行了一层过滤
         async load(id: string) {
-            console.log(id);
             const code = await fetch(id, { cache: "force-cache" }).then((res) =>
                 res.text()
             );

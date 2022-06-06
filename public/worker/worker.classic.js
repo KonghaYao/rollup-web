@@ -1,2 +1,2 @@
 importScripts("./something.js");
-postMessage(globalThis.data);
+postMessage(["线程返回", globalThis.data]);

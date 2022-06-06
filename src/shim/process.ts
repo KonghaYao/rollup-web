@@ -1,7 +1,7 @@
 import process from "process-bundle";
 Object.assign(process, {
     cwd() {
-        return window.location.href;
+        return globalThis.location.href;
     },
     platform: "false",
     env: {

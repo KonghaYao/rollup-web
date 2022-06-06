@@ -38,6 +38,7 @@ const WorkerWrapperCode = function (options?: WorkerOptions) {
             {
                 password: "__rollup_init__",
                 port: port,
+                localURL: initUrl,
             },
             [port]
         );

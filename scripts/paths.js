@@ -1,4 +1,4 @@
-const npmCDN = "https://fastly.jsdelivr.net/npm/";
+export const npmCDN = "https://fastly.jsdelivr.net/npm/";
 /*
     统一的 paths 替换项
 */
