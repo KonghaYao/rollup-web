@@ -41,6 +41,8 @@ export class Evaluator {
                     ModuleWorkerInit();
             }
         }
+
+        // 辅助 worker 进行一个操作
         setGlobal("__create_compiler_port__", () => {
             return this.createCompilerPort();
         });
@@ -48,16 +50,16 @@ export class Evaluator {
         return this;
     }
     // 创建一个端口给其他的线程使用
-    createCompilerPort() {
+    async createCompilerPort(): Promise<MessagePort> {
         // @ts-ignore
         if (this.Compiler[createEndpoint]) {
             // @ts-ignore
             return this.Compiler[createEndpoint]();
         } else {
-            // TODO 本地创建一个 port 未 test
-
-            const channel = new MessageChannel();
-            return expose(this.Compiler, channel.port1);
+            console.warn("创建端口");
+            const { port1, port2 } = new MessageChannel();
+            expose(this.Compiler, port2);
+            return port1;
         }
     }
     /* 执行代码 */

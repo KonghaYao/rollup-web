@@ -78,7 +78,7 @@ export class Compiler {
         path: string,
         importTool?: (url: string) => void
     ): Promise<T> {
-        console.group("Bundling Code");
+        console.group("Bundling Code ", path);
         const System = useGlobal<any>("System");
         const url = new URL(path, this.moduleConfig.root).toString();
 

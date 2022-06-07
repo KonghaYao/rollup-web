@@ -33,6 +33,7 @@ const WorkerWrapperCode = function (options?: WorkerOptions) {
     /* @ts-ignore */
     const { url, port, initUrl } = info;
     const worker = new Worker(url[options?.type || "classic"], options);
+
     port.then((port: MessagePort) => {
         worker.postMessage(
             {
@@ -46,6 +47,7 @@ const WorkerWrapperCode = function (options?: WorkerOptions) {
     worker.addEventListener(
         "message",
         (e) => {
+            console.log(e);
             if (e.data === "__rollup_ready__") {
                 worker.postMessage({
                     password: "__rollup_evaluate__",
@@ -55,11 +57,14 @@ const WorkerWrapperCode = function (options?: WorkerOptions) {
         },
         { once: true }
     );
+    worker.addEventListener("error", (e) => {
+        console.log(e);
+    });
     return worker;
 };
 
 // 使用了线上版本的 worker 辅助
-const isOnline = true;
+const isOnline = false;
 const moduleWorkerURL = await createLocalModule(
     isOnline
         ? Setting.NPM(
