@@ -1,9 +1,9 @@
 import type { Compiler } from "./Compiler";
 import { fetchHook } from "./Compiler/fetchHook";
-import { useGlobal } from "./utils/useGlobal";
+import { setGlobal, useGlobal } from "./utils/useGlobal";
 import { Setting } from "./Setting";
 import { ModuleWorkerInit } from "./Evaluator/systemWorker";
-import { proxy } from "comlink";
+import { createEndpoint, expose, proxy } from "comlink";
 
 /** 一个单独的 Compiler 执行环境, 专门用于 适配 执行 的环境 */
 export class Evaluator {
@@ -33,7 +33,7 @@ export class Evaluator {
         );
 
         // 在 worker 中需要对 systemjs 初始化进行一些处理
-        console.warn("worker 类型", worker);
+        // worker 表示执行环境在 worker 中
         if (worker) {
             switch (worker) {
                 case "module":
@@ -41,9 +41,25 @@ export class Evaluator {
                     ModuleWorkerInit();
             }
         }
+        setGlobal("__create_compiler_port__", () => {
+            return this.createCompilerPort();
+        });
+
         return this;
     }
+    // 创建一个端口给其他的线程使用
+    createCompilerPort() {
+        // @ts-ignore
+        if (this.Compiler[createEndpoint]) {
+            // @ts-ignore
+            return this.Compiler[createEndpoint]();
+        } else {
+            // TODO 本地创建一个 port 未 test
 
+            const channel = new MessageChannel();
+            return expose(this.Compiler, channel.port1);
+        }
+    }
     /* 执行代码 */
     async evaluate<T>(path: string) {
         const System = useGlobal<any>("System");

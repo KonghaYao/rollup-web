@@ -1,5 +1,7 @@
 // 这里引用了 CDN 进行加载
-import { Evaluator } from "https://fastly.jsdelivr.net/npm/rollup-web@3.6.0/dist/index.js";
+
+// import { Evaluator } from "/package/rollup-web/dist/index.js";
+import { Evaluator } from "https://fastly.jsdelivr.net/npm/rollup-web@3.7.1/dist/index.js";
 import { wrap } from "https://fastly.jsdelivr.net/npm/comlink/dist/esm/comlink.mjs";
 const Eval = new Evaluator();
 
@@ -21,8 +23,9 @@ globalThis.addEventListener(
 );
 globalThis.addEventListener("message", (e) => {
     if (e.data && e.data.password === "__rollup_evaluate__" && e.data.url) {
-        Eval.evaluate(e.data.url).then((res) => {
-            console.warn("module worker receive: ", res);
-        });
+        Eval.evaluate(e.data.url);
+        // .then((res) => {
+        //     console.warn("module worker receive: ", res);
+        // });
     }
 });

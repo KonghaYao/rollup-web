@@ -3,10 +3,12 @@ globalThis.module = {};
 importScripts("https://fastly.jsdelivr.net/npm/process/browser.js");
 importScripts("https://unpkg.com/comlink/dist/umd/comlink.js");
 importScripts(
-    "https://fastly.jsdelivr.net/npm/rollup-web@3.7.0/dist/Evaluator.umd.js"
+    "https://fastly.jsdelivr.net/npm/rollup-web@3.7.1/dist/Evaluator.umd.js"
 );
 const { wrap } = globalThis.Comlink;
 const Evaluator = globalThis.Evaluator.Evaluator;
+// 删除全局变量以防止冲突
+delete Comlink;
 delete globalThis.Evaluator;
 const Eval = new Evaluator();
 

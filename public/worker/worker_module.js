@@ -3,5 +3,5 @@ const worker = new ModuleWorker({
     type: "module",
 });
 worker.addEventListener("message", (e) => {
-    console.log(e.data);
+    console.warn("返回: ", e.data);
 });

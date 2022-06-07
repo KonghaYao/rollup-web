@@ -13,20 +13,17 @@ const worker = await createWorker(
 );
 const compiler = wrap(worker);
 
-// 提供 Message Port 给 Worker 线程
-globalThis.__create_compiler_port__ = () => {
-    return compiler[createEndpoint]();
-};
-
 const Eval = new Evaluator();
 console.log(Eval, compiler);
 await Eval.createEnv({
     Compiler: compiler,
 });
 console.log("环境布置完成");
-// export const module = await Eval.evaluate(
-//     "http://localhost:8888/package/rollup-web/public/worker/worker_module.js"
-// );
-export const classic = await Eval.evaluate(
-    "http://localhost:8888/package/rollup-web/public/worker/worker_classic.js"
-);
+export const module = async () =>
+    await Eval.evaluate(
+        "http://localhost:8888/package/rollup-web/public/worker/worker_module.js"
+    );
+export const classic = async () =>
+    await Eval.evaluate(
+        "http://localhost:8888/package/rollup-web/public/worker/worker_classic.js"
+    );

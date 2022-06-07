@@ -57,17 +57,23 @@ const WorkerWrapperCode = function (options?: WorkerOptions) {
     );
     return worker;
 };
+
+// 使用了线上版本的 worker 辅助
 const isOnline = true;
 const moduleWorkerURL = await createLocalModule(
     isOnline
-        ? Setting.NPM("/rollup-web/src/plugins/worker/worker.module.js")
-        : "http://localhost:8888/package/rollup-web/src/plugins/worker/worker.module.js",
+        ? Setting.NPM(
+              `/rollup-web@${Setting.workerVersion}/src/plugins/worker/worker.module.js`
+          )
+        : "/package/rollup-web/src/plugins/worker/worker.module.js",
     "worker.module.js"
 );
 const classicWorkerURL = await createLocalModule(
     isOnline
-        ? Setting.NPM("/rollup-web/src/plugins/worker/worker.classic.js")
-        : "http://localhost:8888/package/rollup-web/src/plugins/worker/worker.classic.js",
+        ? Setting.NPM(
+              `/rollup-web@${Setting.workerVersion}/src/plugins/worker/worker.classic.js`
+          )
+        : "/package/rollup-web/src/plugins/worker/worker.classic.js",
     "worker.classic.js"
 );
 const WorkerWrapper = (initUrl: string) => {
@@ -81,7 +87,7 @@ const WorkerWrapper = (initUrl: string) => {
             classic: classicWorkerURL,
             module: moduleWorkerURL,
         })},
-        port:globalThis.__create_compiler_port__(),
+        port: globalThis.__create_compiler_port__(),
         initUrl:"${url.toString()}"
     }
     const wrapper = ${WorkerWrapperCode.toString()}
