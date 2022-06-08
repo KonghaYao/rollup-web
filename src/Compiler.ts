@@ -49,7 +49,6 @@ export class Compiler {
             );
             this.moduleCache.registerCache();
         }
-        console.log(this.moduleCache);
         this.refreshPlugin();
     }
     plugins: Plugin[] = [];

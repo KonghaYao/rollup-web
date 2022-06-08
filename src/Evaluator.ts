@@ -29,6 +29,10 @@ export class Evaluator {
         root,
     }: {
         Compiler: Compiler;
+
+        /**
+         * 极端情况下覆盖 worker 选项
+         */
         worker?: "module" | "classic";
         root?: string;
     }) {
@@ -47,10 +51,13 @@ export class Evaluator {
             system.__rollup_web__ = true;
             this.HookSystemJS();
         }
+
         // 在 worker 中需要对 systemjs 初始化进行一些处理
-        // worker 表示执行环境在 worker 中
-        if (worker) {
-            switch (worker) {
+        // worker 表示执行环境在 worker 中,默认情况下不需要填写 worker，但是避免错误，可以强制填写
+
+        if (worker) this.isWorker = worker;
+        if (this.isWorker) {
+            switch (this.isWorker) {
                 case "module":
                     // module worker, 需要复写 system 的 fetch-loader
                     ModuleWorkerInit();

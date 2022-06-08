@@ -25,8 +25,12 @@ export const isInWorker = (): "classic" | "module" | false => {
         globalThis.self &&
         typeof (globalThis as any).importScripts === "function"
     ) {
-        // 需要详细判断 module worker
-        return "classic";
+        try {
+            (globalThis as any).importScripts();
+            return "classic";
+        } catch (e) {
+            return "module";
+        }
     }
     return false;
 };
