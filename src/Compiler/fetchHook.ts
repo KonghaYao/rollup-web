@@ -3,6 +3,7 @@ import { isMatch } from "picomatch";
 import { useGlobal } from "../utils/useGlobal";
 import type { Compiler } from "../Compiler";
 import { log } from "../utils/ColorConsole";
+import { bareURL } from "../utils/isURLString";
 
 /**
  * 用于和 Systemjs 进行互动,
@@ -33,18 +34,19 @@ export const fetchHook = (
         /* 
         缓存对内，allBundle 对外，allBundle 是扩展打包的领域，而缓存是针对已经打包的领域进行加速
         */
-
+        const extraBundle = moduleConfig.extraBundle;
         if (cacheUrl) {
             /* 已经存在缓存 */
             log.green("System fetch | cache " + cacheUrl);
             code = (await moduleCache.getData(cacheUrl))!.code;
         } else if (
-            moduleConfig.extraBundle === true ||
+            extraBundle === true ||
             /* 如果没有设置打包区域，那么将全部打包 */
-            (moduleConfig.extraBundle instanceof Array &&
+            (extraBundle instanceof Array &&
+                extraBundle.length &&
                 /* 如果设置了打包区域，那么将会按照这些进行打包 */
-                isMatch(url, moduleConfig.extraBundle)) ||
-            url.startsWith(new URL(moduleConfig.root!).origin)
+                isMatch(url, extraBundle)) ||
+            url.startsWith(bareURL(moduleConfig.root!))
         ) {
             log.pink(` System fetch | bundle ` + url);
             /* 全打包或者被选中打包 */

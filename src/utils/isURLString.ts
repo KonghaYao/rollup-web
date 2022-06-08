@@ -4,5 +4,6 @@ export const isURLString = (url: string) => {
     );
 };
 export const URLResolve = (relative: string, baseURL: string) => {
-    return new URL(relative, baseURL.replace(/\?.*$/, "")).toString();
+    return new URL(relative, bareURL(baseURL)).toString();
 };
+export const bareURL = (url: string) => url.split(/\#|\?/g, 1)[0];
