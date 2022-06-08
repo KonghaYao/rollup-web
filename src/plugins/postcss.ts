@@ -4,6 +4,7 @@ import Postcss, { AcceptedPlugin } from "postcss";
 import atImport from "postcss-import";
 import importURL from "./postcss/import-url";
 import { loadFromRollupCache } from "./postcss/loadFromRollupCache";
+import { URLResolve } from "../utils/isURLString";
 
 export const _postcss = ({
     plugins = [],
@@ -25,7 +26,7 @@ export const _postcss = ({
         // TODO 打包 area 问题
         atImport({
             resolve(id, basedir, importOptions) {
-                const url = new URL(id, basedir + "/index.css").toString();
+                const url = URLResolve(id, basedir + "/index.css");
                 return "//" + encodeURIComponent(url);
             },
             load(p) {

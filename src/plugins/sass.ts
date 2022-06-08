@@ -19,6 +19,7 @@ interface SassStatic {
     options: (all: any, cb?: () => void) => void;
 }
 import { log as Log } from "../utils/ColorConsole";
+import { URLResolve } from "../utils/isURLString";
 export const _sass = ({
     sass: sassOptions,
     log,
@@ -48,8 +49,7 @@ export const _sass = ({
                 if (request.path) {
                     done();
                 } else if (request.current && request.previous) {
-                    const baseURL = request.previous.replace(/\?.+/, "");
-                    const url = new URL(request.current, baseURL).toString();
+                    const url = URLResolve(request.current, request.previous);
                     request.path = url;
                     const ext = checkExtension(url, extensions!);
                     // 当后缀名符合时，直接下载并转化

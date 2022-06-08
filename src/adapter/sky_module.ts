@@ -1,5 +1,5 @@
 import { Plugin } from "rollup";
-import { isURLString } from "../utils/isURLString";
+import { isURLString, URLResolve } from "../utils/isURLString";
 type CDNCreator = (cdn: string) => string;
 /**
  * 将模块路径解析到 Web ESM CDN
@@ -49,7 +49,7 @@ export const sky_module = ({
                     id:
                         typeof cdn === "function"
                             ? cdn(thisFile)
-                            : new URL(thisFile, cdn).toString(),
+                            : URLResolve(thisFile, cdn),
                 };
             }
             return;

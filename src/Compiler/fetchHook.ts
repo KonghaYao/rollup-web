@@ -46,7 +46,7 @@ export const fetchHook = (
                 extraBundle.length &&
                 /* 如果设置了打包区域，那么将会按照这些进行打包 */
                 isMatch(url, extraBundle)) ||
-            url.startsWith(bareURL(moduleConfig.root!))
+            url.startsWith(new URL(moduleConfig.root!).origin)
         ) {
             log.pink(` System fetch | bundle ` + url);
             /* 全打包或者被选中打包 */

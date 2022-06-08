@@ -7,6 +7,7 @@ import { createEndpoint, expose, proxy } from "comlink";
 import { resolveHook } from "./Compiler/resolveHook";
 import { log } from "./utils/ColorConsole";
 import { isInWorker } from "./utils/createWorker";
+import { URLResolve } from "./utils/isURLString";
 
 /** 一个单独的 Compiler 执行环境, 专门用于 适配 执行 的环境 */
 export class Evaluator {
@@ -97,10 +98,7 @@ export class Evaluator {
         const cb = async (url: string) => {
             await System.import(url).then((res: T) => (result = res));
         };
-        await this.Compiler.evaluate(
-            new URL(path, this.root).toString(),
-            proxy(cb)
-        );
+        await this.Compiler.evaluate(URLResolve(path, this.root), proxy(cb));
 
         return result;
     }

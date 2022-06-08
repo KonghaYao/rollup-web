@@ -5,6 +5,7 @@ import { useGlobal } from "./utils/useGlobal";
 import { CacheConfig, ModuleCache } from "./Compiler/ModuleCache";
 import { fetchHook } from "./Compiler/fetchHook";
 import { Plugin, RollupCache } from "rollup-web";
+import { bareURL, URLResolve } from "./utils/isURLString";
 
 /* 
     备忘录：
@@ -33,10 +34,7 @@ export class Compiler {
         public moduleConfig: CompilerModuleConfig
     ) {
         if (!this.moduleConfig.root) {
-            this.moduleConfig.root = globalThis.location.href.replace(
-                /[^\/]*?#.*/,
-                ""
-            );
+            this.moduleConfig.root = bareURL(globalThis.location.href);
         }
         if (moduleConfig.useDataCache) {
             this.moduleCache.createConfig(
@@ -80,7 +78,7 @@ export class Compiler {
     ): Promise<T> {
         console.group("Bundling Code ", path);
         const System = useGlobal<any>("System");
-        const url = new URL(path, this.moduleConfig.root).toString();
+        const url = URLResolve(path, this.moduleConfig.root!);
 
         const isExist = this.moduleCache.hasData(url);
         if (!isExist) await this.CompileSingleFile(url);

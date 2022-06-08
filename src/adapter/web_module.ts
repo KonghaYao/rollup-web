@@ -1,7 +1,7 @@
 import { Plugin } from "rollup";
 import { isMatch } from "picomatch";
 import { addExtension } from "@rollup/pluginutils";
-import { isURLString } from "../utils/isURLString";
+import { isURLString, URLResolve } from "../utils/isURLString";
 import { extname } from "../shim/_/path";
 import { wrapPlugin } from "../utils/wrapPlugin";
 
@@ -72,14 +72,13 @@ const _web_module = ({
             const first = thisFile.charAt(0);
             const isInArea =
                 isURLString(thisFile) &&
-                (thisFile.startsWith(root) ||
+                (thisFile.startsWith(new URL(root).origin) ||
                     extraBundle === true ||
                     isMatch(thisFile, extraBundle!));
             if (isInArea || first === "." || first === "/") {
                 /* 相对位置解析为相对于 root 的 URL 地址 */
-                const importerWeb = new URL(importer, root);
-                let resolved = new URL(thisFile, importerWeb);
-                const url = resolved.toString();
+                const importerWeb = URLResolve(importer, root);
+                let url = URLResolve(thisFile, importerWeb);
 
                 if (extname(url) === "") {
                     /* 解析后缀名 */
