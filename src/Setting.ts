@@ -1,4 +1,3 @@
-import { isInWorker } from "./utils/createWorker";
 import { useGlobal } from "./utils/useGlobal";
 
 export const Setting = {
@@ -7,10 +6,12 @@ export const Setting = {
     workerVersion: "3.7.2",
     async loadSystemJS() {
         const systemURL = this.NPM("systemjs@6.12.1/dist/system.min.js");
-        if (isInWorker()) {
-            await useGlobal<any>("importScripts")(systemURL);
-        } else {
+
+        // TODO 本来是要划分 classic worker 和 module 的，但是暂时没有想到方法
+        try {
             await import(systemURL);
+        } catch (e) {
+            await useGlobal<any>("importScripts")(systemURL);
         }
     },
 };

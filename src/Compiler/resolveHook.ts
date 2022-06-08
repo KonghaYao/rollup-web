@@ -1,7 +1,7 @@
 import { useGlobal } from "../utils/useGlobal";
 
-const System = useGlobal<any>("System");
 export const resolveHook = () => {
+    const System = useGlobal<any>("System");
     const resolve = System.resolve;
     System.resolve = (url: string, par: string) => {
         if (url.startsWith(".") || url.startsWith("/"))

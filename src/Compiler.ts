@@ -2,11 +2,13 @@ import type { RollupOptions, OutputChunk } from "rollup";
 import { web_module, ModuleConfig } from "./adapter/web_module";
 import { useRollup } from "./Compiler/rollup";
 import { useGlobal } from "./utils/useGlobal";
+import { ProxyMarked } from "comlink";
 import { CacheConfig, ModuleCache } from "./Compiler/ModuleCache";
 import { fetchHook } from "./Compiler/fetchHook";
 import { Plugin, RollupCache } from "rollup-web";
 import { bareURL, URLResolve } from "./utils/isURLString";
 import { Setting } from "./Setting";
+import { isInWorker } from "./utils/createWorker";
 
 /* 
     备忘录：
@@ -20,9 +22,12 @@ export type CompilerModuleConfig = ModuleConfig & {
     useDataCache?: false | CacheConfig;
     autoBuildFetchHook?: boolean;
 };
+type ImportTool = (url: string) => void | Promise<void>;
+
 /* Compiler 是一个浏览器打包环境，需要 systemjs 支持 */
 export class Compiler {
     System = useGlobal<any>("System");
+    inWorker = isInWorker();
     constructor(
         /* input and output will be ignored */
         public options: RollupOptions,
@@ -72,8 +77,8 @@ export class Compiler {
      * */
     async evaluate<T = any>(
         path: string,
-        importTool?: (url: string) => void
-    ): Promise<T> {
+        importTool?: ImportTool
+    ): Promise<T | void> {
         console.group("Bundling Code ", path);
         let System = useGlobal<any>("System");
         if (!System)
@@ -89,11 +94,21 @@ export class Compiler {
         const isExist = this.moduleCache.hasData(url);
         if (!isExist) await this.CompileSingleFile(url);
 
-        const runtime = importTool ? importTool : System.import.bind(System);
-        // 注意，线程中由于 环境与打包分离，runtime 不会返回结果
-        const result: T = await runtime(url);
-        console.groupEnd();
-        return result;
+        if (this.inWorker && !importTool) {
+            // 在线程中若没有环境则直接报错
+            throw new Error(
+                "Rollup-web | Compiler in worker must use Evaluator to evaluate"
+            );
+        }
+        if (importTool) {
+            await importTool(url);
+            console.groupEnd();
+            return;
+        } else {
+            const result: T = System.import(url);
+            console.groupEnd();
+            return result;
+        }
     }
 
     isLocalFile(url: string) {
@@ -116,7 +131,7 @@ export class Compiler {
             cache: this.RollupCache,
         }).then((res) => {
             (res.output as OutputChunk[]).forEach((i) => {
-                this.moduleCache.set(i.facadeModuleId!, i);
+                this.moduleCache.set(bareURL(i.facadeModuleId!), i);
             });
             return res.output;
         });

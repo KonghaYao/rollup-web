@@ -19,5 +19,14 @@ export const createWorker = (
         );
     });
 };
-export const isInWorker = () =>
-    globalThis.self && typeof (globalThis as any).importScripts === "function";
+export const isInWorker = (): "classic" | "module" | false => {
+    if (
+        globalThis.self &&
+        typeof (globalThis as any).importScripts === "function"
+    ) {
+        console.warn(globalThis.window);
+        // 需要详细判断 module worker
+        return "classic";
+    }
+    return false;
+};

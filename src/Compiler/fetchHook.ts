@@ -22,14 +22,13 @@ export const fetchHook = (
     SystemJS.shouldFetch = () => true;
 
     const hookName = "fetch";
-
     SystemJS.constructor.prototype[hookName] = async function (
         ...args: [string, any]
     ) {
         const [url] = args;
 
         let code: string;
-        const cacheUrl = await moduleCache.hasData(url.replace(/\?.*/, ""));
+        const cacheUrl = await moduleCache.hasData(bareURL(url));
 
         /* 
         缓存对内，allBundle 对外，allBundle 是扩展打包的领域，而缓存是针对已经打包的领域进行加速

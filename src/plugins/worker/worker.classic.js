@@ -22,7 +22,7 @@ async function fakeImport(url) {
             const code = i
                 .replace("execute: (function", "execute: (async function")
                 .replace(/^\s*importScripts/gm, "await importScripts");
-            console.log(code);
+
             return eval(code);
         });
 }

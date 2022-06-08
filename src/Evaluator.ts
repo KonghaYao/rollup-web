@@ -3,7 +3,7 @@ import { fetchHook } from "./Compiler/fetchHook";
 import { setGlobal, useGlobal } from "./utils/useGlobal";
 import { Setting } from "./Setting";
 import { ModuleWorkerInit } from "./Evaluator/systemWorker";
-import { createEndpoint, expose, proxy } from "comlink";
+import { createEndpoint, expose, proxy, Remote } from "comlink";
 import { resolveHook } from "./Compiler/resolveHook";
 import { log } from "./utils/ColorConsole";
 import { isInWorker } from "./utils/createWorker";
@@ -11,7 +11,7 @@ import { URLResolve } from "./utils/isURLString";
 
 /** 一个单独的 Compiler 执行环境, 专门用于 适配 执行 的环境 */
 export class Evaluator {
-    Compiler!: Compiler;
+    Compiler!: Compiler | Remote<Compiler>;
     moduleConfig!: Compiler["moduleConfig"];
     root = location.href;
     static registered = false;
@@ -64,18 +64,19 @@ export class Evaluator {
 
         return this;
     }
+    /* 链接 SystemJS */
     HookSystemJS() {
-        fetchHook(this.Compiler.moduleCache, this.moduleConfig, () =>
+        const cache = this.Compiler.moduleCache as Compiler["moduleCache"];
+        // 只是异步地使用 cache 内的函数，所以可以这样子传递 proxy
+        fetchHook(cache, this.moduleConfig, () =>
             this.Compiler.CompileSingleFile.bind(this.Compiler)
         );
         resolveHook();
     }
-    // 创建一个端口给其他的线程使用
+    /*  创建一个端口给其他的线程使用 */
     async createCompilerPort(): Promise<MessagePort> {
-        // @ts-ignore
-        if (this.Compiler[createEndpoint]) {
-            // @ts-ignore
-            return this.Compiler[createEndpoint]();
+        if ((this.Compiler as Remote<Compiler>)[createEndpoint]) {
+            return (this.Compiler as Remote<Compiler>)[createEndpoint]();
         } else {
             console.warn("创建端口");
             const { port1, port2 } = new MessageChannel();
@@ -94,6 +95,8 @@ export class Evaluator {
         const cb = async (url: string) => {
             await System.import(url).then((res: T) => (result = res));
         };
+        // 传递 第二回调函数 时不会在 Compiler 进行执行，而是返回给 Evaluator 进行处理
+        /* @ts-ignore */
         await this.Compiler.evaluate(URLResolve(path, this.root), proxy(cb));
 
         return result;
