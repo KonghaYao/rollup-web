@@ -91,6 +91,5 @@ async function toNodeMode(id: string) {
     ${connectToWasm}
     
     ${ExportAsModule}`;
-    console.log(result);
     return result;
 }

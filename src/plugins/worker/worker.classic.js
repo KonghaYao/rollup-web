@@ -2,9 +2,10 @@
 globalThis.module = {};
 importScripts("https://fastly.jsdelivr.net/npm/process/browser.js");
 importScripts("https://unpkg.com/comlink/dist/umd/comlink.js");
-importScripts(
-    "https://fastly.jsdelivr.net/npm/rollup-web@3.7.1/dist/Evaluator.umd.js"
-);
+importScripts("http://localhost:8888/package/rollup-web/dist/Evaluator.umd.js");
+// importScripts(
+//     "https://fastly.jsdelivr.net/npm/rollup-web@3.7.1/dist/Evaluator.umd.js"
+// );
 const { wrap } = globalThis.Comlink;
 const Evaluator = globalThis.Evaluator.Evaluator;
 // 删除全局变量以防止冲突

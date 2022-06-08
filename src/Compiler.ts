@@ -2,7 +2,6 @@ import type { RollupOptions, OutputChunk } from "rollup";
 import { web_module, ModuleConfig } from "./adapter/web_module";
 import { useRollup } from "./Compiler/rollup";
 import { useGlobal } from "./utils/useGlobal";
-import { ProxyMarked } from "comlink";
 import { CacheConfig, ModuleCache } from "./Compiler/ModuleCache";
 import { fetchHook } from "./Compiler/fetchHook";
 import { Plugin, RollupCache } from "rollup-web";
@@ -50,7 +49,7 @@ export class Compiler {
             );
             this.moduleCache.registerCache();
         }
-
+        console.log(this.moduleCache);
         this.refreshPlugin();
     }
     plugins: Plugin[] = [];
@@ -131,7 +130,7 @@ export class Compiler {
             cache: this.RollupCache,
         }).then((res) => {
             (res.output as OutputChunk[]).forEach((i) => {
-                this.moduleCache.set(bareURL(i.facadeModuleId!), i);
+                this.moduleCache.set(i.facadeModuleId!, i);
             });
             return res.output;
         });

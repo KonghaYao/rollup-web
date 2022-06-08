@@ -14,6 +14,7 @@ export class Evaluator {
     Compiler!: Compiler | Remote<Compiler>;
     moduleConfig!: Compiler["moduleConfig"];
     root = location.href;
+    isWorker = isInWorker();
     static registered = false;
     constructor() {
         if (Evaluator.registered)
@@ -37,7 +38,7 @@ export class Evaluator {
         this.moduleConfig = JSON.parse(await Compiler.getModuleConfig());
 
         let system = useGlobal<any>("System");
-        console.log(system);
+
         if (!system || !system.__rollup_web__) {
             log.pink("Evaluator Systemjs | init");
             await Setting.loadSystemJS();
@@ -46,7 +47,6 @@ export class Evaluator {
             system.__rollup_web__ = true;
             this.HookSystemJS();
         }
-
         // 在 worker 中需要对 systemjs 初始化进行一些处理
         // worker 表示执行环境在 worker 中
         if (worker) {
@@ -96,8 +96,9 @@ export class Evaluator {
             await System.import(url).then((res: T) => (result = res));
         };
         // 传递 第二回调函数 时不会在 Compiler 进行执行，而是返回给 Evaluator 进行处理
+        const url = URLResolve(path, this.root);
         /* @ts-ignore */
-        await this.Compiler.evaluate(URLResolve(path, this.root), proxy(cb));
+        await this.Compiler.evaluate(url, proxy(cb));
 
         return result;
     }

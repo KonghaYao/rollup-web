@@ -28,7 +28,7 @@ export const fetchHook = (
         const [url] = args;
 
         let code: string;
-        const cacheUrl = await moduleCache.hasData(bareURL(url));
+        const cacheUrl = await moduleCache.hasData(url);
 
         /* 
         缓存对内，allBundle 对外，allBundle 是扩展打包的领域，而缓存是针对已经打包的领域进行加速

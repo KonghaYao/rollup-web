@@ -64,7 +64,7 @@ const WorkerWrapperCode = function (options?: WorkerOptions) {
 };
 
 // 使用了线上版本的 worker 辅助
-const isOnline = true;
+const isOnline = false;
 const moduleWorkerURL = await createLocalModule(
     isOnline
         ? Setting.NPM(
