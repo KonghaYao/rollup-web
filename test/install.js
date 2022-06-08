@@ -1,5 +1,4 @@
 import mocha from "https://fastly.jsdelivr.net/npm/mocha/mocha.js/+esm";
-import "https://fastly.jsdelivr.net/npm/systemjs@6.12.1/dist/system.min.js";
 // 不能使用对象的方式进行 mocha 配置，不然会出错
 mocha.setup("bdd");
 mocha.checkLeaks();

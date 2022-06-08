@@ -37,15 +37,11 @@ export class Evaluator {
         this.moduleConfig = JSON.parse(await Compiler.getModuleConfig());
 
         let system = useGlobal<any>("System");
-
+        console.log(system);
         if (!system || !system.__rollup_web__) {
             log.pink("Evaluator Systemjs | init");
-            const systemURL = Setting.NPM("systemjs@6.12.1/dist/system.min.js");
-            if (isInWorker()) {
-                await useGlobal<any>("importScripts")(systemURL);
-            } else {
-                await import(systemURL);
-            }
+            await Setting.loadSystemJS();
+
             system = useGlobal("System");
             system.__rollup_web__ = true;
             this.HookSystemJS();

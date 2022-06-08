@@ -6,6 +6,7 @@ import { CacheConfig, ModuleCache } from "./Compiler/ModuleCache";
 import { fetchHook } from "./Compiler/fetchHook";
 import { Plugin, RollupCache } from "rollup-web";
 import { bareURL, URLResolve } from "./utils/isURLString";
+import { Setting } from "./Setting";
 
 /* 
     备忘录：
@@ -44,10 +45,7 @@ export class Compiler {
             );
             this.moduleCache.registerCache();
         }
-        if (moduleConfig.autoBuildFetchHook ?? true)
-            fetchHook(this.moduleCache, this.moduleConfig, () => {
-                return this.CompileSingleFile.bind(this);
-            });
+
         this.refreshPlugin();
     }
     plugins: Plugin[] = [];
@@ -77,7 +75,15 @@ export class Compiler {
         importTool?: (url: string) => void
     ): Promise<T> {
         console.group("Bundling Code ", path);
-        const System = useGlobal<any>("System");
+        let System = useGlobal<any>("System");
+        if (!System)
+            await Setting.loadSystemJS().then(() => {
+                if (this.moduleConfig.autoBuildFetchHook ?? true)
+                    fetchHook(this.moduleCache, this.moduleConfig, () => {
+                        return this.CompileSingleFile.bind(this);
+                    });
+            });
+        System = useGlobal<any>("System");
         const url = URLResolve(path, this.moduleConfig.root!);
 
         const isExist = this.moduleCache.hasData(url);
