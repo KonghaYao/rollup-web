@@ -1,6 +1,6 @@
 {
     "name": "rollup-web",
-    "version": "3.7.4",
+    "version": "3.7.5",
     "description": "Compile your project all in browser!",
     "main": "./src/index.ts",
     "browser": "./dist/index.js",
