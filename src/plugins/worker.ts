@@ -44,19 +44,7 @@ const WorkerWrapperCode = function (options?: WorkerOptions) {
             [port]
         );
     });
-    worker.addEventListener(
-        "message",
-        (e) => {
-            console.log(e);
-            if (e.data === "__rollup_ready__") {
-                worker.postMessage({
-                    password: "__rollup_evaluate__",
-                    url: initUrl,
-                });
-            }
-        },
-        { once: true }
-    );
+
     worker.addEventListener("error", (e) => {
         console.log(e);
     });

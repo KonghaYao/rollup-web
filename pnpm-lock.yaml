@@ -21,6 +21,7 @@ specifiers:
   '@types/postcss-import': ^14.0.0
   '@types/systemjs': ^6.1.1
   '@vue/compiler-sfc': ^3.2.33
+  assemblyscript: ^0.20.8
   builtin-modules: ^3.2.0
   chai: ^4.3.6
   comlink: ^4.3.1
@@ -55,6 +56,7 @@ dependencies:
   '@rollup/plugin-replace': 4.0.0_rollup@2.63.0
   '@swc/core': 1.2.171
   '@swc/wasm-web': 1.2.196
+  assemblyscript: 0.20.8
   builtin-modules: 3.2.0
   chai: 4.3.6
   comlink: 4.3.1
@@ -912,6 +914,14 @@ packages:
     dependencies:
       color-convert: 2.0.1
 
+  /assemblyscript/0.20.8:
+    resolution: {integrity: sha512-IFTMXMgNqi5jSlDpmuSIOPxjWy3nWzdFm4MAo7MFpZ/r6axR7hgcRMsvhDQmR8KtaOT2GCKyDUR4YvZmoNXQjg==}
+    hasBin: true
+    dependencies:
+      binaryen: 108.0.0-nightly.20220528
+      long: 5.2.0
+    dev: false
+
   /assertion-error/1.1.0:
     resolution: {integrity: sha512-jgsaNduz+ndvGyFt3uSuWqvy4lCnIJiovtouQN5JZHOKCS2QuhEdbcQHFhVksz2N2U9hXJo8odG7ETyWlEeuDw==}
     dev: false
@@ -927,6 +937,11 @@ packages:
 
   /balanced-match/1.0.2:
     resolution: {integrity: sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw==}
+    dev: false
+
+  /binaryen/108.0.0-nightly.20220528:
+    resolution: {integrity: sha512-9biG357fx3NXmJNotIuY9agZBcCNHP7d1mgOGaTlPYVHZE7/61lt1IyHCXAL+W5jUOYgmFZ260PR4IbD19RKuA==}
+    hasBin: true
     dev: false
 
   /boolbase/1.0.0:
@@ -1772,6 +1787,10 @@ packages:
   /lodash/4.17.21:
     resolution: {integrity: sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==}
     dev: true
+
+  /long/5.2.0:
+    resolution: {integrity: sha512-9RTUNjK60eJbx3uz+TEGF7fUr29ZDxR5QzXcyDpeSfeH28S9ycINflOgOlppit5U+4kNTe83KQnMEerw7GmE8w==}
+    dev: false
 
   /longest-streak/3.0.1:
     resolution: {integrity: sha512-cHlYSUpL2s7Fb3394mYxwTYj8niTaNHUCLr0qdiCXQfSjfuA7CKofpX2uSwEfFDQ0EB7JcnMnm+GjbqqoinYYg==}

@@ -5,6 +5,16 @@ import { Evaluator } from "https://fastly.jsdelivr.net/npm/rollup-web@3.7.6/dist
 import { wrap } from "https://fastly.jsdelivr.net/npm/comlink/dist/esm/comlink.mjs";
 const Eval = new Evaluator();
 
+// Evaluator Eval
+const EvalCode = (url) =>
+    Eval.evaluate(url).then((res) => {
+        console.warn("module worker receive: ", res);
+    });
+globalThis.addEventListener("message", (e) => {
+    if (e.data && e.data.password === "__rollup_evaluate__" && e.data.url) {
+        EvalCode(e.data.url);
+    }
+});
 globalThis.addEventListener(
     "message",
     (e) => {
@@ -14,17 +24,9 @@ globalThis.addEventListener(
                 worker: "module",
                 root: e.data.localURL,
             }).then(() => {
-                // 必须要返回一个值来表示完成了加载
-                postMessage("__rollup_ready__");
+                EvalCode(e.data.localURL);
             });
         }
     },
     { once: true }
 );
-globalThis.addEventListener("message", (e) => {
-    if (e.data && e.data.password === "__rollup_evaluate__" && e.data.url) {
-        Eval.evaluate(e.data.url).then((res) => {
-            console.warn("module worker receive: ", res);
-        });
-    }
-});

@@ -27,6 +27,16 @@ async function fakeImport(url) {
             return eval(code);
         });
 }
+// Evaluator
+const EvalCode = (url) =>
+    Eval.evaluate(url).then((res) => {
+        console.warn("classic worker receive: ", res);
+    });
+globalThis.addEventListener("message", (e) => {
+    if (e.data && e.data.password === "__rollup_evaluate__" && e.data.url) {
+        EvalCode(e.data.url);
+    }
+});
 
 // importScripts 转变成了 异步操作，导致运行操作失败
 globalThis.addEventListener(
@@ -58,18 +68,9 @@ globalThis.addEventListener(
                     };
                 })
                 .then(() => {
-                    // 必须要返回一个值来表示完成了加载
-                    postMessage("__rollup_ready__");
+                    EvalCode(e.data.localURL.split("?", 1)[0]);
                 });
         }
     },
     { once: true }
 );
-
-globalThis.addEventListener("message", (e) => {
-    if (e.data && e.data.password === "__rollup_evaluate__" && e.data.url) {
-        Eval.evaluate(e.data.url).then((res) => {
-            console.warn("classic worker receive: ", res);
-        });
-    }
-});
