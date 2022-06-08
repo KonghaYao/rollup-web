@@ -3,7 +3,7 @@ import { isURLString } from "../utils/isURLString";
 type CDNCreator = (cdn: string) => string;
 /**
  * 将模块路径解析到 Web ESM CDN
- * @param cdn "https://cdn.skypack.dev/"| "https://esm.run/" | "https://cdn.jsdelivr.net/" | "https://esm.sh/"
+ * @param cdn "https://cdn.skypack.dev/"| "https://esm.run/" | "https://fastly.jsdelivr.net/" | "https://esm.sh/"
  * */
 export const sky_module = ({
     /** esm CDN  的地址 */
@@ -30,8 +30,8 @@ export const sky_module = ({
         name: "sky_module",
 
         resolveId(thisFile, importer = "") {
-            // 当有前缀时，进行 ignore
             if (isURLString(thisFile)) return;
+            // 当有前缀时，进行 ignore
             if (
                 thisFile[0] !== "." &&
                 thisFile[0] !== "/" &&

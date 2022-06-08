@@ -4,12 +4,23 @@ import { setGlobal, useGlobal } from "./utils/useGlobal";
 import { Setting } from "./Setting";
 import { ModuleWorkerInit } from "./Evaluator/systemWorker";
 import { createEndpoint, expose, proxy } from "comlink";
+import { resolveHook } from "./Compiler/resolveHook";
+import { log } from "./utils/ColorConsole";
+import { isInWorker } from "./utils/createWorker";
 
 /** 一个单独的 Compiler 执行环境, 专门用于 适配 执行 的环境 */
 export class Evaluator {
     Compiler!: Compiler;
     moduleConfig!: Compiler["moduleConfig"];
     root = location.href;
+    static registered = false;
+    constructor() {
+        if (Evaluator.registered)
+            throw new Error(
+                "This Environment had been already Hold by a Evaluator"
+            );
+    }
+
     async createEnv({
         Compiler,
         worker,
@@ -20,17 +31,24 @@ export class Evaluator {
         root?: string;
     }) {
         this.Compiler = Compiler;
-        let system = useGlobal("System");
-        if (!system) {
-            await import(Setting.NPM("systemjs@6.12.1/dist/system.min.js"));
-            system = useGlobal("System");
-        }
+
         if (root) this.root = root;
         this.moduleConfig = JSON.parse(await Compiler.getModuleConfig());
-        // 联系 systemjs
-        fetchHook(Compiler.moduleCache, this.moduleConfig, () =>
-            Compiler.CompileSingleFile.bind(Compiler)
-        );
+
+        let system = useGlobal<any>("System");
+
+        if (!system || !system.__rollup_web__) {
+            log.pink("Evaluator Systemjs | init");
+            const systemURL = Setting.NPM("systemjs@6.12.1/dist/system.min.js");
+            if (isInWorker()) {
+                await useGlobal<any>("importScripts")(systemURL);
+            } else {
+                await import(systemURL);
+            }
+            system = useGlobal("System");
+            system.__rollup_web__ = true;
+            this.HookSystemJS();
+        }
 
         // 在 worker 中需要对 systemjs 初始化进行一些处理
         // worker 表示执行环境在 worker 中
@@ -48,6 +66,12 @@ export class Evaluator {
         });
 
         return this;
+    }
+    HookSystemJS() {
+        fetchHook(this.Compiler.moduleCache, this.moduleConfig, () =>
+            this.Compiler.CompileSingleFile.bind(this.Compiler)
+        );
+        resolveHook();
     }
     // 创建一个端口给其他的线程使用
     async createCompilerPort(): Promise<MessagePort> {

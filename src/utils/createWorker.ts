@@ -19,3 +19,5 @@ export const createWorker = (
         );
     });
 };
+export const isInWorker = () =>
+    globalThis.self && typeof (globalThis as any).importScripts === "function";

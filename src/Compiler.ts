@@ -108,6 +108,7 @@ export class Compiler {
             output: {
                 format: "system",
             },
+
             cache: this.RollupCache,
         }).then((res) => {
             (res.output as OutputChunk[]).forEach((i) => {
