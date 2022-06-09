@@ -92,7 +92,8 @@ export const _assemblyscript = ({
     return {
         name: "assemblyscript",
 
-        async buildStart(this, options) {
+        async buildStart(this) {
+            // 加载 asc
             if (!asc) {
                 Log.green("Loading asc...");
                 try {
@@ -107,19 +108,21 @@ export const _assemblyscript = ({
             }
         },
         resolveId(thisFile) {
+            // 所有被解析的 url 将会在这个阶段被直接 resolve
             if (cache.has(thisFile)) return thisFile;
         },
         async load(id: string) {
             if (cache.has(id)) return cache.get(id);
+
+            // 使用参数传递
             if (id.endsWith("?assemblyscript")) {
                 await asc.main(
                     [id, "--config", "asconfig.json", "--baseDir", URLDir(id)],
                     ascRuntime
                 );
-                // console.log(cache.get(buildDir));
                 const url = URLResolve("./module.js", id);
-                console.log(url, cache.get(url));
                 await this.load({ id: url });
+                log && log(id);
                 return `export *  from "${url}"`;
             }
         },
