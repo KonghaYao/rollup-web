@@ -1,5 +1,5 @@
 import { Plugin, PluginCache } from "rollup-web";
-import { wrapPlugin } from "../utils/wrapPlugin";
+import { checkExtension, wrapPlugin } from "../utils/wrapPlugin";
 import type { APIOptions } from "assemblyscript/dist/asc";
 import merge from "lodash-es/merge";
 import { bareURL, URLDir, URLResolve } from "../utils/isURLString";
@@ -15,6 +15,7 @@ const paths = {
             "https://fastly.jsdelivr.net/npm/assemblyscript@0.20.8/dist/asc.js",
     },
 };
+
 export const _assemblyscript = ({
     /** 写入配置文件 */
     asconfig = {},
@@ -24,13 +25,13 @@ export const _assemblyscript = ({
     extensions?: string[];
     log?: (id: string) => void;
 } = {}) => {
-    let cache: PluginCache;
+    let cache: PluginCache = new Map();
     let asc: typeof import("assemblyscript/dist/asc")["default"];
     merge(asconfig, {
         options: {
-            importTable: true,
+            importTable: false,
             exportRuntime: true,
-            bindings: true,
+            bindings: "esm",
         },
         targets: {
             release: {
@@ -51,8 +52,27 @@ export const _assemblyscript = ({
             }
         },
         writeFile(name, data, baseDir) {
-            Log.lime("wasm Build: " + name);
-            cache.set(URLResolve(name, URLResolve("./build/", baseDir)), data);
+            const url = name.replace(/(https?:\/)/, "$1/");
+            Log.lime("wasm Build: " + url);
+            const ext = checkExtension(name, [".js", ".wasm"]);
+            if (ext) {
+                if (data instanceof Uint8Array) {
+                    const localURL = URL.createObjectURL(
+                        new File([data], url, { type: "application/wasm" })
+                    );
+                    cache.set(url, localURL);
+                } else {
+                    const code = (data as any as string).replace(
+                        'new URL("module.wasm", import.meta.url)',
+                        `'${cache.get(
+                            url.replace("module.js", "module.wasm")
+                        )}'`
+                    );
+                    cache.set(url, code);
+                }
+            } else {
+                cache.set(url, data);
+            }
         },
         listFiles(dirname, baseDir) {
             return [];
@@ -86,23 +106,26 @@ export const _assemblyscript = ({
                 }
             }
         },
+        resolveId(thisFile) {
+            if (cache.has(thisFile)) return thisFile;
+        },
         async load(id: string) {
-            cache = this.cache;
-            this.cache.has(id);
-            if (this.cache.has(id)) return this.cache.get(id);
+            if (cache.has(id)) return cache.get(id);
             if (id.endsWith("?assemblyscript")) {
-                const result = await asc.main(
+                await asc.main(
                     [id, "--config", "asconfig.json", "--baseDir", URLDir(id)],
                     ascRuntime
                 );
                 // console.log(cache.get(buildDir));
-                console.log(result);
-                return "";
+                const url = URLResolve("./module.js", id);
+                console.log(url, cache.get(url));
+                await this.load({ id: url });
+                return `export *  from "${url}"`;
             }
         },
     } as Plugin;
 };
 /* Babel 桥接插件 */
 export const assemblyscript = wrapPlugin(_assemblyscript, {
-    extensions: [".as", ".ts"],
+    extensions: [".as", ".ts", ".js"],
 });

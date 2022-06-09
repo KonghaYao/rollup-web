@@ -124,11 +124,21 @@ const _web_module = ({
         },
         // wrapPlugin 进行了一层过滤
         async load(id: string) {
-            const code = await fetch(id, { cache: "force-cache" }).then((res) =>
-                res.text()
-            );
-            log && log(id);
-            return { code };
+            try {
+                const code = await fetch(id, { cache: "force-cache" }).then(
+                    (res) => {
+                        if (res.ok) {
+                            return res.text();
+                        } else {
+                            throw new Error("错误");
+                        }
+                    }
+                );
+                log && log(id);
+                return { code };
+            } catch (e) {
+                return;
+            }
         },
     } as Plugin;
 };
