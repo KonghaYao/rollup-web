@@ -9,3 +9,4 @@ log("Randomized values: ", result);
 // Compute the array values' sum and log it. This will overflow i32 range.
 let total = exports.sumArray(new Uint32Array([1, 2, 3, 4]));
 log(`Sum (likely overflown): `, total);
+export { result, total };
