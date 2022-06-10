@@ -19,6 +19,8 @@ export const paths = {
     comlink: npmCDN + "comlink/dist/esm/comlink.mjs",
     "assemblyscript/dist/asc": npmCDN + "assemblyscript@0.20.8/dist/asc.min.js",
     "@mdx-js/mdx": "https://cdn.skypack.dev/@mdx-js/mdx",
+    rehype: "https://cdn.skypack.dev/rehype",
+    "unist-util-visit": "https://cdn.skypack.dev/unist-util-visit",
 
     assert: "https://cdn.skypack.dev/assert",
     "url-bundle": "https://cdn.skypack.dev/url",
