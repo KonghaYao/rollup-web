@@ -16,10 +16,9 @@ const threadInit = async () => {
         "https://fastly.jsdelivr.net/npm/rollup-web@3.7.6/dist/index.js"
     );
     /* @ts-ignore */
-    const { wrap } = await import(
-        "https://fastly.jsdelivr.net/npm/comlink/dist/esm/comlink.mjs"
-    );
+    const { wrap } = await import("comlink");
     const Eval = new Evaluator();
+    (globalThis as any).__Rollup_Env__ === Eval;
     const EvalCode = (url: string) => Eval.evaluate(url);
     addEventListener("message", (e) => {
         if (e.data && e.data.password === "__rollup_evaluate__" && e.data.url) {
@@ -35,6 +34,8 @@ const threadInit = async () => {
                 root: e.data.localURL,
             });
             removeEventListener("message", EvalInit);
+            dispatchEvent(new Event("__rollup_init__"));
+            console.log("iframe 初始化完成");
         }
     };
     addEventListener("message", EvalInit);
@@ -51,8 +52,11 @@ export class IframeEnv {
         port: MessagePort;
     }) {
         const frame = new IframeBox();
-        frame.src = await this.createSrc(src);
+        frame.src = await this.createSrc(src, true);
+
+        frame.sandbox += " allow-same-origin";
         container.appendChild(frame);
+
         return frame.ready
             .then((api: any) => {
                 return api.runCode(`(${threadInit.toString()})()`);
@@ -83,9 +87,22 @@ export class IframeEnv {
             .use(() => (tree) => {
                 visit(tree, ["element"], (node: any) => {
                     const {
+                        tagName,
                         properties: { src, href },
                     } = node;
-
+                    if (tagName === "script" && src) {
+                        node.children = [
+                            {
+                                type: "text",
+                                value: `addEventListener('__rollup_init__',()=>globalThis.__Rollup_Env__.evaluate("${URLResolve(
+                                    src,
+                                    baseURL
+                                )}"))`,
+                            },
+                        ];
+                        node.properties.src = false;
+                        return;
+                    }
                     if (typeof src === "string")
                         node.properties.src = URLResolve(src, baseURL);
                     if (typeof href === "string")
@@ -96,6 +113,7 @@ export class IframeEnv {
         const InitScript = `<script src="${Setting.NPM(
             "@konghayao/iframe-box/dist/iframeCallback.umd.js"
         )}"></script>`;
+        console.log(file.value);
         return URL.createObjectURL(
             new File([file.value, InitScript], "a.html", { type: "text/html" })
         );

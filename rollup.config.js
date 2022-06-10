@@ -29,6 +29,30 @@ export default [
         ],
     },
     {
+        external: [
+            "process-bundle",
+            "comlink",
+            "https://fastly.jsdelivr.net/npm/rollup-web@3.7.6/dist/index.js",
+            "rehype",
+            "unist-util-visit",
+            "@konghayao/iframe-box",
+        ],
+        input: "./src/Iframe.ts",
+        output: {
+            file: "./dist/Iframe.js",
+            format: "es",
+            paths: paths,
+        },
+        plugins: [
+            ...plugins,
+
+            analyze({
+                summaryOnly: true,
+                writeTo: (str) => writeFileSync("dist/Iframe.analyze.txt", str),
+            }),
+        ],
+    },
+    {
         external: ["process-bundle", "comlink"],
         input: "./src/Evaluator.ts",
         output: {
