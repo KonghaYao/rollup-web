@@ -95,7 +95,8 @@ const _web_module = ({
                         );
                     }
 
-                    for (let ext of extensions) {
+                    //! 添加一个 空白字符的检测，可能空白字符就找到了，所以可以解析
+                    for (let ext of ["", ...extensions]) {
                         const result = await isExist(addExtension(url, ext));
                         if (result) {
                             this.cache.set(url, result);
@@ -122,7 +123,7 @@ const _web_module = ({
             }
             return;
         },
-        // wrapPlugin 进行了一层过滤
+        // 取消 wrapPlugin 的 load 封装，只要是落到 这里的 url 都将会被 load
         async load(id: string) {
             try {
                 const code = await fetch(id, { cache: "force-cache" }).then(
@@ -143,6 +144,10 @@ const _web_module = ({
     } as Plugin;
 };
 /** 将相对路径解析到 web 地址的解析器，一般用于打包在线模块 */
-export const web_module = wrapPlugin(_web_module, {
-    extensions: [".js"],
-});
+export const web_module = wrapPlugin(
+    _web_module,
+    {
+        extensions: [".js"],
+    },
+    { load: false }
+);

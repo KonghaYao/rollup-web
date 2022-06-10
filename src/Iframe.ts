@@ -33,8 +33,6 @@ const threadInit = async () => {
                 Compiler: wrap(e.data.port),
                 worker: "module",
                 root: e.data.localURL,
-            }).then(() => {
-                EvalCode(e.data.localURL);
             });
             removeEventListener("message", EvalInit);
         }
@@ -60,6 +58,7 @@ export class IframeEnv {
                 return api.runCode(`(${threadInit.toString()})()`);
             })
             .then(() => {
+                // Evaluator 初始化
                 (
                     (frame as any).frame as HTMLIFrameElement
                 ).contentWindow!.postMessage(
@@ -69,11 +68,11 @@ export class IframeEnv {
                         port,
                     },
                     "*",
-                    []
+                    [port]
                 );
             });
     }
-    InitEnv() {}
+    /* 创建 HTML 地址 */
     async createSrc(baseURL = location.href, remote = false) {
         const { rehype } = await import("rehype");
         const { visit } = await import("unist-util-visit");

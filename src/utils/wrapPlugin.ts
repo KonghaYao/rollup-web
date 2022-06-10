@@ -38,7 +38,13 @@ interface ExtraOptions {
 /** 对于插件的简单封装 */
 export const wrapPlugin = <T>(
     creator: (options: T) => Plugin,
-    defaultOptions: Partial<T & ExtraOptions>
+    defaultOptions: Partial<T & ExtraOptions>,
+    wrapOptions?: {
+        // 默认是 true
+        load?: boolean;
+        resolveId?: boolean;
+        transform?: boolean;
+    }
 ) => {
     return function (Options: T & ExtraOptions) {
         Options = Object.assign({}, defaultOptions, Options);
@@ -50,13 +56,13 @@ export const wrapPlugin = <T>(
         const filter = createFilter(Options.include, Options.exclude, {
             resolve: "/",
         });
-        if (origin.resolveId) {
+        if (wrapOptions?.resolveId !== false && origin.resolveId) {
             p.resolveId = WrapResolveId<T>(filter, origin, Options);
         }
-        if (origin.load) {
+        if (wrapOptions?.load !== false && origin.load) {
             p.load = WrapLoad<T>(filter, Options, origin);
         }
-        if (origin.transform) {
+        if (wrapOptions?.transform !== false && origin.transform) {
             p.transform = function (code, id) {
                 // 所有文件都是load 过来的，所以文件都是有 http 开头的 id
                 // transform 对于没有后缀名的进行
@@ -74,6 +80,7 @@ export const wrapPlugin = <T>(
     };
 };
 
+/* ResolveId 的 */
 function WrapResolveId<T>(
     filter: (id: unknown) => boolean,
     origin: Plugin,
@@ -105,6 +112,7 @@ function WrapLoad<T>(
         if (!isURLString(id) && !filter(id)) return;
 
         //! 前缀和后缀有一个符合即可
+        // vue3 使用 suffix 进行检测
         if (
             Options._prefix &&
             Options._prefix.length &&

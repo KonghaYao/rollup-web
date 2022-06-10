@@ -78,15 +78,7 @@ export class Compiler {
         importTool?: ImportTool
     ): Promise<T | void> {
         console.group("Bundling Code ", path);
-        let System = useGlobal<any>("System");
-        if (!System)
-            await Setting.loadSystemJS().then(() => {
-                if (this.moduleConfig.autoBuildFetchHook ?? true)
-                    fetchHook(this.moduleCache, this.moduleConfig, () => {
-                        return this.CompileSingleFile.bind(this);
-                    });
-            });
-        System = useGlobal<any>("System");
+
         const url = URLResolve(path, this.moduleConfig.root!);
 
         const isExist = this.moduleCache.hasData(url);
@@ -103,6 +95,15 @@ export class Compiler {
             console.groupEnd();
             return;
         } else {
+            let System = useGlobal<any>("System");
+            if (!System)
+                await Setting.loadSystemJS().then(() => {
+                    if (this.moduleConfig.autoBuildFetchHook ?? true)
+                        fetchHook(this.moduleCache, this.moduleConfig, () => {
+                            return this.CompileSingleFile.bind(this);
+                        });
+                });
+            System = useGlobal<any>("System");
             const result: T = System.import(url);
             console.groupEnd();
             return result;

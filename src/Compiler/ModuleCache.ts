@@ -2,7 +2,7 @@ import { useGlobal } from "../utils/useGlobal";
 import { isMatch } from "picomatch";
 import { Setting } from "../Setting";
 
-/** 模块缓存类，被打包的代码将不会被更新 */
+/** 模块缓存类，被打包的代码将不会被再次打包 */
 export class ModuleCache<T extends string, E> extends Map<T, E> {
     set(key: T, value: E): this {
         // 写入缓存不需要进行忽略
