@@ -3,7 +3,7 @@ lockfileVersion: 5.4
 specifiers:
   '@babel/core': ^7.17.9
   '@babel/preset-typescript': ^7.16.7
-  '@konghayao/iframe-box': ^0.0.1
+  '@konghayao/iframe-box': ^0.0.3
   '@mdx-js/mdx': ^2.1.1
   '@rollup/plugin-babel': ^5.3.1
   '@rollup/plugin-commonjs': 21.1.0
@@ -51,7 +51,7 @@ specifiers:
   yaml: ^2.0.1
 
 dependencies:
-  '@konghayao/iframe-box': 0.0.1
+  '@konghayao/iframe-box': 0.0.3
   '@mdx-js/mdx': 2.1.1
   '@rollup/plugin-babel': 5.3.1_tdv6xmyjufxrs36xvlgrh4mhge
   '@rollup/plugin-commonjs': 21.1.0_rollup@2.63.0
@@ -406,8 +406,8 @@ packages:
       '@jridgewell/sourcemap-codec': 1.4.11
     dev: true
 
-  /@konghayao/iframe-box/0.0.1:
-    resolution: {integrity: sha512-PLKH1ymOOsK2pCMd/VfVi9UNSrEB0Xl5KEMZgG57pQEyuIt8v0vezDAYHwEKF6aK+IdvpoJMLGK57MMgaIS+2g==}
+  /@konghayao/iframe-box/0.0.3:
+    resolution: {integrity: sha512-V5N3gHX80iFsmPW8H4x22EurD5QE8a8/S7AEQUe9eDokGE3xwJI68WOA+/4SGc406V3OzFXbx883q/G6BJc27A==}
     dependencies:
       comlink: 4.3.1
       lit: 2.2.5

@@ -10,10 +10,10 @@ const worker = await createWorker("./test/runtime/worker/compilerWorker.js", {
     type: "module",
 });
 const compiler = wrap(worker);
-
+const port = await compiler[createEndpoint]();
 const ifr = new IframeEnv();
 await ifr.mount({
     src: "http://localhost:8888/package/rollup-web/public/iframe/index.html",
-    port: compiler[createEndpoint](),
+    port,
 });
 export const module = null;

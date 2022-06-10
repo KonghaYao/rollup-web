@@ -23,7 +23,7 @@ export const paths = {
     rehype: "https://cdn.skypack.dev/rehype",
     "unist-util-visit": "https://cdn.skypack.dev/unist-util-visit",
     "@konghayao/iframe-box":
-        "https://cdn.skypack.dev/@konghayao/iframe-box/dist/iframe-box.es.js",
+        "https://cdn.skypack.dev/@konghayao/iframe-box@0.0.3/dist/iframe-box.es.js",
 
     assert: "https://cdn.skypack.dev/assert",
     "url-bundle": "https://cdn.skypack.dev/url",

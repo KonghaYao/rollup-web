@@ -57,24 +57,19 @@ export class IframeEnv {
         frame.sandbox += " allow-same-origin";
         container.appendChild(frame);
 
-        return frame.ready
-            .then((api: any) => {
-                return api.runCode(`(${threadInit.toString()})()`);
-            })
-            .then(() => {
-                // Evaluator 初始化
-                (
-                    (frame as any).frame as HTMLIFrameElement
-                ).contentWindow!.postMessage(
-                    {
-                        password: "__rollup_init__",
-                        localURL: src,
-                        port,
-                    },
-                    "*",
-                    [port]
-                );
-            });
+        return frame.ready.then(() => {
+            console.log("binding Port", port);
+            // Evaluator 初始化
+            frame.frame.contentWindow!.postMessage(
+                {
+                    password: "__rollup_init__",
+                    localURL: src,
+                    port,
+                },
+                "*",
+                [port]
+            );
+        });
     }
     /* 创建 HTML 地址 */
     async createSrc(baseURL = location.href, remote = false) {
@@ -90,7 +85,37 @@ export class IframeEnv {
                         tagName,
                         properties: { src, href },
                     } = node;
-                    if (tagName === "script" && src) {
+                    if (tagName === "head") {
+                        node.children.unshift(
+                            {
+                                type: "element",
+                                tagName: "script",
+                                properties: {
+                                    src: Setting.NPM(
+                                        "@konghayao/iframe-box/dist/iframeCallback.umd.js"
+                                    ),
+                                    ignore: true,
+                                },
+                            },
+                            {
+                                type: "element",
+                                tagName: "script",
+                                properties: {},
+                                children: [
+                                    {
+                                        type: "text",
+                                        value: `(${threadInit.toString()})()`,
+                                    },
+                                ],
+                            }
+                        );
+                        return;
+                    }
+                    if (
+                        tagName === "script" &&
+                        src &&
+                        !node.properties.ignore
+                    ) {
                         node.children = [
                             {
                                 type: "text",
@@ -110,12 +135,9 @@ export class IframeEnv {
                 });
             })
             .process(html);
-        const InitScript = `<script src="${Setting.NPM(
-            "@konghayao/iframe-box/dist/iframeCallback.umd.js"
-        )}"></script>`;
         console.log(file.value);
         return URL.createObjectURL(
-            new File([file.value, InitScript], "a.html", { type: "text/html" })
+            new File([file.value], "a.html", { type: "text/html" })
         );
     }
 }
