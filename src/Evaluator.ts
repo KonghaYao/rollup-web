@@ -64,7 +64,7 @@ export class Evaluator {
             }
         }
 
-        // 辅助 worker 进行一个操作
+        // 辅助 worker 插件进行 worker 与 Compiler 线程沟通
         setGlobal("__create_compiler_port__", () => {
             return this.createCompilerPort();
         });
@@ -80,7 +80,7 @@ export class Evaluator {
         );
         resolveHook();
     }
-    /*  创建一个端口给其他的线程使用 */
+    /*  创建一个端口通向 Compiler 线程的端口给其他的线程使用 */
     async createCompilerPort(): Promise<MessagePort> {
         if ((this.Compiler as Remote<Compiler>)[createEndpoint]) {
             return (this.Compiler as Remote<Compiler>)[createEndpoint]();
