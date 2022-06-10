@@ -18,7 +18,7 @@ const threadInit = async () => {
     /* @ts-ignore */
     const { wrap } = await import("comlink");
     const Eval = new Evaluator();
-    (globalThis as any).__Rollup_Env__ === Eval;
+    (globalThis as any).__Rollup_Env__ = Eval;
     const EvalCode = (url: string) => Eval.evaluate(url);
     addEventListener("message", (e) => {
         if (e.data && e.data.password === "__rollup_evaluate__" && e.data.url) {
@@ -32,13 +32,15 @@ const threadInit = async () => {
                 Compiler: wrap(e.data.port),
                 worker: "module",
                 root: e.data.localURL,
+            }).then(() => {
+                removeEventListener("message", EvalInit);
+                dispatchEvent(new Event("__rollup_init__"));
+                console.log("iframe 初始化完成");
             });
-            removeEventListener("message", EvalInit);
-            dispatchEvent(new Event("__rollup_init__"));
-            console.log("iframe 初始化完成");
         }
     };
     addEventListener("message", EvalInit);
+    dispatchEvent(new Event("__rollup_ready__"));
 };
 
 export class IframeEnv {
@@ -60,14 +62,19 @@ export class IframeEnv {
         return frame.ready.then(() => {
             console.log("binding Port", port);
             // Evaluator 初始化
-            frame.frame.contentWindow!.postMessage(
-                {
-                    password: "__rollup_init__",
-                    localURL: src,
-                    port,
-                },
-                "*",
-                [port]
+            frame.frame.contentWindow!.addEventListener(
+                "__rollup_ready__",
+                () => {
+                    frame.frame.contentWindow!.postMessage(
+                        {
+                            password: "__rollup_init__",
+                            localURL: src,
+                            port,
+                        },
+                        "*",
+                        [port]
+                    );
+                }
             );
         });
     }
@@ -100,7 +107,9 @@ export class IframeEnv {
                             {
                                 type: "element",
                                 tagName: "script",
-                                properties: {},
+                                properties: {
+                                    type: "module",
+                                },
                                 children: [
                                     {
                                         type: "text",
