@@ -3,7 +3,7 @@ import { fetchHook } from "./Compiler/fetchHook";
 import { setGlobal, useGlobal } from "./utils/useGlobal";
 import { Setting } from "./Setting";
 import { ModuleWorkerInit } from "./Evaluator/systemWorker";
-import { createEndpoint, expose, proxy, Remote } from "comlink";
+import { createEndpoint, expose, proxy, Remote, releaseProxy } from "comlink";
 import { resolveHook } from "./Compiler/resolveHook";
 import { log } from "./utils/ColorConsole";
 import { isInWorker } from "./utils/createWorker";
@@ -21,6 +21,15 @@ export class Evaluator {
             throw new Error(
                 "This Environment had been already Hold by a Evaluator"
             );
+    }
+    destroyed = false;
+    /* 销毁执行环境 */
+    destroy() {
+        /* @ts-ignore */
+        if (this.Compiler[releaseProxy]) this.Compiler[releaseProxy]();
+        /* @ts-ignore */
+        delete this.Compiler;
+        this.destroyed = true;
     }
 
     async createEnv({
@@ -54,7 +63,6 @@ export class Evaluator {
 
         // 在 worker 中需要对 systemjs 初始化进行一些处理
         // worker 表示执行环境在 worker 中,默认情况下不需要填写 worker，但是避免错误，可以强制填写
-
         if (worker) this.isWorker = worker;
         if (this.isWorker) {
             switch (this.isWorker) {

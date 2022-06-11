@@ -37,6 +37,9 @@ const threadInit = async () => {
     };
     addEventListener("message", EvalInit);
     dispatchEvent(new Event("__rollup_ready__"));
+    addEventListener("beforeunload", () => {
+        Eval.destroy();
+    });
 };
 
 export class IframeEnv {
@@ -50,7 +53,7 @@ export class IframeEnv {
         port: MessagePort;
     }) {
         const frame = new IframeBox();
-        const [srcUrl, scripts] = await this.createSrc(src, true);
+        const srcUrl = await this.createSrc(src, true);
         frame.src = srcUrl;
         frame.sandbox += " allow-same-origin";
         container.appendChild(frame);
@@ -75,20 +78,14 @@ export class IframeEnv {
             );
         });
     }
-    /* 创建 HTML 地址 */
+    /* 重写 iframe 内部的 HTML */
     async createSrc(baseURL = location.href, remote = false) {
         const { rehype } = await import("rehype");
         const { visit } = await import("unist-util-visit");
         const html = remote
             ? await fetch(baseURL).then((res) => res.text())
             : template;
-        let scripts = [] as {
-            type: "comment";
-            properties: {
-                src: string;
-                [key: string]: any;
-            };
-        }[];
+
         const file = await rehype()
             .use(() => (tree) => {
                 visit(tree, ["element"], (node) => {
@@ -123,9 +120,6 @@ export class IframeEnv {
                             },
                         ];
                         node.properties!.src = false;
-
-                        /* @ts-ignore */
-                        scripts.push(node);
                         return;
                     }
                     if (typeof src === "string")
@@ -135,12 +129,9 @@ export class IframeEnv {
                 });
             })
             .process(html);
-        console.log(file.value);
-        return [
-            URL.createObjectURL(
-                new File([file.value], "index.html", { type: "text/html" })
-            ),
-            scripts,
-        ] as const;
+        // console.log(file.value);
+        return URL.createObjectURL(
+            new File([file.value], "index.html", { type: "text/html" })
+        );
     }
 }

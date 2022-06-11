@@ -2,7 +2,7 @@ import { Plugin, PluginCache } from "rollup-web";
 import { checkExtension, wrapPlugin } from "../utils/wrapPlugin";
 import type { APIOptions } from "assemblyscript/dist/asc";
 import merge from "lodash-es/merge";
-import { bareURL, URLDir, URLResolve } from "../utils/isURLString";
+import { URLDir, URLResolve } from "../utils/isURLString";
 import { log as Log } from "../utils/ColorConsole";
 const paths = {
     imports: {
