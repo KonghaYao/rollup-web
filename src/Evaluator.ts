@@ -46,8 +46,10 @@ export class Evaluator {
         root?: string;
     }) {
         this.Compiler = Compiler;
-
         if (root) this.root = root;
+
+        // 注入全局的地址
+        globalThis.__Rollup_baseURL__ = this.root;
         this.moduleConfig = JSON.parse(await Compiler.getModuleConfig());
 
         let system = useGlobal<any>("System");

@@ -5,6 +5,7 @@ declare module "https://*" {
 declare module "rollup-web" {
     export * from "rollup";
 }
+declare var __Rollup_baseURL__!: string;
 
 declare module "url-resolve-browser" {
     import { resolve } from "path-browserify";
