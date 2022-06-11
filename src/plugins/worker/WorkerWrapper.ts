@@ -1,3 +1,4 @@
+import { wrapper } from "../../iframe/wrapper";
 import { Setting } from "../../Setting";
 import { createLocalModule } from "../../utils/ModuleEval";
 
@@ -53,6 +54,7 @@ export const WorkerWrapper = (initUrl: string) => {
     url.searchParams.delete("worker");
     // 这个代码将会在 Compiler 线程执行
     return `
+    ${wrapper(initUrl)}
     const info = {
         url:${JSON.stringify({
             classic: classicWorkerURL,

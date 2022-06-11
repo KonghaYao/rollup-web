@@ -2,6 +2,7 @@ import { IframeBox } from "@konghayao/iframe-box";
 import { Setting } from "./Setting";
 import { threadInit } from "./iframe/threadInit";
 import { URLResolve } from "./utils/isURLString";
+import { wrapper } from "./iframe/wrapper";
 const template = `<!DOCTYPE html>
 <html lang="en">
     <head>
@@ -28,7 +29,8 @@ export class IframeEnv {
         container.appendChild(frame);
 
         return frame.ready.then(async (api) => {
-            await api.runCode(`(${threadInit.toString()})()`);
+            await api.runCode(`${wrapper(src)}
+            (${threadInit.toString()})();`);
             // Evaluator 初始化
             frame.frame.contentWindow!.addEventListener(
                 "__rollup_ready__",

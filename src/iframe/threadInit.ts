@@ -29,23 +29,3 @@ export const threadInit = async () => {
         Eval.destroy();
     });
 };
-
-/* 用来包裹全局的 URL 对象，保证对象解析为 sandbox 正确的地址 */
-export const wrapURL = () => {
-    const baseURL = globalThis.__Rollup_baseURL__;
-    const URL = globalThis.URL;
-    globalThis.URL = Object.assign(function (url: string, _baseURL?: string) {
-        if (_baseURL) {
-            return new URL(url, _baseURL);
-        }
-        return new URL(url, baseURL);
-    }, URL);
-};
-
-export const wrapFetch = () => {
-    const baseURL = globalThis.__Rollup_baseURL__;
-    const realFetch = globalThis.fetch;
-    globalThis.fetch = function (url, options) {
-        return realFetch(url, options);
-    } as typeof globalThis.fetch;
-};
