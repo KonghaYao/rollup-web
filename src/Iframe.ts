@@ -73,16 +73,6 @@ export class IframeEnv {
                 },
                 { once: true }
             );
-            frame.frame.contentWindow!.addEventListener(
-                "__rollup_init__",
-                () => {
-                    scripts.forEach((i) => {
-                        console.log(i);
-                        api.loadScript(i.properties.src, i.properties);
-                    });
-                },
-                { once: true }
-            );
         });
     }
     /* 创建 HTML 地址 */
@@ -111,7 +101,7 @@ export class IframeEnv {
                             tagName: "script",
                             properties: {
                                 src: Setting.NPM(
-                                    "@konghayao/iframe-box/dist/iframeCallback.umd.js"
+                                    "@konghayao/iframe-box@0.0.5/dist/iframeCallback.umd.js"
                                 ),
                                 ignore: true,
                             },
@@ -123,12 +113,17 @@ export class IframeEnv {
                         src &&
                         !node.properties!.ignore
                     ) {
-                        node.properties!.src = URLResolve(
-                            src as string,
-                            baseURL
-                        );
-                        // 直接注释掉这个代码
-                        Object.assign(node, { type: "comment", value: "" });
+                        node.children = [
+                            {
+                                type: "text",
+                                value: `addEventListener('__rollup_init__',()=>globalThis.__Rollup_Env__.evaluate("${URLResolve(
+                                    src as string,
+                                    baseURL
+                                )}"))`,
+                            },
+                        ];
+                        node.properties!.src = false;
+
                         /* @ts-ignore */
                         scripts.push(node);
                         return;
