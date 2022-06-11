@@ -1,4 +1,4 @@
-import { Evaluator, createWorker } from "../../dist/index.js";
+import { createWorker } from "../../dist/index.js";
 import { IframeEnv } from "../../dist/Iframe.js";
 import {
     wrap,

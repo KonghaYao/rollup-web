@@ -1,6 +1,7 @@
-import { wrapper } from "../../iframe/wrapper";
-import { Setting } from "../../Setting";
-import { createLocalModule } from "../../utils/ModuleEval";
+import { transfer, wrap } from "comlink";
+import { createModule } from "../../utils/ModuleEval";
+import { ClassicInit } from "./worker.classic";
+import { ModuleInit } from "./worker.module";
 
 // 专用线程的接洽代码
 
@@ -10,15 +11,12 @@ const WorkerWrapperCode = function (options?: WorkerOptions) {
     const { url, port, initUrl } = info;
     const worker = new Worker(url[options?.type || "classic"], options);
 
+    const api = wrap<{
+        init(port: MessagePort, initUrl: string): void;
+    }>(worker);
+
     port.then((port: MessagePort) => {
-        worker.postMessage(
-            {
-                password: "__rollup_init__",
-                port: port,
-                localURL: initUrl,
-            },
-            [port]
-        );
+        api.init(transfer(port, [port]), initUrl);
     });
 
     worker.addEventListener("error", (e) => {
@@ -29,21 +27,13 @@ const WorkerWrapperCode = function (options?: WorkerOptions) {
 
 // 使用了线上版本的 worker 辅助
 /* false 时为 dev 状态 */
-const isOnline = true;
-const moduleWorkerURL = await createLocalModule(
-    isOnline
-        ? Setting.NPM(
-              `/rollup-web@${Setting.workerVersion}/src/plugins/worker/worker.module.js`
-          )
-        : "/package/rollup-web/src/plugins/worker/worker.module.js",
+const moduleWorkerURL = createModule(
+    `(${ModuleInit.toString()})();`,
     "worker.module.js"
 );
-const classicWorkerURL = await createLocalModule(
-    isOnline
-        ? Setting.NPM(
-              `/rollup-web@${Setting.workerVersion}/src/plugins/worker/worker.classic.js`
-          )
-        : "/package/rollup-web/src/plugins/worker/worker.classic.js",
+
+const classicWorkerURL = createModule(
+    `(${ClassicInit.toString()})();`,
     "worker.classic.js"
 );
 
