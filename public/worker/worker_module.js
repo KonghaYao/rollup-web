@@ -9,4 +9,5 @@ worker.addEventListener("message", (e) => {
 worker.addEventListener("error", (e) => {
     console.error(e);
 });
+
 console.log(" Module Worker Init");
