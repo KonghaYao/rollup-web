@@ -48,7 +48,7 @@
         "yaml": "^2.0.1"
     },
     "dependencies": {
-        "@konghayao/iframe-box": "^0.0.3",
+        "@konghayao/iframe-box": "^0.0.5",
         "@mdx-js/mdx": "^2.1.1",
         "@rollup/plugin-babel": "^5.3.1",
         "@rollup/plugin-commonjs": "21.1.0",

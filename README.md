@@ -18,9 +18,9 @@ We already create some website bundling just in browser!
     - [x] Dynamic Import
     - [x] Compiler Worker and Environment Worker
     - [x] Plugin Loader (dynamic import plugin easier)
+    - [ ] Iframe Sandbox (Coming soon)
     - [ ] Config File Loader
     - [ ] Unified Cache System
-    - [ ] Iframe Sandbox
 
 2. Plugin Provide
     1. Vanilla JS and TS Part
