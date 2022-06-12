@@ -6,8 +6,8 @@ describe("Web Worker 测试", () => {
         const moduleExport = module();
         console.log(moduleExport);
     });
-    // it("classic: 基础编译", async () => {
-    //     const classicExport = await classic();
-    //     console.log(classicExport);
-    // });
+    it("classic: 基础编译", async () => {
+        const classicExport = await classic();
+        console.log(classicExport);
+    });
 });

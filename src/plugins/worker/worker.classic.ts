@@ -1,6 +1,7 @@
 import { expose, proxy } from "comlink";
 import { createModule } from "../../utils/ModuleEval";
 import type { Evaluator } from "../../Evaluator";
+import { Setting } from "../../Setting";
 
 // 这里引用了 CDN 进行加载
 const ClassicInit = () => {
@@ -11,7 +12,7 @@ const ClassicInit = () => {
     importScripts("https://unpkg.com/comlink/dist/umd/comlink.js");
     // importScripts("http://localhost:8888/package/rollup-web/dist/Evaluator.umd.js");
     importScripts(
-        "https://fastly.jsdelivr.net/npm/rollup-web@3.7.8/dist/Evaluator.umd.js"
+        "https://fastly.jsdelivr.net/npm/rollup-web@$version$/dist/Evaluator.umd.js"
     );
     /* @ts-ignore */
     const { Comlink, Evaluator: EvaluatorModule } = globalThis;
@@ -89,6 +90,6 @@ const ClassicInit = () => {
 export const classicWorkerURL = createModule(
     `
     
-    (${ClassicInit.toString()})()`,
+    (${ClassicInit.toString().replace("$version$", Setting.workerVersion)})()`,
     "worker.classic.js"
 );

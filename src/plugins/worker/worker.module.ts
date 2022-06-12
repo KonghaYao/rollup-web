@@ -33,7 +33,7 @@ export const moduleWorkerURL = createModule(
     // 使用这样的方式使得线程同步加载
     `import {wrap} from '${Setting.NPM("comlink/dist/esm/comlink.mjs")}';
     import { Evaluator } from '${Setting.NPM(
-        "rollup-web@3.7.8/dist/index.js"
+        `rollup-web@${Setting.workerVersion}/dist/index.js`
     )}';
     (${ModuleInit.toString()})();`,
     "worker.module.js"
