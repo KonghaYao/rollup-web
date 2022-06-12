@@ -1,6 +1,4 @@
-import { Setting } from "../../Setting";
-import { createModule } from "../../utils/ModuleEval";
-import { ClassicInit } from "./worker.classic";
+import { classicWorkerURL } from "./worker.classic";
 import { moduleWorkerURL } from "./worker.module";
 
 // 专用线程的接洽代码
@@ -25,11 +23,6 @@ const WorkerWrapperCode = function (options?: WorkerOptions) {
     });
     return worker;
 };
-
-const classicWorkerURL = createModule(
-    `(${ClassicInit.toString()})();`,
-    "worker.classic.js"
-);
 
 /* 转化代码为一段包含 Worker 生成的 封装代码 */
 export const WorkerWrapper = (initUrl: string) => {

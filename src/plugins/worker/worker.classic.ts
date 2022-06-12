@@ -1,15 +1,16 @@
 import { expose, proxy } from "comlink";
+import { createModule } from "../../utils/ModuleEval";
 import type { Evaluator } from "../../Evaluator";
 
 // 这里引用了 CDN 进行加载
-export const ClassicInit = async () => {
+const ClassicInit = () => {
     const importScripts = (globalThis as any).importScripts;
     /* @ts-ignore */
     globalThis.module = {};
-    await importScripts("https://fastly.jsdelivr.net/npm/process/browser.js");
-    await importScripts("https://unpkg.com/comlink/dist/umd/comlink.js");
-    //await importScripts("http://localhost:8888/package/rollup-web/dist/Evaluator.umd.js");
-    await importScripts(
+    importScripts("https://fastly.jsdelivr.net/npm/process/browser.js");
+    importScripts("https://unpkg.com/comlink/dist/umd/comlink.js");
+    // importScripts("http://localhost:8888/package/rollup-web/dist/Evaluator.umd.js");
+    importScripts(
         "https://fastly.jsdelivr.net/npm/rollup-web@3.7.6/dist/Evaluator.umd.js"
     );
     /* @ts-ignore */
@@ -21,7 +22,6 @@ export const ClassicInit = async () => {
     delete globalThis.Comlink;
     /* @ts-ignore */
     delete globalThis.Evaluator;
-
     async function fakeImport(url: string) {
         const System = (globalThis as any).System;
         return System.fetch(url)
@@ -34,7 +34,12 @@ export const ClassicInit = async () => {
                     .replace("execute: (function", "execute: (async function")
                     .replace(/^\s*importScripts/gm, "await importScripts");
 
-                return code;
+                const url = URL.createObjectURL(
+                    new File([code], "index.js", { type: "text/javascript" })
+                );
+                (globalThis as any).__importScripts(url);
+                URL.revokeObjectURL(url);
+                return;
             });
     }
     function SystemInit(localURL: string) {
@@ -57,33 +62,31 @@ export const ClassicInit = async () => {
             });
         };
     }
-    let port: MessagePort;
+
     addEventListener(
         "message",
-        (e) => {
-            port = e.data;
+        async (e) => {
+            // ! 在内部进行了 import comlink 和 Evaluator
+            const { port: CompilerPort, localURL } = e.data;
             let Eval: Evaluator;
-            expose(
-                {
-                    async init(CompilerPort: MessagePort, localURL: string) {
-                        Eval = new Evaluator();
-                        await Eval.createEnv({
-                            Compiler: wrap(CompilerPort) as any,
-                            worker: "module",
-                            root: localURL,
-                        })
-                            .then(() => SystemInit(localURL))
-                            .then(() => {
-                                this.evaluate(localURL);
-                            });
-                    },
-                    evaluate(url: string) {
-                        return proxy(Eval.evaluate(url));
-                    },
-                },
-                port
-            );
+            Eval = new Evaluator();
+            await Eval.createEnv({
+                Compiler: wrap(CompilerPort) as any,
+                worker: "module",
+                root: localURL,
+            })
+                .then(() => SystemInit(localURL))
+                .then(async () => {
+                    await Eval.evaluate(localURL);
+                    console.log("worker 初始化完成");
+                });
         },
         { once: true }
     );
 };
+// console.log(ClassicInit.toString().replace(/^\(\)\s=>\s{([\s\S]+)}/, "$1"));
+export const classicWorkerURL = createModule(
+    `
+    (${ClassicInit.toString()})()`,
+    "worker.classic.js"
+);

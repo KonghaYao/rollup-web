@@ -4,10 +4,10 @@ const worker = new ClassicWorker({
     type: "classic",
 });
 
-worker.addEventListener("error", (e) => {
-    console.error(e);
-});
 worker.addEventListener("message", (e) => {
     console.warn(e.data);
+});
+worker.addEventListener("error", (e) => {
+    console.error(e);
 });
 console.log(" Classic Worker Init");
