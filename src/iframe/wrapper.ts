@@ -50,7 +50,7 @@ export const wrapFetch = function (baseURL: string) {
         }
         return realFetch(url, options);
     } as typeof globalThis.fetch;
-    globalThis.fetch.toString = realFetch.toString;
+    globalThis.fetch.toString = () => "function fetch() { [native code] }";
 };
 
 export const wrapXHR = function (baseURL: string) {
@@ -75,5 +75,6 @@ export const wrapXHR = function (baseURL: string) {
         }
         return Open.call(this, method, url, async, username, password);
     } as typeof globalThis.XMLHttpRequest.prototype.open;
-    globalThis.XMLHttpRequest.prototype.open.toString = Open.toString;
+    globalThis.XMLHttpRequest.prototype.open.toString = () =>
+        "function open() { [native code] }";
 };

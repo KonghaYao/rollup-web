@@ -17,10 +17,11 @@ const ModuleInit = () => {
                 Compiler: wrap(CompilerPort) as any,
                 worker: "module",
                 root: localURL,
+                wrap: true,
             }).then(async () => {
                 await Eval.evaluate(localURL);
+                console.log("worker 初始化完成");
             });
-            console.log("worker 初始化完成");
         },
         { once: true }
     );
@@ -30,7 +31,7 @@ const ModuleInit = () => {
 /* false 时为 dev 状态 */
 export const moduleWorkerURL = createModule(
     // 使用这样的方式使得线程同步加载
-    `import {wrap,expose} from '${Setting.NPM("comlink/dist/esm/comlink.mjs")}';
+    `import {wrap} from '${Setting.NPM("comlink/dist/esm/comlink.mjs")}';
     import { Evaluator } from '${Setting.NPM(
         "rollup-web@3.7.8/dist/index.js"
     )}';
