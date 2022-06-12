@@ -11,7 +11,7 @@ const ClassicInit = () => {
     importScripts("https://unpkg.com/comlink/dist/umd/comlink.js");
     // importScripts("http://localhost:8888/package/rollup-web/dist/Evaluator.umd.js");
     importScripts(
-        "https://fastly.jsdelivr.net/npm/rollup-web@3.7.6/dist/Evaluator.umd.js"
+        "https://fastly.jsdelivr.net/npm/rollup-web@3.7.8/dist/Evaluator.umd.js"
     );
     /* @ts-ignore */
     const { Comlink, Evaluator: EvaluatorModule } = globalThis;
@@ -74,6 +74,7 @@ const ClassicInit = () => {
                 Compiler: wrap(CompilerPort) as any,
                 worker: "module",
                 root: localURL,
+                wrap: true,
             })
                 .then(() => SystemInit(localURL))
                 .then(async () => {
@@ -87,6 +88,7 @@ const ClassicInit = () => {
 // console.log(ClassicInit.toString().replace(/^\(\)\s=>\s{([\s\S]+)}/, "$1"));
 export const classicWorkerURL = createModule(
     `
+    
     (${ClassicInit.toString()})()`,
     "worker.classic.js"
 );

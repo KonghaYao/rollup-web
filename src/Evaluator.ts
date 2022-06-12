@@ -8,6 +8,7 @@ import { resolveHook } from "./Compiler/resolveHook";
 import { log } from "./utils/ColorConsole";
 import { isInWorker } from "./utils/createWorker";
 import { URLResolve } from "./utils/isURLString";
+import { wrapAll } from "./iframe/wrapper";
 
 /** 一个单独的 Compiler 执行环境, 专门用于 适配 执行 的环境 */
 export class Evaluator {
@@ -36,6 +37,7 @@ export class Evaluator {
         Compiler,
         worker,
         root,
+        wrap = false,
     }: {
         Compiler: Compiler;
 
@@ -44,6 +46,7 @@ export class Evaluator {
          */
         worker?: "module" | "classic";
         root?: string;
+        wrap?: boolean;
     }) {
         this.Compiler = Compiler;
         if (root) this.root = root;
@@ -73,7 +76,9 @@ export class Evaluator {
                     ModuleWorkerInit();
             }
         }
-
+        if (wrap) {
+            wrapAll(this.root);
+        }
         // 辅助 worker 插件进行 worker 与 Compiler 线程沟通
         setGlobal("__create_compiler_port__", () => {
             return this.createCompilerPort();

@@ -8,6 +8,12 @@ export const wrapper = function (baseURL: string) {
     `;
 };
 
+export const wrapAll = function (baseURL: string) {
+    [wrapURL, wrapRequest, wrapFetch, wrapXHR].forEach((i) => {
+        i(baseURL);
+    });
+};
+
 export const wrapURL = function (baseURL: string) {
     const URL = globalThis.URL;
     globalThis.URL = new Proxy(URL, {
