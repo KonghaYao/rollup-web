@@ -4,7 +4,7 @@ import json from "@rollup/plugin-json";
 import { writeFileSync } from "fs";
 import { emptyDir } from "./scripts/emptyDir.js";
 import { plugins } from "./scripts/plugins.js";
-import { npmCDN, paths } from "./scripts/paths.js";
+import { paths } from "./scripts/paths.js";
 
 true && emptyDir("./dist");
 const pluginInput = "*";
@@ -37,6 +37,7 @@ export default [
             "unist-util-visit",
             "@konghayao/iframe-box",
         ],
+        // 生成一个 Iframe 进行使用
         input: "./src/Iframe.ts",
         output: {
             file: "./dist/Iframe.js",
@@ -53,6 +54,7 @@ export default [
         ],
     },
     {
+        // 这是给 worker 使用的 umd 版本的环境
         external: ["process-bundle", "comlink"],
         input: "./src/Evaluator.ts",
         output: {

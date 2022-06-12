@@ -64,6 +64,7 @@ export class IframeEnv {
                     const { tagName, properties = {} } = node;
                     const { src, href } = properties;
                     if (tagName === "head") {
+                        //头部插入沟通函数
                         node.children.unshift({
                             type: "element",
                             tagName: "script",
@@ -76,23 +77,37 @@ export class IframeEnv {
                         } as any);
                         return;
                     }
-                    if (
-                        tagName === "script" &&
-                        src &&
-                        !node.properties!.ignore
-                    ) {
-                        node.children = [
-                            {
-                                type: "text",
-                                value: `addEventListener('__rollup_init__',()=>globalThis.__Rollup_Env__.evaluate("${URLResolve(
-                                    src as string,
-                                    baseURL
-                                )}"))`,
-                            },
-                        ];
-                        node.properties!.src = false;
-                        return;
+                    if (tagName === "script") {
+                        if (src && !node.properties!.ignore) {
+                            // 将 具有 src 地址的 script 转化为延迟函数
+                            node.children = [
+                                {
+                                    type: "text",
+                                    value: `addEventListener('__rollup_init__',()=>globalThis.__Rollup_Env__.evaluate("${URLResolve(
+                                        src as string,
+                                        baseURL
+                                    )}"))`,
+                                },
+                            ];
+                            node.properties!.src = false;
+                            return;
+                        }
+                        if (node.children.length) {
+                            // 将 script 文本 转化为延迟函数
+                            node.children = node.children.map((i) => {
+                                if (i.type === "text") {
+                                    i.value = `addEventListener('__rollup_init__',()=>{
+                                            eval(${i.value})
+                                        })`;
+                                }
+                                return i;
+                            });
+                            node.properties!.src = false;
+                            return;
+                        }
                     }
+
+                    // 如果部分 element 也有 地址，那么相对应地替换掉
                     if (typeof src === "string")
                         node.properties!.src = URLResolve(src, baseURL);
                     if (typeof href === "string")
