@@ -1,38 +1,39 @@
-import { expose, proxy } from "comlink";
+import { createModule } from "../../utils/ModuleEval";
 import type { Evaluator } from "../../Evaluator";
-
-// 这里引用了 CDN 进行加载
-export const ModuleInit = async () => {
-    const { wrap } = await import("comlink");
-    /* @ts-ignore */
-    const { Evaluator } = await import(
-        "https://fastly.jsdelivr.net/npm/rollup-web@3.7.6/dist/index.js"
-    );
-    let port: MessagePort;
+import { Setting } from "../../Setting";
+/* module worker 启动函数，必须为同步 */
+const ModuleInit = () => {
     addEventListener(
         "message",
-        (e) => {
-            port = e.data;
+        async (e) => {
+            // ! 在内部进行了 import comlink 和 Evaluator
+            const { port: CompilerPort, localURL } = e.data;
             let Eval: Evaluator;
-            expose(
-                {
-                    async init(CompilerPort: MessagePort, localURL: string) {
-                        Eval = new Evaluator();
-                        await Eval.createEnv({
-                            Compiler: wrap(CompilerPort) as any,
-                            worker: "module",
-                            root: localURL,
-                        }).then(() => {
-                            this.evaluate(localURL);
-                        });
-                    },
-                    evaluate(url: string) {
-                        return proxy(Eval.evaluate(url));
-                    },
-                },
-                port
-            );
+
+            /* @ts-ignore */
+            Eval = new Evaluator();
+            await Eval.createEnv({
+                /* @ts-ignore */
+                Compiler: wrap(CompilerPort) as any,
+                worker: "module",
+                root: localURL,
+            }).then(async () => {
+                await Eval.evaluate(localURL);
+            });
+            console.log("worker 初始化完成");
         },
         { once: true }
     );
 };
+
+// 使用了线上版本的 worker 辅助
+/* false 时为 dev 状态 */
+export const moduleWorkerURL = createModule(
+    // 使用这样的方式使得线程同步加载
+    `import {wrap,expose} from '${Setting.NPM("comlink/dist/esm/comlink.mjs")}';
+    import { Evaluator } from '${Setting.NPM(
+        "rollup-web@3.7.7/dist/index.js"
+    )}';
+    (${ModuleInit.toString()})();`,
+    "worker.module.js"
+);
