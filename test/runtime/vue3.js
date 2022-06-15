@@ -6,6 +6,7 @@ import { babelCore } from "../../dist/plugins/babel.core.js";
 import { less } from "../../dist/plugins/less.js";
 import { sass } from "../../dist/plugins/sass.js";
 import { postcss } from "../../dist/plugins/postcss.js";
+import { assets } from "../../dist/plugins/assets.js";
 // 导入各种插件
 import json from "https://esm.sh/@rollup/plugin-json";
 import alias from "https://esm.sh/@rollup/plugin-alias";
@@ -56,7 +57,12 @@ const config = {
             },
         }),
 
-        vue({}),
+        vue({
+            log(id, code) {
+                console.log(id, code);
+            },
+        }),
+        assets(),
         postcss({
             log(id, code) {
                 console.log("postcss ", id);

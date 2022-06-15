@@ -1,6 +1,7 @@
 <template>
     <div id="vue3">
         Vue3 编辑 {{ JSON.stringify(A) }}
+        <img src="./img/index.png" />
     </div>
 </template>
 

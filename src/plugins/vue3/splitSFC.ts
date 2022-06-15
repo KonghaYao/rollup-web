@@ -104,7 +104,6 @@ export function getScript(
 
     const script = compileScript(descriptor, {
         inlineTemplate: true,
-
         id,
         templateOptions,
         sourceMap,

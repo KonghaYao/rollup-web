@@ -90,6 +90,11 @@ const compiler = new Compiler(RollupConfig, {
 await compiler.evaluate("./src/index.tsx");
 ```
 
+## Bug Fixing
+
+-   [x] Vue reactive Image src cause error ( use assets plugin to import! )
+-   [ ] Postcss existSync can't run in browser
+
 ## License
 
 Apache-2.0
