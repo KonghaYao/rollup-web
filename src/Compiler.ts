@@ -136,8 +136,17 @@ export class Compiler {
         });
     }
 
-    useWorker() {
-        expose(proxy(this));
-        globalThis.postMessage("__rollup_web_ready__");
+    /**
+     * 在 worker 线程中启动，将自身导出为 comlink 接口
+     * @params force 强制使用 force 模式
+     */
+    useWorker(force = false) {
+        if (force || this.inWorker) {
+            expose(proxy(this));
+            globalThis.postMessage("__rollup_web_ready__");
+            return true;
+        } else {
+            return false;
+        }
     }
 }
