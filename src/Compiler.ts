@@ -8,6 +8,7 @@ import { Plugin, RollupCache } from "rollup-web";
 import { bareURL, URLResolve } from "./utils/isURLString";
 import { Setting } from "./Setting";
 import { isInWorker } from "./utils/createWorker";
+import { expose, proxy } from "comlink";
 
 /* 
     备忘录：
@@ -133,5 +134,10 @@ export class Compiler {
             });
             return res.output;
         });
+    }
+
+    useWorker() {
+        expose(proxy(this));
+        globalThis.postMessage("__rollup_web_ready__");
     }
 }

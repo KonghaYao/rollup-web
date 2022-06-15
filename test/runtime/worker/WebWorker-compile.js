@@ -1,4 +1,3 @@
-import * as Comlink from "https://fastly.jsdelivr.net/npm/comlink/dist/esm/comlink.mjs";
 import { Compiler, sky_module } from "../../../dist/index.js";
 import { worker } from "../../../dist/plugins/worker.js";
 import { wasm } from "../../../dist/plugins/wasm.js";
@@ -30,5 +29,4 @@ const compiler = new Compiler(config, {
     // },
     extraBundle: ["https://fastly.jsdelivr.net/npm/brotli-wasm*/**"],
 });
-Comlink.expose(compiler);
-postMessage("init");
+compiler.useWorker();

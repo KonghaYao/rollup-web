@@ -28,7 +28,4 @@ const compiler = new Compiler(config, {
 
     extraBundle: ["https://fastly.jsdelivr.net/npm/brotli-wasm*/**"],
 });
-Comlink.expose(compiler);
-
-// 通知线程初始化结束
-postMessage("ready");
+compiler.useWorker();
