@@ -21,7 +21,9 @@ import { wrapAll } from "./iframe/wrapper";
 export class Evaluator {
     Compiler!: Compiler | Remote<Compiler>;
     moduleConfig!: Compiler["moduleConfig"];
-    root = location.href;
+
+    /*  在 Worker 和 Iframe 中 location 会错误！ */
+    root = globalThis.location.href;
     isWorker = isInWorker();
     static registered = false;
     constructor() {
@@ -135,7 +137,11 @@ export class Evaluator {
 
         return result;
     }
-    async useWorker(workerUrl: string) {
+    /* 在所在环境启动一个 Compiler Worker */
+    async useWorker(
+        /* 这个 URL 是相对于你所的网页的 URL，而不是执行的 js 文件 */
+        workerUrl: string
+    ) {
         const worker = await createWorker(workerUrl, { type: "module" });
         this.Compiler = wrap(worker);
         return this.Compiler;

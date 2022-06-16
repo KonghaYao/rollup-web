@@ -20,7 +20,6 @@ const ModuleLengths = ({
                 : Buffer.byteLength(code, "utf-8"),
     };
 };
-export const MapperStore = new Map<string, ModuleMapper>();
 
 // 借鉴 rollup-plugin-visualizer 实现的模块关系导出
 export const drawDependence = ({
@@ -28,14 +27,14 @@ export const drawDependence = ({
     /** 通过 log 可以对外暴露内部的 mapper ，从而监控依赖变化 */
     log,
     /** 保证异步载入的时候能够正常进行 mapper 缓存 */
-    mapperTag,
+    mapperTag = "default",
 }: {
     projectRoot: string;
     log(mapperTag: string, mapper: ModuleMapper): void;
     mapperTag: string;
 }) => {
     if (typeof mapperTag !== "string")
-        throw "rollup | draw-dependence | mapperTag 需要输入一个字符串";
+        throw "draw-dependence | mapperTag 需要输入一个字符串";
     return {
         name: "draw-dependence",
         async generateBundle(_, outputBundle) {
@@ -43,11 +42,11 @@ export const drawDependence = ({
 
             // 构建 Mapper
             let mapper: ModuleMapper;
-            if (MapperStore.has(mapperTag)) {
-                mapper = MapperStore.get(mapperTag)!;
+            if (this.cache.has(mapperTag)) {
+                mapper = this.cache.get(mapperTag)!;
             } else {
                 mapper = new ModuleMapper(projectRoot, mapperTag);
-                MapperStore.set(mapperTag, mapper);
+                this.cache.set(mapperTag, mapper);
             }
 
             Object.entries(outputBundle)

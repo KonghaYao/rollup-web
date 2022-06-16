@@ -57,7 +57,7 @@ const returnResult = (
 
 const _web_module = ({
     /* 必须为绝对地址 */
-    root = window.location.href,
+    root = globalThis.location.href,
     /** 在 load 之前进行 log */
     log,
     extensions = [],

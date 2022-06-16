@@ -6,7 +6,7 @@ import { wrapPlugin } from "../utils/wrapPlugin";
 export const _babel = ({
     /** 写入配置文件 */
     babelrc = {},
-    /** 默认使用 window.Babel，这里可以替换 */
+    /** 默认使用 globalThis.Babel，这里可以替换 */
     log,
 }: {
     babelrc?: TransformOptions;

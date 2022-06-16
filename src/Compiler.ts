@@ -140,7 +140,10 @@ export class Compiler {
      * 在 worker 线程中启动，将自身导出为 comlink 接口
      * @params force 强制使用 force 模式
      */
-    useWorker(force = false) {
+    useWorker(
+        /* 强制开启 comlink worker 端口 */
+        force = false
+    ) {
         if (force || this.inWorker) {
             expose(proxy(this));
             globalThis.postMessage("__rollup_web_ready__");
