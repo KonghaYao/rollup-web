@@ -56,8 +56,11 @@ export class IframeEnv {
 
     /* 处理 HTML, 将其转化为顺序执行 */
     private async transformHTML(baseURL: string, html: string) {
-        const { rehype } = await import("rehype");
-        const { visit } = await import("unist-util-visit");
+        const [{ rehype }, { visit }] = await Promise.all([
+            import("rehype"),
+            import("unist-util-visit"),
+        ]);
+
         return rehype()
             .use(() => (tree) => {
                 visit(tree, ["element"], (node) => {
