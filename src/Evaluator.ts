@@ -3,10 +3,17 @@ import { fetchHook } from "./Compiler/fetchHook";
 import { setGlobal, useGlobal } from "./utils/useGlobal";
 import { Setting } from "./Setting";
 import { ModuleWorkerInit } from "./Evaluator/systemWorker";
-import { createEndpoint, expose, proxy, Remote, releaseProxy } from "comlink";
+import {
+    createEndpoint,
+    expose,
+    proxy,
+    Remote,
+    releaseProxy,
+    wrap,
+} from "comlink";
 import { resolveHook } from "./Compiler/resolveHook";
 import { log } from "./utils/ColorConsole";
-import { isInWorker } from "./utils/createWorker";
+import { createWorker, isInWorker } from "./utils/createWorker";
 import { URLResolve } from "./utils/isURLString";
 import { wrapAll } from "./iframe/wrapper";
 
@@ -39,7 +46,7 @@ export class Evaluator {
         root,
         wrap = false,
     }: {
-        Compiler: Compiler;
+        Compiler?: Compiler;
 
         /**
          * 极端情况下覆盖 worker 选项
@@ -47,13 +54,17 @@ export class Evaluator {
         worker?: "module" | "classic";
         root?: string;
         wrap?: boolean;
-    }) {
-        this.Compiler = Compiler;
+    } = {}) {
+        if (Compiler) this.Compiler = Compiler;
+        if (!this.Compiler)
+            throw new Error(
+                "Evaluator | Compiler must be init! useWorker() or input a Compiler "
+            );
         if (root) this.root = root;
 
         // 注入全局的地址
         globalThis.__Rollup_baseURL__ = this.root;
-        this.moduleConfig = JSON.parse(await Compiler.getModuleConfig());
+        this.moduleConfig = JSON.parse(await this.Compiler.getModuleConfig());
 
         let system = useGlobal<any>("System");
 
@@ -123,5 +134,10 @@ export class Evaluator {
         await this.Compiler.evaluate(url, proxy(cb));
 
         return result;
+    }
+    async useWorker(workerUrl: string) {
+        const worker = await createWorker(workerUrl, { type: "module" });
+        this.Compiler = wrap(worker);
+        return this.Compiler;
     }
 }

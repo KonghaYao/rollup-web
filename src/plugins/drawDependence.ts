@@ -24,7 +24,7 @@ export const MapperStore = new Map<string, ModuleMapper>();
 
 // 借鉴 rollup-plugin-visualizer 实现的模块关系导出
 export const drawDependence = ({
-    projectRoot = window.location.href,
+    projectRoot = globalThis.location.href,
     /** 通过 log 可以对外暴露内部的 mapper ，从而监控依赖变化 */
     log,
     /** 保证异步载入的时候能够正常进行 mapper 缓存 */
