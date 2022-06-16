@@ -1,16 +1,9 @@
-import { createWorker } from "../../dist/index.js";
+import { createWorker, Evaluator } from "../../dist/index.js";
 import { IframeEnv } from "../../dist/Iframe.js";
-import {
-    wrap,
-    createEndpoint,
-} from "https://fastly.jsdelivr.net/npm/comlink/dist/esm/comlink.mjs";
 
-// 需要使用这种方式等候 线程结束初始化
-const worker = await createWorker("./test/runtime/worker/compilerWorker.js", {
-    type: "module",
-});
-const compiler = wrap(worker);
-const port = await compiler[createEndpoint]();
+const Eval = new Evaluator();
+await Eval.useWorker("./test/runtime/worker/compilerWorker.js");
+const port = await Eval.createCompilerPort();
 
 // 初始化 iframe 辅助工具即可
 const ifr = new IframeEnv();

@@ -93,12 +93,14 @@ export class IframeEnv {
                             node.properties!.src = false;
                             return;
                         }
-                        if (node.children.length) {
+                        if (node.children && node.children.length) {
                             // 将 script 文本 转化为延迟函数
                             node.children = node.children.map((i) => {
                                 if (i.type === "text") {
                                     i.value = `addEventListener('__rollup_init__',()=>{
-                                            eval(${i.value})
+                                        const script = document.createElement('script')
+                                        script.textContent=\`${i.value}\`;
+                                        document.head.appendChild(script)
                                         })`;
                                 }
                                 return i;
