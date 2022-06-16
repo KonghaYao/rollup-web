@@ -11,6 +11,8 @@ const worker = await createWorker("./test/runtime/worker/compilerWorker.js", {
 });
 const compiler = wrap(worker);
 const port = await compiler[createEndpoint]();
+
+// 初始化 iframe 辅助工具即可
 const ifr = new IframeEnv();
 await ifr.mount({
     src: "http://localhost:8888/package/rollup-web/public/iframe/index.html",

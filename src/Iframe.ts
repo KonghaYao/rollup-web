@@ -3,14 +3,6 @@ import { Setting } from "./Setting";
 import { threadInit } from "./iframe/threadInit";
 import { URLResolve } from "./utils/isURLString";
 import { wrapper } from "./iframe/wrapper";
-const template = `<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-    </head>
-    <body>
-    </body>
-</html>`;
 
 export class IframeEnv {
     async mount({
@@ -22,20 +14,19 @@ export class IframeEnv {
         src: string;
         port: MessagePort;
     }) {
-        const frame = new IframeBox();
-        const srcUrl = await this.createSrc(src, true);
-        frame.src = srcUrl;
-        frame.sandbox += " allow-same-origin";
-        container.appendChild(frame);
+        const box = new IframeBox();
+        box.src = await this.createSrc(src);
+        box.sandbox += " allow-same-origin";
+        container.appendChild(box);
 
-        return frame.ready.then(async (api) => {
+        return box.ready.then(async (api) => {
             await api.runCode(`${wrapper(src)}
             (${threadInit.toString()})();`);
             // Evaluator 初始化
-            frame.frame.contentWindow!.addEventListener(
+            box.frame.contentWindow!.addEventListener(
                 "__rollup_ready__",
                 () => {
-                    frame.frame.contentWindow!.postMessage(
+                    box.frame.contentWindow!.postMessage(
                         {
                             password: "__rollup_init__",
                             localURL: src,
@@ -49,15 +40,25 @@ export class IframeEnv {
             );
         });
     }
-    /* 重写 iframe 内部的 HTML */
-    async createSrc(baseURL = location.href, remote = false) {
+    /**
+     * 重写 iframe 内部的 HTML,并将其转化为 blob URL
+     * @param baseURL html 的位置，相对于 location
+     */
+    async createSrc(baseURL: string) {
+        const html = await fetch(baseURL).then((res) => res.text());
+
+        const file = await this.transformHTML(baseURL, html);
+        // console.log(file.value);
+        return URL.createObjectURL(
+            new File([file.value], "index.html", { type: "text/html" })
+        );
+    }
+
+    /* 处理 HTML, 将其转化为顺序执行 */
+    private async transformHTML(baseURL: string, html: string) {
         const { rehype } = await import("rehype");
         const { visit } = await import("unist-util-visit");
-        const html = remote
-            ? await fetch(baseURL).then((res) => res.text())
-            : template;
-
-        const file = await rehype()
+        return rehype()
             .use(() => (tree) => {
                 visit(tree, ["element"], (node) => {
                     if (node.type !== "element") return;
@@ -115,9 +116,5 @@ export class IframeEnv {
                 });
             })
             .process(html);
-        // console.log(file.value);
-        return URL.createObjectURL(
-            new File([file.value], "index.html", { type: "text/html" })
-        );
     }
 }

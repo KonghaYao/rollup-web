@@ -136,6 +136,7 @@ export class Compiler {
         });
     }
 
+    // TODO Compiler 线程 插件数据存储问题
     /**
      * 在 worker 线程中启动，将自身导出为 comlink 接口
      * @params force 强制使用 force 模式
