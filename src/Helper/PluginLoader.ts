@@ -83,4 +83,7 @@ export const PluginLoader = {
             return res;
         });
     },
+    loads(...tags: string[]) {
+        return Promise.all(tags.map((i) => this.load(i)));
+    },
 };

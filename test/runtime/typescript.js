@@ -3,8 +3,10 @@ import { Compiler, sky_module, PluginLoader } from "../../dist/index.js";
 import { babel } from "../../dist/plugins/babel.js";
 
 // 导入各种插件
-const { default: json } = await PluginLoader.load("plugin-json");
-const { default: alias } = await PluginLoader.load("plugin-alias");
+const [{ default: json }, { default: alias }] = await PluginLoader.loads(
+    "plugin-json",
+    "plugin-alias"
+);
 const { default: commonjs } = await PluginLoader.load("plugin-commonjs");
 const { default: replace } = await PluginLoader.load("plugin-replace");
 
