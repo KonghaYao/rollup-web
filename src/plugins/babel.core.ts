@@ -10,7 +10,6 @@ export const _babel = ({
     log,
 }: {
     babelrc?: TransformOptions;
-    Babel?: object;
     extensions?: string[];
     log?: (id: string) => void;
 } = {}) => {

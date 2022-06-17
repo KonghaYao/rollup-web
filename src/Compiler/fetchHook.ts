@@ -3,8 +3,6 @@ import { isMatch } from "picomatch";
 import { useGlobal } from "../utils/useGlobal";
 import type { Compiler } from "../Compiler";
 import { log } from "../utils/ColorConsole";
-import { bareURL } from "../utils/isURLString";
-
 /**
  * 用于和 Systemjs 进行互动,
  * fetch 只与第一次打包有关，

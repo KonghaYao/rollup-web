@@ -3,7 +3,7 @@ export const threadInit = async () => {
     // import { Evaluator } from "http://localhost:8888/package/rollup-web/dist/index.js";
     /* @ts-ignore */
     const { Evaluator } = await import(
-        "https://fastly.jsdelivr.net/npm/rollup-web@3.7.6/dist/index.js"
+        "https://fastly.jsdelivr.net/npm/rollup-web@3.8.0/dist/index.js"
     );
     /* @ts-ignore */
     const { wrap } = await import("comlink");

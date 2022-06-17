@@ -1,4 +1,3 @@
-import { expose, proxy } from "comlink";
 import { createModule } from "../../utils/ModuleEval";
 import type { Evaluator } from "../../Evaluator";
 import { Setting } from "../../Setting";
