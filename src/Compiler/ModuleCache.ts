@@ -30,7 +30,6 @@ export class ModuleCache<T extends string, E> extends Map<T, E> {
     async registerCache() {
         await import(Setting.NPM("localforage/dist/localforage.min.js"));
         const localforage = useGlobal<any>("localforage");
-        // Feel free to change the drivers order :)
         this.store = localforage.createInstance({
             name: "rollup_web",
             driver: [
