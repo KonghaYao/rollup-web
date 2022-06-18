@@ -23,5 +23,7 @@ export type CachePlugin<T> = {
      * 若返回 undefined 那么跳过这个函数
      */
     has(this: LocalCache, key: string): Promise<boolean | void>;
+
+    clear(this: LocalCache): Promise<void>;
 };
 export type CacheKey<T = string> = keyof Omit<CachePlugin<T>, "name">;

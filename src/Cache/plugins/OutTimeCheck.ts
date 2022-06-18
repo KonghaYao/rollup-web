@@ -16,23 +16,31 @@ export const OutTimeCheck = ({
         name: "__rollup_web_outTime__",
     });
     const checkOutTime = async () => {
-        const lastTime: number = (await store.getItem(name)) || 0;
+        const lastTime: number | null = (await store.getItem(name)) || 0;
         if (Date.now() - lastTime > maxAge * 1000) {
-            return null;
+            return store
+                .clear()
+                .then(() => null)
+                .catch(() => null);
         }
         return;
     };
+    // 删除缓存是整片删除，所以不需要每次都进行检测
+    checkOutTime();
+    let setTime = false;
     return {
         name: "out_time_check",
-        async get(key) {
-            return checkOutTime();
-        },
         async set(key, value) {
-            store.setItem(name, Date.now());
+            // console.log("写入时间记录");
+            if (setTime === false) {
+                // 注意，在整个活动时间内，没有必要每次写入进行一个操作，而是每次打开页面第一次写入的时候，写入时间即可
+                await store.setItem(name, Date.now());
+                setTime = true;
+            }
             return;
         },
-        async has(key) {
-            return checkOutTime();
+        async clear() {
+            await store.setItem(name, 100);
         },
     } as CachePlugin<string>;
 };

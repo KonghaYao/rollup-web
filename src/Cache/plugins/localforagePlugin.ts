@@ -29,5 +29,8 @@ export const localforagePlugin = ({ name }: { name: string }) => {
                 });
             return keyStore.has(key);
         },
+        clear() {
+            return store.clear();
+        },
     } as CachePlugin<string>;
 };

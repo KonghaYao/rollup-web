@@ -20,5 +20,8 @@ export const MemoryCache = () => {
         async has(key) {
             return store.has(key);
         },
+        clear(this) {
+            return store.clear();
+        },
     } as CachePlugin<string>;
 };

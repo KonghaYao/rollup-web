@@ -8,3 +8,4 @@ export * from "./Evaluator";
 export * from "./Helper/PluginLoader";
 export { createWorker } from "./utils/createWorker";
 export { LocalCache } from "./Cache/LocalCache";
+export * as Cache from "./Cache/index";

@@ -5,6 +5,7 @@ export class LocalCache<T = string> {
     private plugins: CachePlugin<T>[] = [];
     usePlugins(...plugins: CachePlugin<T>[]) {
         this.plugins = plugins;
+        this.plugins.map((i) => {});
         return this;
     }
     private async walker<
@@ -14,6 +15,7 @@ export class LocalCache<T = string> {
         Result extends ReturnType<Func>
     >(key: Key, ...args: Args): Promise<Result | null> {
         for (let plugin of this.plugins) {
+            if (typeof plugin[key] !== "function") continue;
             const result = await (plugin[key] as any).apply(this, args);
             if (result !== undefined) {
                 if (result === null) break;
@@ -35,5 +37,8 @@ export class LocalCache<T = string> {
     async has(key: string) {
         const result = await this.walker("has", key);
         return result;
+    }
+    async clear() {
+        await this.walker("clear");
     }
 }
