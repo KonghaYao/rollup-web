@@ -28,6 +28,8 @@ export class LocalCache<T = string> {
     }
     async get(key: string) {
         const result = await this.walker("get", key);
+        // 副作用
+        if (result) this.walker("afterGet", key, result);
         return result;
     }
     async has(key: string) {

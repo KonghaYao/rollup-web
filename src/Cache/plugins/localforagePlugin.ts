@@ -7,6 +7,7 @@ export const localforagePlugin = ({ name }: { name: string }) => {
     });
     const keyStore = new Set();
     return {
+        name: "localforage",
         get(key) {
             return store.getItem(key);
         },

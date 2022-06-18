@@ -23,6 +23,7 @@ export const OutTimeCheck = ({
         return;
     };
     return {
+        name: "out_time_check",
         async get(key) {
             return checkOutTime();
         },
