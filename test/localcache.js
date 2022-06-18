@@ -20,7 +20,6 @@ const timeStore = localforage.createInstance({
 describe("LocalCache 测试", () => {
     it("基础测试", async () => {
         // 读取过期数据测试
-
         const outTimeData = await Cache.extensions.get("test_message");
         expect(outTimeData).to.eq(null);
 

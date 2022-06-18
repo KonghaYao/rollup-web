@@ -18,18 +18,23 @@ export const OutTimeCheck = ({
     const checkOutTime = async () => {
         const lastTime: number | null = (await store.getItem(name)) || 0;
         if (Date.now() - lastTime > maxAge * 1000) {
-            return store
-                .clear()
-                .then(() => null)
-                .catch(() => null);
+            return null;
         }
         return;
     };
-    // 删除缓存是整片删除，所以不需要每次都进行检测
-    checkOutTime();
+    let firstCheck = false;
     let setTime = false;
     return {
         name: "out_time_check",
+        async get(this, key) {
+            if (firstCheck === false) {
+                if ((await checkOutTime()) === null) {
+                    // 删除缓存是整片删除，所以不需要每次都进行检测
+                    await this.clear();
+                    firstCheck = true;
+                }
+            }
+        },
         async set(key, value) {
             // console.log("写入时间记录");
             if (setTime === false) {
