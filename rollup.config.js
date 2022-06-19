@@ -32,7 +32,6 @@ export default [
         external: [
             "process-bundle",
             "comlink",
-            "https://fastly.jsdelivr.net/npm/rollup-web@3.7.6/dist/index.js",
             "rehype",
             "unist-util-visit",
             "@konghayao/iframe-box",
