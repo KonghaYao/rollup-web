@@ -1,4 +1,3 @@
-import type { OutputChunk } from "rollup";
 import { isMatch } from "picomatch";
 import { useGlobal } from "../utils/useGlobal";
 import type { Compiler } from "../Compiler";
@@ -9,9 +8,8 @@ import { log } from "../utils/ColorConsole";
  * 如果后续再请求到同一个 url，那么会直接走缓存
  */
 export const fetchHook = (
-    moduleCache: Compiler["moduleCache"],
     moduleConfig: Compiler["moduleConfig"],
-    rollupCode: () => (code: string) => Promise<any>
+    rollupCode: () => (code: string) => Promise<string>
 ) => {
     const SystemJS = useGlobal<any>("System");
 
@@ -26,16 +24,11 @@ export const fetchHook = (
         const [url] = args;
 
         let code: string;
-        const cacheUrl = await moduleCache.has(url);
         /* 
         缓存对内，allBundle 对外，allBundle 是扩展打包的领域，而缓存是针对已经打包的领域进行加速
         */
         const extraBundle = moduleConfig.extraBundle;
-        if (cacheUrl) {
-            /* 已经存在缓存 */
-            log.green("System fetch | cache " + url);
-            code = (await moduleCache.get(url))!;
-        } else if (
+        if (
             extraBundle === true ||
             /* 如果没有设置打包区域，那么将全部打包 */
             (extraBundle instanceof Array &&
@@ -44,11 +37,10 @@ export const fetchHook = (
                 isMatch(url, extraBundle)) ||
             url.startsWith(new URL(moduleConfig.root!).origin)
         ) {
-            log.pink(` System fetch | bundle ` + url);
-            console.log(cacheUrl, url);
+            // console.log(cacheUrl, url);
 
             /* 全打包或者被选中打包 */
-            code = await Bundle(url, rollupCode, moduleCache);
+            code = await rollupCode()(url);
         } else {
             /* 默认使用 esm import 方式导入代码 */
             log.blue(" System fetch | import " + url);
@@ -82,29 +74,4 @@ async function LoadEsmModule(url: string) {
                     }
                 }
             })`;
-}
-/* 
-    内部没有缓存，但是使用了全打包方式，下载代码并进行 rollup 解析
-*/
-async function Bundle(
-    url: string,
-    rollupCode: () => (code: string) => Promise<OutputChunk[]>,
-
-    moduleCache: Compiler["moduleCache"]
-) {
-    /* 副作用： 打包，打包过后是会有缓存的 */
-    const result = await rollupCode()(url);
-    // console.log(result);
-    // 从缓存中取出这个代码
-    let code: string = "// void code";
-    result.find((i) => {
-        if (i.isEntry) {
-            code = i.code;
-            moduleCache.set(url, code);
-        } else {
-            moduleCache.set(i.facadeModuleId!, i.code);
-        }
-    });
-
-    return code;
 }

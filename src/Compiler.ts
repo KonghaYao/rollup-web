@@ -3,7 +3,6 @@ import { web_module, ModuleConfig } from "./adapter/web_module";
 import { useRollup } from "./Compiler/rollup";
 import { useGlobal } from "./utils/useGlobal";
 import { createModuleCache } from "./Cache";
-import { CacheConfig } from "./Compiler/ModuleCache";
 import { fetchHook } from "./Compiler/fetchHook";
 import { Plugin, RollupCache } from "rollup-web";
 import { bareURL, URLResolve } from "./utils/isURLString";
@@ -11,6 +10,17 @@ import { Setting } from "./Setting";
 import { isInWorker } from "./utils/createWorker";
 import { expose, proxy } from "comlink";
 import { LocalCache } from "./Cache/LocalCache";
+import { log } from "./utils/ColorConsole";
+/**
+ * 缓存配置项
+ */
+export type CacheConfig = {
+    /*  设置忽略缓存的域 */
+    ignore?: string[];
+    root?: string;
+    /* 以秒计算的缓存生命时间 */
+    maxAge?: number;
+};
 
 /* 
     备忘录：
@@ -96,7 +106,7 @@ export class Compiler {
             if (!System)
                 await Setting.loadSystemJS().then(() => {
                     if (this.moduleConfig.autoBuildFetchHook ?? true)
-                        fetchHook(this.moduleCache, this.moduleConfig, () => {
+                        fetchHook(this.moduleConfig, () => {
                             return this.CompileSingleFile.bind(this);
                         });
                 });
@@ -115,7 +125,12 @@ export class Compiler {
         plugins: {},
     };
     /* 编译单个代码，不宜单独使用 */
-    async CompileSingleFile(url: string) {
+    async CompileSingleFile(url: string): Promise<string> {
+        const isCached = await this.moduleCache.has(url);
+        if (isCached) {
+            log.green(` System fetch | cache ` + url);
+            return (await this.moduleCache.get(url)) || "";
+        }
         return useRollup({
             ...this.options,
             input: url,
@@ -125,7 +140,18 @@ export class Compiler {
             },
             cache: this.RollupCache,
         }).then((res) => {
-            return res.output;
+            let code: string = "";
+            res.output.forEach((i) => {
+                const info = i as OutputChunk;
+                if (info.isEntry) {
+                    code = info.code;
+                    this.moduleCache.set(url, info.code);
+                } else {
+                    this.moduleCache.set(info.facadeModuleId!, info.code);
+                }
+            });
+            log.pink(` System fetch | bundle ` + url);
+            return code;
         });
     }
 

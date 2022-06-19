@@ -6,8 +6,8 @@ const worker = new ModuleWorker({
 worker.addEventListener("message", (e) => {
     console.warn("model receive: ", e.data);
 });
-worker.addEventListener("error", (e) => {
-    console.error(e);
-});
+// worker.addEventListener("error", (e) => {
+//     console.error(e);
+// });
 
 console.log(" Module Worker Init");

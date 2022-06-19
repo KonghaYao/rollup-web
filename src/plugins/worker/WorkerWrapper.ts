@@ -18,9 +18,9 @@ const WorkerWrapperCode = function (options?: WorkerOptions) {
         [port]
     );
 
-    worker.addEventListener("error", (e) => {
-        console.log(e);
-    });
+    // worker.addEventListener("messageerror", (e) => {
+    //     console.log(e);
+    // });
     return worker;
 };
 
