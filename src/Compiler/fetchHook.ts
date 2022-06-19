@@ -27,7 +27,6 @@ export const fetchHook = (
 
         let code: string;
         const cacheUrl = await moduleCache.has(url);
-
         /* 
         缓存对内，allBundle 对外，allBundle 是扩展打包的领域，而缓存是针对已经打包的领域进行加速
         */
@@ -46,8 +45,10 @@ export const fetchHook = (
             url.startsWith(new URL(moduleConfig.root!).origin)
         ) {
             log.pink(` System fetch | bundle ` + url);
+            console.log(cacheUrl, url);
+
             /* 全打包或者被选中打包 */
-            code = await Bundle(url, rollupCode);
+            code = await Bundle(url, rollupCode, moduleCache);
         } else {
             /* 默认使用 esm import 方式导入代码 */
             log.blue(" System fetch | import " + url);
@@ -87,13 +88,23 @@ async function LoadEsmModule(url: string) {
 */
 async function Bundle(
     url: string,
-    rollupCode: () => (code: string) => Promise<OutputChunk[]>
+    rollupCode: () => (code: string) => Promise<OutputChunk[]>,
+
+    moduleCache: Compiler["moduleCache"]
 ) {
     /* 副作用： 打包，打包过后是会有缓存的 */
     const result = await rollupCode()(url);
-
+    // console.log(result);
     // 从缓存中取出这个代码
-    return result.find((i) => {
-        return i.facadeModuleId!.startsWith(url);
-    })!.code;
+    let code: string = "// void code";
+    result.find((i) => {
+        if (i.isEntry) {
+            code = i.code;
+            moduleCache.set(url, code);
+        } else {
+            moduleCache.set(i.facadeModuleId!, i.code);
+        }
+    });
+
+    return code;
 }

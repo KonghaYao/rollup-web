@@ -20,7 +20,8 @@ export const MemoryCache = () => {
             return;
         },
         async has(key) {
-            return store.has(key);
+            // ! 注意, 如果自身不存在，则进行一个 穿透
+            return store.has(key) || undefined;
         },
         clear(this) {
             return store.clear();

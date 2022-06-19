@@ -1,3 +1,4 @@
+import { log } from "../../utils/ColorConsole";
 import { createStore } from "../createStore";
 import { CachePlugin } from "../Types";
 
@@ -22,19 +23,21 @@ export const OutTimeCheck = ({
         }
         return;
     };
+    const runtimeCheck: CachePlugin<string>["get"] = async function (this) {
+        if (firstCheck === false && (await checkOutTime()) === null) {
+            // 删除缓存是整片删除，所以不需要每次都进行检测
+
+            log.red("Cache | out time clear Cache");
+            await this.clear();
+            firstCheck = true;
+        }
+    };
     let firstCheck = false;
     let setTime = false;
     return {
         name: "out_time_check",
-        async get(this, key) {
-            if (firstCheck === false) {
-                if ((await checkOutTime()) === null) {
-                    // 删除缓存是整片删除，所以不需要每次都进行检测
-                    await this.clear();
-                    firstCheck = true;
-                }
-            }
-        },
+        get: runtimeCheck,
+        has: runtimeCheck,
         async set(key, value) {
             // console.log("写入时间记录");
             if (setTime === false) {

@@ -125,9 +125,6 @@ export class Compiler {
             },
             cache: this.RollupCache,
         }).then((res) => {
-            (res.output as OutputChunk[]).forEach((i) => {
-                this.moduleCache.set(i.facadeModuleId!, i.code);
-            });
             return res.output;
         });
     }
