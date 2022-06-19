@@ -101,9 +101,8 @@ export class Evaluator {
     }
     /* 链接 SystemJS */
     HookSystemJS() {
-        const cache = this.Compiler.moduleCache as Compiler["moduleCache"];
         // 只是异步地使用 cache 内的函数，所以可以这样子传递 proxy
-        fetchHook(cache, this.moduleConfig, () =>
+        fetchHook(this.moduleConfig, () =>
             this.Compiler.CompileSingleFile.bind(this.Compiler)
         );
         resolveHook();
@@ -142,6 +141,7 @@ export class Evaluator {
         /* 这个 URL 是相对于你所的网页的 URL，而不是执行的 js 文件 */
         workerUrl: string
     ) {
+        log.lime("Evaluator | create Worker");
         const worker = await createWorker(workerUrl, { type: "module" });
         this.Compiler = wrap(worker);
         return this.Compiler;
