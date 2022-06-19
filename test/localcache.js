@@ -20,11 +20,11 @@ const timeStore = localforage.createInstance({
 describe("LocalCache 测试", () => {
     it("基础测试", async () => {
         // 读取过期数据测试
-        const outTimeData = await Cache.extensions.get("test_message");
+        const outTimeData = await Cache.ExtensionsCache.get("test_message");
         expect(outTimeData).to.eq(null);
 
         // 写入测试
-        await Cache.extensions.set("test_message", "1234567890");
+        await Cache.ExtensionsCache.set("test_message", "1234567890");
         await store.getItem("test_message").then((res) => {
             expect(res).to.eq("1234567890");
         });
@@ -35,8 +35,11 @@ describe("LocalCache 测试", () => {
         });
 
         // 读取测试
-        const data = await Cache.extensions.get("test_message");
+        const data = await Cache.ExtensionsCache.get("test_message");
         expect(data).to.eq("1234567890");
+
+        const data1 = await Cache.ExtensionsCache.get("test_message");
+        expect(data1).to.eq("1234567890");
 
         await timeStore.setItem("__rollup_extensions__", 100);
     });

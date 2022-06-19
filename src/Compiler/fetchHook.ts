@@ -26,7 +26,7 @@ export const fetchHook = (
         const [url] = args;
 
         let code: string;
-        const cacheUrl = await moduleCache.hasData(url);
+        const cacheUrl = await moduleCache.has(url);
 
         /* 
         缓存对内，allBundle 对外，allBundle 是扩展打包的领域，而缓存是针对已经打包的领域进行加速
@@ -34,8 +34,8 @@ export const fetchHook = (
         const extraBundle = moduleConfig.extraBundle;
         if (cacheUrl) {
             /* 已经存在缓存 */
-            log.green("System fetch | cache " + cacheUrl);
-            code = (await moduleCache.getData(cacheUrl))!.code;
+            log.green("System fetch | cache " + url);
+            code = (await moduleCache.get(url))!;
         } else if (
             extraBundle === true ||
             /* 如果没有设置打包区域，那么将全部打包 */

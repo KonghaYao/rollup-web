@@ -6,7 +6,9 @@ export const MemoryCache = () => {
         name: "memory",
         get(key) {
             // ! 这里统一没有找到为 undefined 穿透
-            return store.get(key) ?? undefined;
+            const result = store.get(key) ?? undefined;
+            // console.log("from memory", result);
+            return result;
         },
         /* 在别的插件获取到时，进行一个更新 */
         afterGet(this, key, value) {

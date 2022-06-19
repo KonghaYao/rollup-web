@@ -5,6 +5,8 @@ import { isURLString, URLResolve } from "../utils/isURLString";
 import { extname } from "../shim/_/path";
 import { wrapPlugin } from "../utils/wrapPlugin";
 
+import { ExtensionsCache } from "../Cache";
+
 /* 文件缓存器 */
 const fileCache = new Set<string>();
 const isExist = async (url: string) => {
@@ -83,7 +85,7 @@ const _web_module = ({
                 if (extname(url) === "") {
                     /* 解析后缀名 */
 
-                    const current = this.cache.get(url);
+                    const current = await ExtensionsCache.get(url);
 
                     if (current) {
                         await isExist(current);
@@ -99,7 +101,7 @@ const _web_module = ({
                     for (let ext of ["", ...extensions]) {
                         const result = await isExist(addExtension(url, ext));
                         if (result) {
-                            this.cache.set(url, result);
+                            await ExtensionsCache.set(url, result);
                             return returnResult(
                                 forceDependenciesExternal,
                                 result,

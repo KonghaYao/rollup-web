@@ -2,13 +2,15 @@ import type { RollupOptions, OutputChunk } from "rollup";
 import { web_module, ModuleConfig } from "./adapter/web_module";
 import { useRollup } from "./Compiler/rollup";
 import { useGlobal } from "./utils/useGlobal";
-import { CacheConfig, ModuleCache } from "./Compiler/ModuleCache";
+import { createModuleCache } from "./Cache";
+import { CacheConfig } from "./Compiler/ModuleCache";
 import { fetchHook } from "./Compiler/fetchHook";
 import { Plugin, RollupCache } from "rollup-web";
 import { bareURL, URLResolve } from "./utils/isURLString";
 import { Setting } from "./Setting";
 import { isInWorker } from "./utils/createWorker";
 import { expose, proxy } from "comlink";
+import { LocalCache } from "./Cache/LocalCache";
 
 /* 
     备忘录：
@@ -42,14 +44,8 @@ export class Compiler {
         if (!this.moduleConfig.root) {
             this.moduleConfig.root = bareURL(globalThis.location.href);
         }
-        if (moduleConfig.useDataCache) {
-            this.moduleCache.createConfig(
-                typeof moduleConfig.useDataCache === "object"
-                    ? moduleConfig.useDataCache
-                    : {}
-            );
-            this.moduleCache.registerCache();
-        }
+        this.moduleCache = createModuleCache(moduleConfig.useDataCache);
+
         this.refreshPlugin();
     }
     plugins: Plugin[] = [];
@@ -64,7 +60,7 @@ export class Compiler {
         );
     }
     /* 打包缓存，code import 被替换为指定的 url 标记 */
-    moduleCache = new ModuleCache<string, OutputChunk>();
+    moduleCache!: LocalCache;
 
     getModuleConfig() {
         return JSON.stringify(this.moduleConfig);
@@ -82,7 +78,7 @@ export class Compiler {
 
         const url = URLResolve(path, this.moduleConfig.root!);
 
-        const isExist = this.moduleCache.hasData(url);
+        const isExist = await this.moduleCache.has(url);
         if (!isExist) await this.CompileSingleFile(url);
 
         if (this.inWorker && !importTool) {
@@ -130,7 +126,7 @@ export class Compiler {
             cache: this.RollupCache,
         }).then((res) => {
             (res.output as OutputChunk[]).forEach((i) => {
-                this.moduleCache.set(i.facadeModuleId!, i);
+                this.moduleCache.set(i.facadeModuleId!, i.code);
             });
             return res.output;
         });

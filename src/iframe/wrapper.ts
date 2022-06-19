@@ -30,7 +30,10 @@ export const wrapURL = function (baseURL: string) {
 export const wrapRequest = function (baseURL: string) {
     const real = globalThis.Request;
     globalThis.Request = new Proxy(real, {
-        construct(target, argArray) {
+        construct(
+            target,
+            argArray: [URL | RequestInfo, RequestInit | undefined]
+        ) {
             const [url, options] = argArray;
             // 注意，只拦截字符串，而不拦截 url，
             // 因为 url 可能是已经被 wrap 的
