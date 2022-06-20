@@ -41,6 +41,7 @@ export const fetchHook = (
 
             /* 全打包或者被选中打包 */
             code = await rollupCode()(url);
+            // console.log(url, "\n", code);
         } else {
             /* 默认使用 esm import 方式导入代码 */
             log.blue(" System fetch | import " + url);

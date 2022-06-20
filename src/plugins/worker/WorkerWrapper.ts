@@ -8,18 +8,22 @@ const WorkerWrapperCode = function (options?: WorkerOptions) {
     // 在外部注入了参数
     /* @ts-ignore */
     const { url, port, initUrl } = info;
-    const worker = new Worker(url[options?.type || "classic"], options);
-
-    worker.postMessage(
-        {
-            port,
-            localURL: initUrl,
-        },
-        [port]
+    const worker = new Worker(
+        url[options?.type || "classic"],
+        Object.assign({ name: initUrl }, options)
     );
+    setTimeout(() => {
+        worker.postMessage(
+            {
+                port,
+                localURL: initUrl,
+            },
+            [port]
+        );
+    }, 100);
 
-    // worker.addEventListener("messageerror", (e) => {
-    //     console.log(e);
+    // worker.addEventListener("error", (e) => {
+    //     console.error(e);
     // });
     return worker;
 };
@@ -30,6 +34,12 @@ export const WorkerWrapper = (initUrl: string) => {
     const url = new URL(initUrl);
     url.searchParams.delete("worker");
     // 这个代码将会在 Compiler 线程执行
+
+    // fetch(moduleWorkerURL)
+    //     .then((res) => res.text())
+    //     .then((res) => {
+    //         console.log(res);
+    //     });
     return `
     const port = await globalThis.__create_compiler_port__()
     const info = {

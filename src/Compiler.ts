@@ -54,7 +54,11 @@ export class Compiler {
         if (!this.moduleConfig.root) {
             this.moduleConfig.root = bareURL(globalThis.location.href);
         }
-        this.moduleCache = createModuleCache(moduleConfig.useDataCache);
+        this.moduleCache =
+            moduleConfig.useDataCache === undefined ||
+            moduleConfig.useDataCache === false
+                ? (new Map<string, string>() as any as LocalCache)
+                : createModuleCache(moduleConfig.useDataCache);
 
         this.refreshPlugin();
     }
