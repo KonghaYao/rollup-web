@@ -139,11 +139,18 @@ export class Evaluator {
     /* 在所在环境启动一个 Compiler Worker */
     async useWorker(
         /* 这个 URL 是相对于你所的网页的 URL，而不是执行的 js 文件 */
-        workerUrl: string
+        workerUrlOrPort: string | MessagePort
     ) {
-        log.lime("Evaluator | create Worker");
-        const worker = await createWorker(workerUrl, { type: "module" });
-        this.Compiler = wrap(worker);
+        if (typeof workerUrlOrPort === "string") {
+            log.lime("Evaluator | Creating Worker");
+            const worker = await createWorker(workerUrlOrPort, {
+                type: "module",
+            });
+            this.Compiler = wrap(worker);
+        } else {
+            log.lime("Evaluator | Link Worker");
+            this.Compiler = wrap(workerUrlOrPort);
+        }
         return this.Compiler;
     }
 }
