@@ -8,7 +8,9 @@ const ClassicInit = () => {
     /* @ts-ignore */
     globalThis.module = {};
     importScripts("https://fastly.jsdelivr.net/npm/process/browser.js");
-    // importScripts("http://localhost:8888/package/rollup-web/dist/Evaluator.umd.js");
+    // importScripts(
+    //     "http://localhost:8888/package/rollup-web/dist/Evaluator.umd.js"
+    // );
     importScripts(
         "https://fastly.jsdelivr.net/npm/rollup-web@$version$/dist/Evaluator.umd.js"
     );

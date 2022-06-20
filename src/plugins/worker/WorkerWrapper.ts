@@ -12,7 +12,23 @@ const WorkerWrapperCode = function (options?: WorkerOptions) {
         url[options?.type || "classic"],
         Object.assign({ name: initUrl }, options)
     );
-    setTimeout(() => {
+    worker.addEventListener("ready", () => {
+        console.warn("0");
+    });
+    if (options?.type === "module") {
+        // FIXME 发送事件过早，未初始化完成,
+        // 线程中绝对不能发送初始化信息，这样会扰乱 主线程的信息接收，所以必须主线程直接初始化线程
+        // 但是 module worker 又是异步的，没有办法监控
+        setTimeout(() => {
+            worker.postMessage(
+                {
+                    port,
+                    localURL: initUrl,
+                },
+                [port]
+            );
+        }, 300);
+    } else {
         worker.postMessage(
             {
                 port,
@@ -20,11 +36,7 @@ const WorkerWrapperCode = function (options?: WorkerOptions) {
             },
             [port]
         );
-    }, 100);
-
-    // worker.addEventListener("error", (e) => {
-    //     console.error(e);
-    // });
+    }
     return worker;
 };
 
@@ -35,11 +47,6 @@ export const WorkerWrapper = (initUrl: string) => {
     url.searchParams.delete("worker");
     // 这个代码将会在 Compiler 线程执行
 
-    // fetch(moduleWorkerURL)
-    //     .then((res) => res.text())
-    //     .then((res) => {
-    //         console.log(res);
-    //     });
     return `
     const port = await globalThis.__create_compiler_port__()
     const info = {

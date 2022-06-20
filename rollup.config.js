@@ -54,7 +54,7 @@ export default [
     },
     {
         // 这是给 worker 使用的 umd 版本的环境
-        external: ["process-bundle", "comlink"],
+        external: ["process-bundle"],
         input: "./src/Evaluator.ts",
         output: {
             file: "./dist/Evaluator.umd.js",
@@ -62,7 +62,6 @@ export default [
             name: "Evaluator",
             globals: {
                 "process-bundle": "process",
-                comlink: "Comlink",
             },
         },
         plugins: [
