@@ -24,6 +24,7 @@ export const _postcss = ({
     /* Postcss 内置插件 */
     const innerPlugin = [
         // TODO 打包 area 问题,如何链接到
+        // TODO 当使用 绝对路径的 css 导入时，会报错，其实本质就是 area 的问题
 
         /*  atImport 与 Rollup 的交接 */
         atImport({

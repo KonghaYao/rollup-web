@@ -24,7 +24,6 @@ const _wasm = (config: Config): Plugin => {
             return;
         },
         async load(id) {
-            console.log(id);
             const mode = config.mode
                 ? typeof config.mode === "string"
                     ? config.mode
@@ -55,7 +54,6 @@ async function toNodeMode(id: string) {
     const buffer = await fetch(id, { cache: "force-cache" }).then((res) =>
         res.arrayBuffer()
     );
-    console.log(id);
     const { imports, exports } = await parseWasm(buffer);
     /** 获取 wasm 中的所需要的导入项 */
     const ImportFromWasm = imports

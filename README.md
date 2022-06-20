@@ -19,14 +19,15 @@ We already create some website bundling just in browser!
     - [x] Compiler Worker and Environment Worker
     - [x] Plugin Loader (dynamic import plugin easier)
     - [x] Iframe Sandbox
+    - [x] Unified Cache System
+    - [x] Fetcher Adapter (anyway you like to load file)
     - [ ] Config File Loader
-    - [ ] Unified Cache System
 
 2. Plugin Provide
     1. Vanilla JS and TS Part
         - [x] Babel-Core Support
         - [x] Babel-plugins Support ( use esm.sh! )
-        - [x] SWC Support
+        - [x] SWC Support ( SWC is huge! /(ㄒ o ㄒ)/~~ )
     2. Style Part
         - [x] Postcss Support
         - [x] CSS Support

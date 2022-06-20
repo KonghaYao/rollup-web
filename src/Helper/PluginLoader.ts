@@ -1,6 +1,7 @@
 import { Setting } from "../Setting";
 import { log } from "../utils/ColorConsole";
-// 必须为 内置，这样才能够直接判断并加载
+
+/* rollup 本身就可以直接使用的插件 */
 const extraRollupPlugins = [
     {
         name: "plugin-json",
@@ -35,9 +36,7 @@ export const PluginLoader = {
         )
             .then((res) => res.json())
             .then((res) => {
-                console.log(res);
                 const dist = res.files.find((i: any) => i.name === "dist")!;
-                console.log(dist);
                 return dist.files
                     .find((i: any) => i.name === "plugins")!
                     .files.filter((i: any) => i.type === "file")!
@@ -45,7 +44,7 @@ export const PluginLoader = {
             });
     },
     /** list plugins from CDN */
-    list(from?: number, to?: number) {
+    list(from: number = 1, to: number = 10) {
         let showList = this.pluginList.concat(
             this.extraRollupPlugins.map((i) => i.name)
         );
@@ -56,7 +55,6 @@ export const PluginLoader = {
     },
     search(reg: string | RegExp) {
         const regexp = typeof reg === "string" ? new RegExp(reg) : reg;
-
         log.green(
             "Search Plugin :",
             this.pluginList
@@ -65,7 +63,7 @@ export const PluginLoader = {
         );
     },
 
-    /* 自动 import 插件 */
+    /* 自动 import 一个插件 */
     async load(pluginName: string, version?: string) {
         let pluginURL: string;
         let extra = this.extraRollupPlugins.find((i) => i.name === pluginName);
@@ -83,6 +81,7 @@ export const PluginLoader = {
             return res;
         });
     },
+    /* 批量加载插件，虽然不太美观，但是可以实现批量加载 */
     loads(...tags: string[]) {
         return Promise.all(tags.map((i) => this.load(i)));
     },

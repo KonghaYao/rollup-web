@@ -1,6 +1,5 @@
 /* 用来包裹全局的 URL 对象，保证对象解析为 sandbox 正确的地址 */
 export const wrapper = function (baseURL: string) {
-    console.log(baseURL);
     return `(${wrapURL.toString()})('${baseURL}');
     (${wrapRequest.toString()})('${baseURL}');
     (${wrapFetch.toString()})('${baseURL}');
