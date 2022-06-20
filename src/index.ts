@@ -1,5 +1,5 @@
 export { Setting } from "./Setting";
-export * from "./adapter/adapter";
+export * from "./adapter/index";
 export * from "./Compiler/rollup";
 export * from "./utils/ModuleEval";
 export * from "./utils/loadScript";

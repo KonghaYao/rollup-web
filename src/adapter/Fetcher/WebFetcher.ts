@@ -1,4 +1,4 @@
-import { Fetcher } from "../Fetcher";
+import { Fetcher } from "./Fetcher";
 
 /* 文件缓存器 */
 const fileCache = new Set<string>();

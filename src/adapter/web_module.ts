@@ -5,7 +5,7 @@ import { isURLString, URLResolve } from "../utils/isURLString";
 import { extname } from "../shim/_/path";
 import { wrapPlugin } from "../utils/wrapPlugin";
 import { ExtensionsCache } from "../Cache";
-import type { Fetcher } from "./Fetcher";
+import type { Fetcher } from "./Fetcher/Fetcher";
 import { WebFetcher } from "./Fetcher/WebFetcher";
 
 export interface ModuleConfig {

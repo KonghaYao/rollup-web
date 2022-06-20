@@ -2,7 +2,7 @@ import { Plugin } from "rollup";
 import { isURLString, URLResolve } from "../utils/isURLString";
 type CDNCreator = (cdn: string) => string;
 /**
- * 将模块路径解析到 Web ESM CDN
+ * ! 将模块路径解析到 Web ESM CDN
  * @param cdn "https://cdn.skypack.dev/"| "https://esm.run/" | "https://fastly.jsdelivr.net/" | "https://esm.sh/"
  * */
 export const sky_module = ({
