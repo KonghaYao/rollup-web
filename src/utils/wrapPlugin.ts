@@ -39,6 +39,7 @@ interface ExtraOptions {
 export const wrapPlugin = <T>(
     creator: (options: T) => Plugin,
     defaultOptions: Partial<T & ExtraOptions>,
+    /* 这里可以取消对某一个部分的 wrap */
     wrapOptions?: {
         // 默认是 true
         load?: boolean;

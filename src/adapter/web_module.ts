@@ -4,29 +4,9 @@ import { addExtension } from "@rollup/pluginutils";
 import { isURLString, URLResolve } from "../utils/isURLString";
 import { extname } from "../shim/_/path";
 import { wrapPlugin } from "../utils/wrapPlugin";
-
 import { ExtensionsCache } from "../Cache";
-
-/* 文件缓存器 */
-const fileCache = new Set<string>();
-const isExist = async (url: string) => {
-    if (fileCache.has(url)) {
-        return url;
-    } else {
-        try {
-            await fetch(url).then((res) => {
-                if (res.ok) {
-                } else {
-                    throw new Error("错误");
-                }
-            });
-            fileCache.add(url);
-            return url;
-        } catch (e) {
-            return;
-        }
-    }
-};
+import type { Fetcher } from "./Fetcher";
+import { WebFetcher } from "./Fetcher/WebFetcher";
 
 export interface ModuleConfig {
     /* 本地引用强制设置为忽略解析 */
@@ -40,6 +20,8 @@ export interface ModuleConfig {
     cache?: string | false;
     /* 额外的打包区域，使用 picomatch 进行 url 匹配 */
     extraBundle?: true | string[];
+
+    adapter?: Fetcher;
 }
 
 /* 最终 resolve 的返回值 */
@@ -65,13 +47,19 @@ const _web_module = ({
     extensions = [],
     extraBundle,
     forceDependenciesExternal = false,
+
     logExternal = () => {},
+    /* 可以自定义获取方式 */
+    adapter = WebFetcher,
 }: ModuleConfig = {}) => {
+    const { isExist, readFile } = adapter;
     return {
         name: "web_module",
         /** 现在这里进行文件获取，load 的时候直接获取缓存文件 */
         async resolveId(thisFile, importer = "", { isEntry }) {
             const first = thisFile.charAt(0);
+
+            /* 是否存在于打包范围 */
             const isInArea =
                 isURLString(thisFile) &&
                 (thisFile.startsWith(new URL(root).origin) ||
@@ -128,15 +116,7 @@ const _web_module = ({
         // 取消 wrapPlugin 的 load 封装，只要是落到 这里的 url 都将会被 load
         async load(id: string) {
             try {
-                const code = await fetch(id, { cache: "force-cache" }).then(
-                    (res) => {
-                        if (res.ok) {
-                            return res.text();
-                        } else {
-                            throw new Error("错误");
-                        }
-                    }
-                );
+                const code = await readFile(id);
                 log && log(id);
                 return { code };
             } catch (e) {
