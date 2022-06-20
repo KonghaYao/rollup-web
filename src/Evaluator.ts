@@ -42,6 +42,7 @@ export class Evaluator {
         this.destroyed = true;
     }
 
+    /* 初始化环境，进行之后才能够自动进行 Compiler */
     async createEnv({
         Compiler,
         worker,
@@ -136,7 +137,7 @@ export class Evaluator {
 
         return result;
     }
-    /* 在所在环境启动一个 Compiler Worker */
+    /* 在所在环境启动一个 Compiler Worker 或者是使用 worker port */
     async useWorker(
         /* 这个 URL 是相对于你所的网页的 URL，而不是执行的 js 文件 */
         workerUrlOrPort: string | MessagePort
@@ -151,6 +152,6 @@ export class Evaluator {
             log.lime("Evaluator | Link Worker");
             this.Compiler = wrap(workerUrlOrPort);
         }
-        return this.Compiler;
+        return this;
     }
 }

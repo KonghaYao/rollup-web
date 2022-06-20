@@ -4,7 +4,7 @@ import { Setting } from "../../Setting";
 /* module worker 启动函数，必须为同步 */
 const ModuleInit = function () {
     addEventListener("message", async (e) => {
-        // ! 在内部进行了 import comlink 和 Evaluator
+        // ! 在内部进行了  Evaluator
         const { port: CompilerPort, localURL } = e.data;
         console.info(
             "%cThread | Data Receive ",
@@ -12,9 +12,8 @@ const ModuleInit = function () {
         );
         /* @ts-ignore */
         let Eval = new Evaluator();
+        await Eval.useWorker(CompilerPort);
         await Eval.createEnv({
-            /* @ts-ignore */
-            Compiler: wrap(CompilerPort) as any,
             worker: "module",
             root: localURL,
             wrap: true,
@@ -35,8 +34,7 @@ const ModuleInit = function () {
 /* false 时为 dev 状态 */
 export const moduleWorkerURL = createModule(
     // 使用这样的方式使得线程同步加载
-    `import {wrap} from '${Setting.NPM("comlink/dist/esm/comlink.mjs")}';
-    import { Evaluator } from '${Setting.NPM(
+    `import { Evaluator } from '${Setting.NPM(
         `rollup-web@${Setting.workerVersion}/dist/index.js`
     )}';
     (${ModuleInit.toString()})()`,

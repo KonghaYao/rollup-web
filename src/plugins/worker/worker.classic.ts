@@ -8,18 +8,14 @@ const ClassicInit = () => {
     /* @ts-ignore */
     globalThis.module = {};
     importScripts("https://fastly.jsdelivr.net/npm/process/browser.js");
-    importScripts("https://unpkg.com/comlink/dist/umd/comlink.js");
     // importScripts("http://localhost:8888/package/rollup-web/dist/Evaluator.umd.js");
     importScripts(
         "https://fastly.jsdelivr.net/npm/rollup-web@$version$/dist/Evaluator.umd.js"
     );
     /* @ts-ignore */
-    const { Comlink, Evaluator: EvaluatorModule } = globalThis;
-    const { wrap } = Comlink as typeof import("comlink");
+    const { Evaluator: EvaluatorModule } = globalThis;
     const { Evaluator } = EvaluatorModule as typeof import("../../Evaluator");
     // 删除全局变量以防止冲突
-    /* @ts-ignore */
-    delete globalThis.Comlink;
     /* @ts-ignore */
     delete globalThis.Evaluator;
     async function fakeImport(url: string) {
@@ -66,12 +62,12 @@ const ClassicInit = () => {
     addEventListener(
         "message",
         async (e) => {
-            // ! 在内部进行了 import comlink 和 Evaluator
+            // ! 在内部进行了  Evaluator
             const { port: CompilerPort, localURL } = e.data;
             let Eval: Evaluator;
             Eval = new Evaluator();
+            await Eval.useWorker(CompilerPort);
             await Eval.createEnv({
-                Compiler: wrap(CompilerPort) as any,
                 worker: "module",
                 root: localURL,
                 wrap: true,
