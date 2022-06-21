@@ -1,4 +1,4 @@
-import { Fetcher } from "./Fetcher";
+import { Fetcher } from "../Fetcher";
 import FS from "@isomorphic-git/lightning-fs";
 
 export const fs = new FS("_rollup_web_store_");
