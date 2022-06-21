@@ -20,7 +20,7 @@ We already create some website bundling just in browser!
     - [x] Plugin Loader (dynamic import plugin easier)
     - [x] Iframe Sandbox
     - [x] Unified Cache System
-    - [x] Fetcher Adapter (anyway you like to load file)
+    - [x] Fetcher Adapter (anyway you like to load source code)
     - [ ] Config File Loader
 
 2. Plugin Provide

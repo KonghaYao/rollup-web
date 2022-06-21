@@ -1,4 +1,5 @@
 export const npmCDN = "https://fastly.jsdelivr.net/npm/";
+export const Skypack = "https://cdn.skypack.dev/";
 /*
     统一的 paths 替换项
 */
@@ -17,24 +18,25 @@ export const paths = {
     "safe-identifier-bundle": npmCDN + "safe-identifier/+esm",
     "lodash-es/merge": npmCDN + "lodash-es/merge.js",
     comlink: npmCDN + "comlink/dist/esm/comlink.mjs",
-
     "assemblyscript/dist/asc": npmCDN + "assemblyscript@0.20.8/dist/asc.min.js",
-    "@mdx-js/mdx": "https://cdn.skypack.dev/@mdx-js/mdx",
-    rehype: "https://cdn.skypack.dev/rehype",
-    "unist-util-visit": "https://cdn.skypack.dev/unist-util-visit",
-    "@konghayao/iframe-box":
-        "https://cdn.skypack.dev/@konghayao/iframe-box@0.0.5/dist/iframe-box.es.js",
 
-    assert: "https://cdn.skypack.dev/assert",
-    "url-bundle": "https://cdn.skypack.dev/url",
-    picomatch: "https://cdn.skypack.dev/picomatch",
+    "@isomorphic-git/lightning-fs": Skypack + "@isomorphic-git/lightning-fs",
+    "@mdx-js/mdx": Skypack + "@mdx-js/mdx",
+    rehype: Skypack + "rehype",
+    "unist-util-visit": Skypack + "unist-util-visit",
+    "@konghayao/iframe-box":
+        Skypack + "@konghayao/iframe-box@0.0.5/dist/iframe-box.es.js",
+
+    assert: Skypack + "assert",
+    "url-bundle": Skypack + "url",
+    picomatch: Skypack + "picomatch",
 
     "buffer-bundle": "https://esm.sh/buffer",
     "source-map": "https://esm.sh/source-map",
 
     postcss: "https://esm.sh/postcss",
     "postcss-import": "https://esm.sh/postcss-import",
-    "@vue/compiler-sfc": "https://cdn.skypack.dev/@vue/compiler-sfc",
+    "@vue/compiler-sfc": Skypack + "@vue/compiler-sfc",
     "@babel/core": "https://esm.sh/@babel/core",
     // uncheck
     "postcss-selector-parser": "https://esm.sh/postcss-selector-parser",
