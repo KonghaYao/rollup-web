@@ -23,4 +23,7 @@ export const WebFetcher: Fetcher = {
             }
         }
     },
+    async isNew() {
+        return false;
+    },
 };

@@ -11,6 +11,7 @@ import { isInWorker } from "./utils/createWorker";
 import { expose, proxy } from "comlink";
 import { LocalCache } from "./Cache/LocalCache";
 import { log } from "./utils/ColorConsole";
+import { WebFetcher } from "./adapter/Fetcher/WebFetcher";
 /**
  * 缓存配置项
  */
@@ -80,14 +81,21 @@ export class Compiler {
         return JSON.stringify(this.moduleConfig);
     }
 
+    reporter = {
+        lastEvaluate: {
+            time: 0,
+        },
+    };
     /**
      * 执行代码
      * @param importTool 用于线程调用的额外选项，可以替换与 systemjs 的交互
      * */
+    evaluate<T = any>(path: string, importTool: ImportTool): Promise<void>;
+    evaluate<T = any>(path: string): Promise<T>;
     async evaluate<T = any>(
         path: string,
         importTool?: ImportTool
-    ): Promise<T | void> {
+    ): Promise<unknown> {
         console.group("Bundling Code ", path);
 
         const url = URLResolve(path, this.moduleConfig.root!);
@@ -101,40 +109,51 @@ export class Compiler {
                 "Rollup-web | Compiler in worker must use Evaluator to evaluate"
             );
         }
+
         if (importTool) {
+            // 在 worker 线程中，使用线程的回调函数返回数据
             await importTool(url);
             console.groupEnd();
-            return;
+            this.reporter.lastEvaluate.time = Date.now();
+            return; // 不返回数据
         } else {
+            // 主线程中的操作
             let System = useGlobal<any>("System");
-            if (!System)
-                await Setting.loadSystemJS().then(() => {
-                    if (this.moduleConfig.autoBuildFetchHook ?? true)
-                        fetchHook(this.moduleConfig, () => {
-                            return this.CompileSingleFile.bind(this);
-                        });
-                });
+            if (!System) {
+                throw new Error(
+                    "Compiler | evaluate : You need a Evaluator to start! "
+                );
+            }
             System = useGlobal<any>("System");
             const result: T = System.import(url);
             console.groupEnd();
+            this.reporter.lastEvaluate.time = Date.now();
             return result;
         }
-    }
-
-    isLocalFile(url: string) {
-        return url.startsWith(this.moduleConfig.root!);
     }
     RollupCache: RollupCache = {
         modules: [],
         plugins: {},
     };
-    /* 编译单个代码，不宜单独使用 */
-    async CompileSingleFile(url: string): Promise<string> {
+
+    /* 编译之前的检查缓存环节 */
+    async checkCache(url: string) {
         const isCached = await this.moduleCache.has(url);
+
         if (isCached) {
+            const hasNewer = await (
+                this.moduleConfig.adapter || WebFetcher
+            ).isNew(url, this.reporter.lastEvaluate.time);
+            if (hasNewer) return false;
             log.green(` System fetch | cache ` + url);
             return (await this.moduleCache.get(url)) || "";
         }
+        return false;
+    }
+    /* 编译单个代码，不宜单独使用 */
+    async CompileSingleFile(url: string): Promise<string> {
+        const bundled = await this.checkCache(url);
+        if (bundled) return bundled;
         return useRollup({
             ...this.options,
             input: url,

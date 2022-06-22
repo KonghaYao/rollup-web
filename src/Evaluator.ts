@@ -46,7 +46,7 @@ export class Evaluator {
     async createEnv({
         Compiler,
         worker,
-        root,
+        root = globalThis.location.href,
         wrap = false,
     }: {
         Compiler?: Compiler;
@@ -61,7 +61,7 @@ export class Evaluator {
         if (Compiler) this.Compiler = Compiler;
         if (!this.Compiler)
             throw new Error(
-                "Evaluator | Compiler must be init! useWorker() or input a Compiler "
+                "Evaluator | Compiler must be built first! Like useWorker() or input a Compiler! "
             );
         if (root) this.root = root;
 

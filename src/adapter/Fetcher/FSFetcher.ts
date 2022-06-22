@@ -16,4 +16,12 @@ export const FSFetcher: Fetcher = {
             () => false
         );
     },
+    isNew(path) {
+        return fs.promises.stat(path).then(
+            (res) => {
+                return res.mtimeMs;
+            },
+            () => false
+        );
+    },
 };

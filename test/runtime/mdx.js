@@ -41,4 +41,9 @@ const compiler = new Compiler(config, {
         console.log("%c Download ==> " + url, "color:green");
     },
 });
-export const module = await compiler.evaluate("./public/mdx/index.jsx");
+import { Evaluator } from "../../dist/index.js";
+const Eval = new Evaluator();
+await Eval.createEnv({
+    Compiler: compiler,
+});
+export const module = await Eval.evaluate("./public/mdx/index.jsx");
