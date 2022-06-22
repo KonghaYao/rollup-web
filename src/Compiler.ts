@@ -3,10 +3,8 @@ import { web_module, ModuleConfig } from "./adapter/web_module";
 import { useRollup } from "./Compiler/rollup";
 import { useGlobal } from "./utils/useGlobal";
 import { createModuleCache } from "./Cache";
-import { fetchHook } from "./Compiler/fetchHook";
 import { Plugin, RollupCache } from "rollup-web";
 import { bareURL, URLResolve } from "./utils/isURLString";
-import { Setting } from "./Setting";
 import { isInWorker } from "./utils/createWorker";
 import { expose, proxy } from "comlink";
 import { LocalCache } from "./Cache/LocalCache";
@@ -177,8 +175,6 @@ export class Compiler {
             return code;
         });
     }
-
-    // TODO Compiler 线程 插件数据存储问题
     /**
      * 在 worker 线程中启动，将自身导出为 comlink 接口
      * @params force 强制使用 force 模式

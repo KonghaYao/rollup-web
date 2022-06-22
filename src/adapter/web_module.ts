@@ -55,6 +55,11 @@ const _web_module = ({
     const { isExist, readFile } = adapter;
     return {
         name: "web_module",
+        api: {
+            getAdapter() {
+                return adapter;
+            },
+        },
         /** 现在这里进行文件获取，load 的时候直接获取缓存文件 */
         async resolveId(thisFile, importer = "", { isEntry }) {
             const first = thisFile.charAt(0);

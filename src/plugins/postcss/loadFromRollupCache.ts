@@ -5,9 +5,14 @@ export const loadFromRollupCache = async function (
     url: string,
     Info: { id: string }
 ) {
-    const result = await this.resolve(url, Info.id);
-    if (!result) return;
-    await this.load(result);
-    /* 从缓存中读取源文件 */
-    return this.cache.get(result.id) as string;
+    // 放置 resolve 错误导致没有响应到
+    let result: Awaited<ReturnType<typeof this.resolve>>;
+    try {
+        result = await this.resolve(url, Info.id);
+    } catch (e) {
+        result = null;
+    }
+    if (!result || result.external) return;
+    const moduleInfo = await this.load(result);
+    return moduleInfo.code as string | void;
 };
