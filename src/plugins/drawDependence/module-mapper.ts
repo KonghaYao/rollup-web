@@ -24,6 +24,25 @@ export class ModuleMapper {
     private nodeParts: Record<ModuleUID, ModulePart> = {};
     private nodeMetas: Record<string, ModuleIdStorage> = {};
 
+    /* 从 静态数据中重置内部数据 */
+    reset({
+        UNIQUE_PREFIX,
+        COUNTER,
+        nodeMetas,
+        nodeParts,
+        tag,
+        projectRoot,
+    }: ModuleMapper) {
+        return Object.assign(this, {
+            UNIQUE_PREFIX,
+            COUNTER,
+            nodeParts,
+            nodeMetas,
+            tag,
+            projectRoot,
+        });
+    }
+
     constructor(private projectRoot: string | RegExp, public tag: string) {}
 
     trimProjectRootId(moduleId: string): string {
@@ -72,13 +91,13 @@ export class ModuleMapper {
         value: ModuleLengths
     ): ModuleUID {
         const uid = this.getBundleModuleUid(bundleId, moduleId);
-        if (uid in this.nodeParts) {
-            throw new Error(
-                `Override module: bundle id ${bundleId}, module id ${moduleId}, value ${JSON.stringify(
-                    value
-                )}, existing value: ${JSON.stringify(this.nodeParts[uid])}`
-            );
-        }
+        // if (uid in this.nodeParts) {
+        //     throw new Error(
+        //         `Override module: bundle id ${bundleId}, module id ${moduleId}, value ${JSON.stringify(
+        //             value
+        //         )}, existing value: ${JSON.stringify(this.nodeParts[uid])}`
+        //     );
+        // }
         this.nodeParts[uid] = {
             ...value,
             mainUid: this.getModuleUid(moduleId),

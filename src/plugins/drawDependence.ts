@@ -44,11 +44,13 @@ export const drawDependence = ({
 
             // 构建 Mapper
             let mapper: ModuleMapper;
-            if (await cache.has(mapperTag)) {
-                mapper = (await cache.get(mapperTag))!;
+            if (this.cache.has(mapperTag)) {
+                mapper = this.cache.get(mapperTag);
             } else {
                 mapper = new ModuleMapper(projectRoot, mapperTag);
-                cache.set(mapperTag, mapper);
+                const oldVersion = await cache.get(mapperTag);
+                mapper.reset(oldVersion);
+                this.cache.set(mapperTag, mapper);
             }
 
             Object.entries(outputBundle)
@@ -105,6 +107,7 @@ export const drawDependence = ({
 
             // 直接向外部暴露而不进行操作
             log(mapperTag, mapper);
+            cache.set(mapperTag, mapper);
         },
     } as Plugin;
 };
