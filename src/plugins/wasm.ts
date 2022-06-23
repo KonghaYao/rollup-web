@@ -87,7 +87,7 @@ async function toNodeMode(id: string) {
     const result = `${ImportFromWasm}
         
     ${connectToWasm}
-    
+
     ${ExportAsModule}`;
     return result;
 }

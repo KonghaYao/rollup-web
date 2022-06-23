@@ -40,7 +40,7 @@ export class Compiler {
     System = useGlobal<any>("System");
     inWorker = isInWorker();
     constructor(
-        /* input and output will be ignored */
+        /* input 和 output 将会被覆盖 */
         public options: RollupOptions,
 
         /**

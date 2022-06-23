@@ -8,18 +8,21 @@ const ClassicInit = () => {
     /* @ts-ignore */
     globalThis.module = {};
     importScripts("https://fastly.jsdelivr.net/npm/process/browser.js");
-    // importScripts(
-    //     "http://localhost:8888/package/rollup-web/dist/Evaluator.umd.js"
-    // );
     importScripts(
-        "https://fastly.jsdelivr.net/npm/rollup-web@$version$/dist/Evaluator.umd.js"
+        "http://localhost:8888/package/rollup-web/dist/Evaluator.umd.js"
     );
+    // importScripts(
+    //     "https://fastly.jsdelivr.net/npm/rollup-web@$version$/dist/Evaluator.umd.js"
+    // );
     /* @ts-ignore */
     const { Evaluator: EvaluatorModule } = globalThis;
     const { Evaluator } = EvaluatorModule as typeof import("../../Evaluator");
     // 删除全局变量以防止冲突
     /* @ts-ignore */
     delete globalThis.Evaluator;
+
+    /* @ts-ignore */
+    const __importScripts = globalThis.importScripts;
     async function fakeImport(url: string) {
         const System = (globalThis as any).System;
         return System.fetch(url)
@@ -35,15 +38,14 @@ const ClassicInit = () => {
                 const url = URL.createObjectURL(
                     new File([code], "index.js", { type: "text/javascript" })
                 );
-                (globalThis as any).__importScripts(url);
+                __importScripts(url);
                 URL.revokeObjectURL(url);
                 return;
             });
     }
     function SystemInit(localURL: string) {
         const System = (globalThis as any).System;
-        /* @ts-ignore */
-        globalThis.__importScripts = globalThis.importScripts;
+
         /* @ts-ignore */
         globalThis.importScripts = (...urls: string[]) => {
             return urls.reduce((col, cur) => {
@@ -85,8 +87,6 @@ const ClassicInit = () => {
 };
 // console.log(ClassicInit.toString().replace(/^\(\)\s=>\s{([\s\S]+)}/, "$1"));
 export const classicWorkerURL = createModule(
-    `
-    
-    (${ClassicInit.toString().replace("$version$", Setting.workerVersion)})()`,
+    `(${ClassicInit.toString().replace("$version$", Setting.workerVersion)})()`,
     "worker.classic.js"
 );

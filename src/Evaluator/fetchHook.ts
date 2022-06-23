@@ -2,6 +2,8 @@ import { isMatch } from "picomatch";
 import { useGlobal } from "../utils/useGlobal";
 import type { Compiler } from "../Compiler";
 import { log } from "../utils/ColorConsole";
+import { environment } from "./environment";
+import { EnvTag } from "../Evaluator";
 /**
  * 用于和 Systemjs 进行互动,
  * fetch 只与第一次打包有关，
@@ -9,7 +11,8 @@ import { log } from "../utils/ColorConsole";
  */
 export const fetchHook = (
     moduleConfig: Compiler["moduleConfig"],
-    rollupCode: () => (code: string) => Promise<string>
+    rollupCode: () => (code: string) => Promise<string>,
+    env: EnvTag
 ) => {
     const SystemJS = useGlobal<any>("System");
 
@@ -46,6 +49,9 @@ export const fetchHook = (
             /* 默认使用 esm import 方式导入代码 */
             log.blue(" System fetch | import " + url);
             code = await LoadEsmModule(url);
+        }
+        if (["worker-module", "worker-classic", "iframe"].includes(env)) {
+            code = environment({ config: moduleConfig }) + code;
         }
         return new Response(
             new Blob([code], {

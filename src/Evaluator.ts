@@ -1,5 +1,5 @@
 import type { Compiler } from "./Compiler";
-import { fetchHook } from "./Compiler/fetchHook";
+import { fetchHook } from "./Evaluator/fetchHook";
 import { setGlobal, useGlobal } from "./utils/useGlobal";
 import { Setting } from "./Setting";
 import { ModuleWorkerInit } from "./Evaluator/systemWorker";
@@ -17,6 +17,13 @@ import { createWorker, isInWorker } from "./utils/createWorker";
 import { URLResolve } from "./utils/isURLString";
 import { wrapAll } from "./iframe/wrapper";
 
+export type EnvTag =
+    | "main"
+    | "module"
+    | "classic"
+    | "worker-module"
+    | "worker-classic"
+    | "iframe";
 /** 一个单独的 Compiler 执行环境, 专门用于 适配 执行 的环境 */
 export class Evaluator {
     Compiler!: Compiler | Remote<Compiler>;
@@ -59,11 +66,12 @@ export class Evaluator {
         wrap?: boolean;
     } = {}) {
         if (Compiler) this.Compiler = Compiler;
+        if (worker) this.isWorker = worker;
+        if (root) this.root = root;
         if (!this.Compiler)
             throw new Error(
                 "Evaluator | Compiler must be built first! Like useWorker() or input a Compiler! "
             );
-        if (root) this.root = root;
 
         // 注入全局的地址
         globalThis.__Rollup_baseURL__ = this.root;
@@ -82,7 +90,6 @@ export class Evaluator {
 
         // 在 worker 中需要对 systemjs 初始化进行一些处理
         // worker 表示执行环境在 worker 中,默认情况下不需要填写 worker，但是避免错误，可以强制填写
-        if (worker) this.isWorker = worker;
         if (this.isWorker) {
             switch (this.isWorker) {
                 case "module":
@@ -100,11 +107,14 @@ export class Evaluator {
 
         return this;
     }
+    env: EnvTag = this.isWorker ? (("worker-" + this.isWorker) as any) : "main";
     /* 链接 SystemJS */
     HookSystemJS() {
         // 只是异步地使用 cache 内的函数，所以可以这样子传递 proxy
-        fetchHook(this.moduleConfig, () =>
-            this.Compiler.CompileSingleFile.bind(this.Compiler)
+        fetchHook(
+            this.moduleConfig,
+            () => this.Compiler.CompileSingleFile.bind(this.Compiler),
+            this.env
         );
         resolveHook();
     }

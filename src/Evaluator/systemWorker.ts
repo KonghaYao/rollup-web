@@ -1,3 +1,6 @@
+import { ModuleConfig } from "../adapter/web_module";
+import { environment } from "./environment";
+
 function errMsg(errCode: number, msg: any) {
     if (process.env.SYSTEM_PRODUCTION)
         return (msg || "") + " (SystemJS https://git.io/JvFET#" + errCode + ")";
@@ -21,6 +24,7 @@ const importMap: any = {
 export const ModuleWorkerInit = () => {
     // 重新刷新 SystemJS 的初始化
     // 这个是 fetch-loader
+    // 向单个环境中注入的参数
     /* @ts-ignore */
     const systemJSPrototype = globalThis.System;
     var instantiate = systemJSPrototype.instantiate;

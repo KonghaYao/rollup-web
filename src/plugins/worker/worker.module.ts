@@ -36,12 +36,10 @@ const ModuleInit = function () {
 /* false 时为 dev 状态 */
 export const moduleWorkerURL = createModule(
     // 使用这样的方式使得线程同步加载
-    `
-     import { Evaluator } from '${Setting.NPM(
-         `rollup-web@${Setting.workerVersion}/dist/index.js`
-     )}';
-    // import { Evaluator } from  'http://localhost:8888/package/rollup-web/dist/index.js';
-  
+    // `  import { Evaluator } from '${Setting.NPM(
+    //     `rollup-web@${Setting.workerVersion}/dist/index.js`
+    // )}';` +
+    `import { Evaluator } from  'http://localhost:8888/package/rollup-web/dist/index.js';
      (${ModuleInit.toString()})()
     `,
     "worker.module.js"

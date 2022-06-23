@@ -102,7 +102,7 @@ export class IframeEnv {
                                 if (i.type === "text") {
                                     i.value = `addEventListener('__rollup_init__',()=>{
                                         const script = document.createElement('script')
-                                        script.textContent=\`${i.value}\`;
+                                        script.innerHTML=\`${i.value}\`;
                                         document.head.appendChild(script)
                                         })`;
                                 }

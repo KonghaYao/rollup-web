@@ -6,9 +6,9 @@ Simply use rollup to bundle **esm or commonjs or typescript code** in browser!
 
 Like Vite in Nodejs! We want to create a brand new bundle environment in browser!
 
-We have made Rollup and Systemjs in browser, Our plugins create bridges to compile Ts, Tsx, Vue SFC, Babel ... to **vanilla JS** run in browser!
+We have made a Compiler System in browser, using plugins to compile Ts, Tsx, Vue SFC, Babel ... to **vanilla JS** run in browser!
 
-We already create some website bundling just in browser!
+We already create some website just bundling in browser!
 
 # Target
 
@@ -59,9 +59,10 @@ We already create some website bundling just in browser!
 ## Normal Bundle
 
 ```js
-// load System.js first
-import "https://fastly.jsdelivr.net/npm/systemjs@6.12.1/dist/system.min.js";
-import { Compiler } from "https://fastly.jsdelivr.net/npm/rollup-web@3/dist/index.js";
+import {
+    Compiler,
+    Evaluator,
+} from "https://fastly.jsdelivr.net/npm/rollup-web@4/dist/index.js";
 
 // We use Rollup to compile Code!
 const RollupConfig = {
@@ -87,14 +88,20 @@ const compiler = new Compiler(RollupConfig, {
     },
 });
 
+// This step will create an Environment to run source code!
+const Eval = new Evaluator();
+await Eval.createEnv({
+    Compiler: compiler,
+});
+
 // evaluate the code just use url!
-await compiler.evaluate("./src/index.tsx");
+await Eval.evaluate("./public/mdx/index.jsx");
 ```
 
 ## Bug Fixing
 
 -   [x] Vue reactive Image src cause error ( use assets plugin to import! )
--   [ ] Postcss existSync can't run in browser
+-   [ ] Postcss System Import
 
 ## License
 
