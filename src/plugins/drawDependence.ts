@@ -3,7 +3,8 @@ import { ModuleTree, ModuleTreeLeaf } from "./drawDependence/types";
 import { ModuleMapper } from "./drawDependence/module-mapper";
 import { addLinks, buildTree } from "./drawDependence/data";
 import { Buffer } from "buffer";
-const ModuleLengths = ({
+import { cache } from "./drawDependence/cache";
+function ModuleLengths({
     id,
     renderedLength,
     code,
@@ -11,7 +12,7 @@ const ModuleLengths = ({
     id: string;
     renderedLength: number;
     code: string | null;
-}) => {
+}) {
     return {
         id,
         renderedLength:
@@ -19,7 +20,7 @@ const ModuleLengths = ({
                 ? renderedLength
                 : Buffer.byteLength(code, "utf-8"),
     };
-};
+}
 
 // 借鉴 rollup-plugin-visualizer 实现的模块关系导出
 export const drawDependence = ({
@@ -42,11 +43,11 @@ export const drawDependence = ({
 
             // 构建 Mapper
             let mapper: ModuleMapper;
-            if (this.cache.has(mapperTag)) {
-                mapper = this.cache.get(mapperTag)!;
+            if (await cache.has(mapperTag)) {
+                mapper = (await cache.get(mapperTag))!;
             } else {
                 mapper = new ModuleMapper(projectRoot, mapperTag);
-                this.cache.set(mapperTag, mapper);
+                cache.set(mapperTag, mapper);
             }
 
             Object.entries(outputBundle)
@@ -100,7 +101,7 @@ export const drawDependence = ({
                         mapper
                     );
                 });
-                
+
             // 直接向外部暴露而不进行操作
             log(mapperTag, mapper);
         },

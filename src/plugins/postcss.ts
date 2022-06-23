@@ -5,12 +5,16 @@ import atImport from "postcss-import";
 import importURL from "./postcss/import-url";
 import { loadFromRollupCache } from "./postcss/loadFromRollupCache";
 import { URLResolve } from "../utils/isURLString";
-import { Fetcher } from "src/adapter/Fetcher";
 
+/**
+ * postcss 的接口
+ * @property filter 返回 true 则过滤掉这个url
+ */
 export const _postcss = ({
     plugins = [],
     options,
     log,
+
     filter,
 }: {
     plugins?: AcceptedPlugin[];
@@ -21,7 +25,6 @@ export const _postcss = ({
     // Rollup 内置环境
     let Context: TransformPluginContext;
     let Info: { id: string };
-    let adapter: Fetcher;
 
     /* Postcss 内置插件 */
     const innerPlugin = [
@@ -60,12 +63,6 @@ export const _postcss = ({
     const converter = Postcss(plugins.concat(innerPlugin));
     return {
         name: "postcss",
-        buildStart({ plugins }) {
-            const parentPlugin = plugins.find(
-                (plugin) => plugin.name === "web_module"
-            )!;
-            adapter = parentPlugin.api.getAdapter();
-        },
         /* Postcss 最终将会被写为 CSS-In-JS 的形式 */
         async transform(input, id) {
             Context = this;

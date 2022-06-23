@@ -1,14 +1,14 @@
 import { CachePlugin } from "../Types";
 
-export const MemoryCache = () => {
-    const store = new Map<string, any>();
+export const MemoryCache = <T = string>(): CachePlugin<T> => {
+    const store = new Map<string, T>();
     return {
         name: "memory",
-        get(key) {
+        async get(key) {
             // ! 这里统一没有找到为 undefined 穿透
             const result = store.get(key) ?? undefined;
             // console.log("from memory", result);
-            return result;
+            return result as T | void;
         },
         /* 在别的插件获取到时，进行一个更新 */
         afterGet(this, key, value) {
@@ -23,8 +23,8 @@ export const MemoryCache = () => {
             // ! 注意, 如果自身不存在，则进行一个 穿透
             return store.has(key) || undefined;
         },
-        clear(this) {
+        async clear(this) {
             return store.clear();
         },
-    } as CachePlugin<string>;
+    };
 };

@@ -12,7 +12,11 @@ export const loadFromRollupCache = async function (
     } catch (e) {
         result = null;
     }
-    if (!result || result.external) return;
-    const moduleInfo = await this.load(result);
-    return moduleInfo.code as string | void;
+    if (!result || result.external) {
+        // 如果 resolve 失败或者是屏蔽，则忽略这个 url
+        return;
+    } else {
+        const moduleInfo = await this.load(result);
+        return moduleInfo.code as string | void;
+    }
 };

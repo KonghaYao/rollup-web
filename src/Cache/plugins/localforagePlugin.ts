@@ -1,15 +1,19 @@
 import { createStore } from "../createStore";
 import { CachePlugin } from "../Types";
 
-export const localforagePlugin = ({ name }: { name: string }) => {
+export const localforagePlugin = <T = string>({
+    name,
+}: {
+    name: string;
+}): CachePlugin<T> => {
     const store = createStore({
         name,
     });
     const keyStore = new Set();
     return {
         name: "localforage",
-        get(key) {
-            return store.getItem(key);
+        async get(key) {
+            return store.getItem(key) as any as Promise<T | void>;
         },
         async set(key, value) {
             return store
@@ -32,5 +36,5 @@ export const localforagePlugin = ({ name }: { name: string }) => {
         clear() {
             return store.clear();
         },
-    } as CachePlugin<string>;
+    };
 };
