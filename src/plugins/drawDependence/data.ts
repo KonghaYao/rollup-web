@@ -135,10 +135,7 @@ export const addLinks = (
         }
 
         const moduleInfo = getModuleInfo(moduleId);
-
-        if (!moduleInfo) {
-            return;
-        }
+        if (!moduleInfo) return;
 
         if (moduleInfo.isEntry) {
             mapper.setNodeMeta(moduleId, { isEntry: true });

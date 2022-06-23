@@ -1,9 +1,10 @@
-import type { Plugin } from "rollup-web";
+import type { Plugin, OutputChunk } from "rollup-web";
 import { ModuleTree, ModuleTreeLeaf } from "./drawDependence/types";
 import { ModuleMapper } from "./drawDependence/module-mapper";
 import { addLinks, buildTree } from "./drawDependence/data";
 import { Buffer } from "buffer";
 import { cache } from "./drawDependence/cache";
+export { cache };
 function ModuleLengths({
     id,
     renderedLength,
@@ -94,7 +95,7 @@ export const drawDependence = ({
                         bundle.type !== "chunk" ||
                         bundle.facadeModuleId == null
                     )
-                        return; //only chunks
+                        return;
                     addLinks(
                         bundle.facadeModuleId,
                         this.getModuleInfo.bind(this),
