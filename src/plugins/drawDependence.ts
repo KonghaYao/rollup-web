@@ -22,6 +22,8 @@ function ModuleLengths({
                 : Buffer.byteLength(code, "utf-8"),
     };
 }
+// 注意，这个插件是动态打包的，使用 DB 存储是为了和主线程通信，并不是进行缓存
+await cache.clear();
 
 // 借鉴 rollup-plugin-visualizer 实现的模块关系导出
 export const drawDependence = ({
@@ -48,8 +50,6 @@ export const drawDependence = ({
                 mapper = this.cache.get(mapperTag);
             } else {
                 mapper = new ModuleMapper(projectRoot, mapperTag);
-                const oldVersion = await cache.get(mapperTag);
-                mapper.reset(oldVersion);
                 this.cache.set(mapperTag, mapper);
             }
 
