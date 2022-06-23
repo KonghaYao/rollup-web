@@ -3,7 +3,7 @@ export const threadInit = async () => {
     // import { Evaluator } from "http://localhost:8888/package/rollup-web/dist/index.js";
     /* @ts-ignore */
     const { Evaluator } = await import(
-        "https://fastly.jsdelivr.net/npm/rollup-web@3.9.2/dist/index.js"
+        "https://fastly.jsdelivr.net/npm/rollup-web@4.0.0/dist/index.js"
     );
     const Eval = new Evaluator();
     (globalThis as any).__Rollup_Env__ = Eval;
