@@ -8,12 +8,12 @@ const ClassicInit = () => {
     /* @ts-ignore */
     globalThis.module = {};
     importScripts("https://fastly.jsdelivr.net/npm/process/browser.js");
-    importScripts(
-        "http://localhost:8888/package/rollup-web/dist/Evaluator.umd.js"
-    );
     // importScripts(
-    //     "https://fastly.jsdelivr.net/npm/rollup-web@$version$/dist/Evaluator.umd.js"
+    //     "http://localhost:8888/package/rollup-web/dist/Evaluator.umd.js"
     // );
+    importScripts(
+        "https://fastly.jsdelivr.net/npm/rollup-web@$version$/dist/Evaluator.umd.js"
+    );
     /* @ts-ignore */
     const { Evaluator: EvaluatorModule } = globalThis;
     const { Evaluator } = EvaluatorModule as typeof import("../../Evaluator");
@@ -85,7 +85,6 @@ const ClassicInit = () => {
         { once: true }
     );
 };
-// console.log(ClassicInit.toString().replace(/^\(\)\s=>\s{([\s\S]+)}/, "$1"));
 export const classicWorkerURL = createModule(
     `(${ClassicInit.toString().replace("$version$", Setting.workerVersion)})()`,
     "worker.classic.js"
