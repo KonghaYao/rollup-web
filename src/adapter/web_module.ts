@@ -25,16 +25,9 @@ export interface ModuleConfig {
 }
 
 /* 最终 resolve 的返回值 */
-const returnResult = (
-    forceDependenciesExternal: boolean,
-    result: string,
-    isEntry: boolean,
-    logExternal?: ModuleConfig["logExternal"]
-) => {
-    if (!isEntry && forceDependenciesExternal && logExternal)
-        logExternal(result);
+const returnResult = (result: string, isEntry: boolean) => {
     return {
-        external: isEntry ? false : forceDependenciesExternal,
+        external: !isEntry,
         id: result,
     };
 };
@@ -46,9 +39,6 @@ const _web_module = ({
     log,
     extensions = [],
     extraBundle,
-    forceDependenciesExternal = false,
-
-    logExternal = () => {},
     /* 可以自定义获取方式 */
     adapter = WebFetcher,
 }: ModuleConfig = {}) => {
@@ -82,12 +72,7 @@ const _web_module = ({
 
                     if (current) {
                         await isExist(current);
-                        return returnResult(
-                            forceDependenciesExternal,
-                            current,
-                            isEntry,
-                            logExternal
-                        );
+                        return returnResult(current, isEntry);
                     }
 
                     //! 添加一个 空白字符的检测，可能空白字符就找到了，所以可以解析
@@ -95,25 +80,13 @@ const _web_module = ({
                         const result = await isExist(addExtension(url, ext));
                         if (result) {
                             await ExtensionsCache.set(url, result);
-                            return returnResult(
-                                forceDependenciesExternal,
-                                result,
-                                isEntry,
-                                logExternal
-                            );
+                            return returnResult(result, isEntry);
                         }
                     }
                 } else {
                     /* 绝对位置或者为模块 */
                     const id = await isExist(url);
-                    return id
-                        ? returnResult(
-                              forceDependenciesExternal,
-                              id,
-                              isEntry,
-                              logExternal
-                          )
-                        : url;
+                    return id ? returnResult(id, isEntry) : url;
                 }
             }
             return;

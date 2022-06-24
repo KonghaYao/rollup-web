@@ -68,7 +68,6 @@ export class Compiler {
         this.plugins.push(
             web_module({
                 ...this.moduleConfig,
-                forceDependenciesExternal: true,
             })
         );
     }

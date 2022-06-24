@@ -1,4 +1,4 @@
-/* 用来包裹全局的 URL 对象，保证对象解析为 sandbox 正确的地址 */
+/* 用来包裹全局的 URL 对象，保证对象解析为 sandbox 正确的地址。但是 像 location 这样的运行时不会进行 wrap */
 export const wrapper = function (baseURL: string) {
     return `(${wrapURL.toString()})('${baseURL}');
     (${wrapRequest.toString()})('${baseURL}');

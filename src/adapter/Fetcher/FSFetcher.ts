@@ -3,7 +3,7 @@ import FS from "@isomorphic-git/lightning-fs";
 import { isURLString } from "../../utils/isURLString";
 
 const pathConvert = (url: string) => {
-    if (isURLString(url)) {
+    if (isURLString(url) && url.startsWith(globalThis.__Rollup_baseURL__)) {
         return new URL(url).pathname;
     }
     return url;
@@ -17,7 +17,6 @@ export const FSFetcher: Fetcher = {
                 encoding: "utf8",
             }) as Promise<string>;
         } else {
-            console.log(path);
             return fetch(path, { cache: "force-cache" }).then((res) =>
                 res.text()
             );
@@ -36,6 +35,7 @@ export const FSFetcher: Fetcher = {
         path = pathConvert(path);
         return fs.promises.stat(path).then(
             (res) => {
+                // 未完成判断
                 return res.mtimeMs;
             },
             () => false

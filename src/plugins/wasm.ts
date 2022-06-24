@@ -66,7 +66,7 @@ async function toNodeMode(id: string) {
         .join("\n");
 
     /** 自动导入并初始化 wasm 程序 */
-    const connectToWasm = `  import {wasmHelper} from '${import.meta.url}';
+    const connectToWasm = `import {wasmHelper} from '${import.meta.url}';
         const __wasm_module__ = await wasmHelper({ ${imports
             .map(
                 ({ from, names }, i) =>

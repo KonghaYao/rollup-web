@@ -81,7 +81,7 @@ export class IframeEnv {
                         } as any);
                         return;
                     }
-
+                    // TODO 解决 script 执行顺序的问题
                     if (tagName === "script") {
                         if (src && !node.properties!.ignore) {
                             // 将 具有 src 地址的 script 转化为延迟函数
@@ -94,6 +94,7 @@ export class IframeEnv {
                                     )}"))`,
                                 },
                             ];
+                            // 取消掉 script 的 src， 防止出现错误
                             node.properties!.src = false;
                             return;
                         }
