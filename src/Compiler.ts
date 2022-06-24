@@ -32,6 +32,7 @@ export type CompilerModuleConfig = ModuleConfig & {
     /* 匹配到的区域都将使用 rollup 打包 */
     useDataCache?: false | CacheConfig;
     autoBuildFetchHook?: boolean;
+    ignore?: string[];
 };
 type ImportTool = (url: string) => void | Promise<void>;
 

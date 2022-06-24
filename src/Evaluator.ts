@@ -30,7 +30,9 @@ export class Evaluator {
     moduleConfig: Compiler["moduleConfig"] = {};
 
     /*  在 Worker 和 Iframe 中 location 会错误！ */
-    root = globalThis.location.href;
+    get root() {
+        return this.moduleConfig.root!;
+    }
     isWorker = isInWorker();
     static registered = false;
     constructor() {
@@ -67,20 +69,17 @@ export class Evaluator {
         wrap?: boolean;
     } = {}) {
         if (Compiler) this.Compiler = Compiler;
-        if (worker) this.isWorker = worker;
-        if (env) this.env = env;
-        if (root) {
-            this.root = root;
-            this.moduleConfig.root = root;
-        }
         if (!this.Compiler)
             throw new Error(
                 "Evaluator | Compiler must be built first! Like useWorker() or input a Compiler! "
             );
+        if (worker) this.isWorker = worker;
+        if (env) this.env = env;
+        this.moduleConfig = JSON.parse(await this.Compiler.getModuleConfig());
+        if (root) this.moduleConfig.root = root;
 
         // 注入全局的地址
         globalThis.__Rollup_baseURL__ = this.root;
-        this.moduleConfig = JSON.parse(await this.Compiler.getModuleConfig());
 
         let system = useGlobal<any>("System");
 

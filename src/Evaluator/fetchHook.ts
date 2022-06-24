@@ -29,11 +29,14 @@ export const fetchHook = (
         const [url] = args;
 
         let code: string;
-        /* 
-        缓存对内，allBundle 对外，allBundle 是扩展打包的领域，而缓存是针对已经打包的领域进行加速
-        */
         const extraBundle = moduleConfig.extraBundle;
-        if (
+        const ignore = moduleConfig.ignore || [];
+        // console.log(ignore, url);
+        if (isMatch(url, ignore)) {
+            /* 默认使用 esm import 方式导入代码 */
+            log.blue(" System fetch | import " + url);
+            code = await LoadEsmModule(url);
+        } else if (
             extraBundle === true ||
             /* 如果没有设置打包区域，那么将全部打包 */
             (extraBundle instanceof Array &&

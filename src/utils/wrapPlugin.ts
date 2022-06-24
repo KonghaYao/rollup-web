@@ -104,6 +104,7 @@ function WrapResolveId<T>(
     } as ResolveIdHook;
 }
 
+/* load 会进行后缀名检查 */
 function WrapLoad<T>(
     filter: (id: unknown) => boolean,
     Options: T & ExtraOptions,

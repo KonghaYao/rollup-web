@@ -9,11 +9,8 @@ import type { Fetcher } from "./Fetcher";
 import { WebFetcher } from "./Fetcher/WebFetcher";
 
 export interface ModuleConfig {
-    /* 本地引用强制设置为忽略解析 */
-    forceDependenciesExternal?: boolean;
     root?: string;
     log?: (string: string) => void;
-    logExternal?: (url: string) => void;
     /* 用于没有设置后缀名时的猜测函数，并具有筛选功能 */
     extensions?: string[];
     /* 不缓存文件 */
@@ -22,15 +19,8 @@ export interface ModuleConfig {
     extraBundle?: true | string[];
 
     adapter?: Fetcher;
+    ignore?: string[];
 }
-
-/* 最终 resolve 的返回值 */
-const returnResult = (result: string, isEntry: boolean) => {
-    return {
-        external: !isEntry,
-        id: result,
-    };
-};
 
 const _web_module = ({
     /* 必须为绝对地址 */
@@ -41,6 +31,7 @@ const _web_module = ({
     extraBundle,
     /* 可以自定义获取方式 */
     adapter = WebFetcher,
+    ignore = [],
 }: ModuleConfig = {}) => {
     const { isExist, readFile } = adapter;
     return {
@@ -53,6 +44,9 @@ const _web_module = ({
         /** 现在这里进行文件获取，load 的时候直接获取缓存文件 */
         async resolveId(thisFile, importer = "", { isEntry }) {
             const first = thisFile.charAt(0);
+            if (isURLString(thisFile) && isMatch(thisFile, ignore)) {
+                return { external: true, id: thisFile };
+            }
 
             /* 是否存在于打包范围 */
             const isInArea =
@@ -67,12 +61,9 @@ const _web_module = ({
 
                 if (extname(url) === "") {
                     /* 解析后缀名 */
-
                     const current = await ExtensionsCache.get(url);
-
-                    if (current) {
-                        await isExist(current);
-                        return returnResult(current, isEntry);
+                    if (current && (await isExist(current))) {
+                        return { id: url, external: !isEntry };
                     }
 
                     //! 添加一个 空白字符的检测，可能空白字符就找到了，所以可以解析
@@ -80,23 +71,24 @@ const _web_module = ({
                         const result = await isExist(addExtension(url, ext));
                         if (result) {
                             await ExtensionsCache.set(url, result);
-                            return returnResult(result, isEntry);
+                            return { id: result, external: !isEntry };
                         }
                     }
                 } else {
                     /* 绝对位置或者为模块 */
                     const id = await isExist(url);
-                    return id ? returnResult(id, isEntry) : url;
+                    return id ? { external: !isEntry, id } : url;
                 }
             }
             return;
         },
         // 取消 wrapPlugin 的 load 封装，只要是落到 这里的 url 都将会被 load
         async load(id: string) {
+            // console.log("    ", id);
             try {
                 const code = await readFile(id);
                 log && log(id);
-                return { code };
+                return { code: `//${id};\n` + code };
             } catch (e) {
                 return;
             }

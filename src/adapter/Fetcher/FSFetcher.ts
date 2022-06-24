@@ -1,9 +1,10 @@
 import { Fetcher } from "../Fetcher";
 import FS from "@isomorphic-git/lightning-fs";
 import { isURLString } from "../../utils/isURLString";
+import { WebFetcher } from "./WebFetcher";
 
 const pathConvert = (url: string) => {
-    if (isURLString(url) && url.startsWith(globalThis.__Rollup_baseURL__)) {
+    if (isURLString(url) && url.startsWith(globalThis.location.origin)) {
         return new URL(url).pathname;
     }
     return url;
@@ -17,19 +18,21 @@ export const FSFetcher: Fetcher = {
                 encoding: "utf8",
             }) as Promise<string>;
         } else {
-            return fetch(path, { cache: "force-cache" }).then((res) =>
-                res.text()
-            );
+            return WebFetcher.readFile(path);
         }
     },
     isExist(path) {
         path = pathConvert(path);
-        return fs.promises.stat(path).then(
-            (res) => {
-                return res.isFile() ? path : false;
-            },
-            () => false
-        );
+        if (path.startsWith("/")) {
+            return fs.promises.stat(path).then(
+                (res) => {
+                    return res.isFile() ? path : false;
+                },
+                () => false
+            );
+        } else {
+            return WebFetcher.isExist(path);
+        }
     },
     isNew(path) {
         path = pathConvert(path);

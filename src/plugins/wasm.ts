@@ -15,13 +15,13 @@ type Config = { mode?: Mode | ModeCreator; extensions?: string[] };
 const _wasm = (config: Config): Plugin => {
     return {
         name: "wasm",
-        resolveId(thisFile, importer) {
+        resolveId(thisFile, importer, { isEntry }) {
             const ext = checkExtension(thisFile, config.extensions!);
-            // 只对 绝对路径进行拦截解析
-            if (isURLString(thisFile) && ext !== false) {
-                return thisFile;
+            // 只对 绝对路径进行拦截解析，
+            if (isURLString(thisFile) && ext) {
+                console.warn(thisFile);
+                return { external: !isEntry, id: thisFile };
             }
-            return;
         },
         async load(id) {
             const mode = config.mode
@@ -84,7 +84,9 @@ async function toNodeMode(id: string) {
                 } __wasm_module__.${name};`
         )
         .join("\n");
-    const result = `${ImportFromWasm}
+    const result = `
+    //${id};
+    ${ImportFromWasm}
         
     ${connectToWasm}
 
