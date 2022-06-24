@@ -81,6 +81,7 @@ export class IframeEnv {
                         } as any);
                         return;
                     }
+
                     if (tagName === "script") {
                         if (src && !node.properties!.ignore) {
                             // 将 具有 src 地址的 script 转化为延迟函数

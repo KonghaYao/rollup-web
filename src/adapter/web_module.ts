@@ -113,7 +113,7 @@ const _web_module = ({
                               isEntry,
                               logExternal
                           )
-                        : id;
+                        : url;
                 }
             }
             return;

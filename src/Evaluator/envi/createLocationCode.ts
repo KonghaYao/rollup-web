@@ -14,6 +14,8 @@ export function createLocationCode(env: string, config: ModuleConfig) {
     }
     return locationCode;
 }
+
+/* 会被字符串化的函数 */
 const locationCover = (url: string) => {
     const info = new URL(url);
     const data = [
@@ -30,6 +32,7 @@ const locationCover = (url: string) => {
         col[cur] = (info as any)[cur];
         return col;
     }, {} as any);
+    // 修改这个接口实现不同的参数传递
     const result = Object.assign(data, {
         assign() {},
         ancestorOrigins: { length: 0 },

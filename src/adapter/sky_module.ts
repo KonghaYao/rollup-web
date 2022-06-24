@@ -27,11 +27,7 @@ export const sky_module = ({
         resolveId(thisFile, importer = "") {
             if (isURLString(thisFile)) return;
             // 当有前缀时，进行 ignore
-            if (
-                thisFile[0] !== "." &&
-                thisFile[0] !== "/" &&
-                !isURLString(thisFile)
-            ) {
+            if (thisFile[0] !== "." && thisFile[0] !== "/") {
                 if (ignore?.includes(thisFile)) return;
                 // 重命名模块
                 thisFile = thisFile in rename ? rename[thisFile] : thisFile;

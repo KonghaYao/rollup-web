@@ -10,7 +10,13 @@ true && emptyDir("./dist");
 const pluginInput = "*";
 export default [
     {
-        external: ["rollup-web", "process-bundle", "picomatch", "comlink"],
+        external: [
+            "rollup-web",
+            "process-bundle",
+            "picomatch",
+            "comlink",
+            "@isomorphic-git/lightning-fs",
+        ],
         input: "./src/index.ts",
         output: {
             file: "./dist/index.js",
@@ -75,7 +81,31 @@ export default [
         ],
     },
     {
-        // 必须要使用这种方式保证 rollup 能够识别 paths
+        //  插件制造，必须要使用这种方式保证 rollup 能够识别 paths
+        external: [...Object.keys(paths)],
+        input: [`src/adapter/Fetcher/${pluginInput}.ts`],
+        output: {
+            dir: "dist",
+            format: "es",
+
+            paths: {
+                ...paths,
+            },
+        },
+        plugins: [
+            multiInput(),
+            json(),
+
+            ...plugins,
+            analyze({
+                summaryOnly: true,
+                writeTo: (str) =>
+                    writeFileSync("dist/plugins.analyze.txt", str),
+            }),
+        ],
+    },
+    {
+        //  插件制造，必须要使用这种方式保证 rollup 能够识别 paths
         external: [
             ...Object.keys(paths),
             "https://fastly.jsdelivr.net/npm/@babel/standalone/babel.min.js",

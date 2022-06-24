@@ -27,7 +27,7 @@ We already create some website just bundling in browser!
     1. Vanilla JS and TS Part
         - [x] Babel-Core Support
         - [x] Babel-plugins Support ( use esm.sh! )
-        - [x] SWC Support ( SWC is huge! /(ㄒ o ㄒ)/~~ )
+        - [x] SWC Support ( SWC is huge in package size! /(ㄒ o ㄒ)/~~ )
     2. Style Part
         - [x] Postcss Support
         - [x] CSS Support
