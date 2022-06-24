@@ -7,10 +7,10 @@ export const Setting = {
     async loadSystemJS() {
         const systemURL = this.NPM("systemjs@6.12.1/dist/system.min.js");
 
-        // TODO 本来是要划分 classic worker 和 module 的，但是暂时没有想到方法
         try {
             await import(systemURL);
         } catch (e) {
+            // 在 worker 中
             await useGlobal<any>("importScripts")(systemURL);
         }
     },

@@ -1,35 +1,17 @@
-import { ModuleConfig } from "src/adapter/web_module";
-const locationCover = (url: string) => {
-    const info = new URL(url);
-    const data = [
-        "hash",
-        "host",
-        "hostname",
-        "href",
-        "origin",
-        "pathname",
-        "port",
-        "protocol",
-        "search",
-    ].reduce((col, cur) => {
-        col[cur] = (info as any)[cur];
-        return col;
-    }, {} as any);
-    const result = Object.assign(data, {
-        assign() {},
-        ancestorOrigins: { length: 0 },
-        reload() {},
-        replace() {},
-        toString() {},
-    });
-
-    return result;
-};
+import { ModuleConfig } from "../adapter/web_module";
+import { EnvTag } from "../Evaluator";
+import { createLocationCode } from "./envi/createLocationCode";
 
 /* 内置插件，用于将 iframe, worker 中的环境参数统一 */
-export const environment = ({ config }: { config: ModuleConfig }) => {
+export const environment = (
+    { config }: { config: ModuleConfig },
+    env: EnvTag
+) => {
+    let locationCode = createLocationCode(env, config);
     return `
-var location = (${locationCover.toString()})("${config.root as string}");
+
+// 这里声明了 location 变量
+${locationCode}
 // 挂载 config
 var __config = (()=>{
     const replacer = {
@@ -43,5 +25,7 @@ var __config = (()=>{
     }
 })();
 self = new Proxy(globalThis.self, __config);
-globalThis = new Proxy(globalThis, __config); `;
+globalThis = new Proxy(globalThis, __config); 
+// This is Source Code
+`;
 };

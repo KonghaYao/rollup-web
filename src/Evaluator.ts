@@ -27,7 +27,7 @@ export type EnvTag =
 /** 一个单独的 Compiler 执行环境, 专门用于 适配 执行 的环境 */
 export class Evaluator {
     Compiler!: Compiler | Remote<Compiler>;
-    moduleConfig!: Compiler["moduleConfig"];
+    moduleConfig: Compiler["moduleConfig"] = {};
 
     /*  在 Worker 和 Iframe 中 location 会错误！ */
     root = globalThis.location.href;
@@ -55,9 +55,10 @@ export class Evaluator {
         worker,
         root = globalThis.location.href,
         wrap = false,
+        env,
     }: {
         Compiler?: Compiler;
-
+        env?: EnvTag;
         /**
          * 极端情况下覆盖 worker 选项
          */
@@ -67,7 +68,11 @@ export class Evaluator {
     } = {}) {
         if (Compiler) this.Compiler = Compiler;
         if (worker) this.isWorker = worker;
-        if (root) this.root = root;
+        if (env) this.env = env;
+        if (root) {
+            this.root = root;
+            this.moduleConfig.root = root;
+        }
         if (!this.Compiler)
             throw new Error(
                 "Evaluator | Compiler must be built first! Like useWorker() or input a Compiler! "
@@ -97,6 +102,7 @@ export class Evaluator {
                     ModuleWorkerInit();
             }
         }
+
         if (wrap) {
             wrapAll(this.root);
         }

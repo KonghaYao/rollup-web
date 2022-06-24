@@ -16,10 +16,12 @@ export const fetchHook = (
 ) => {
     const SystemJS = useGlobal<any>("System");
 
+    // 环境覆盖参数
+    const banner = environment({ config: moduleConfig }, env);
+
     // 记录 esm import 之后的 Module 的导入代码
     SystemJS.constructor.prototype._esm_module_ = new Map<string, any>();
     SystemJS.shouldFetch = () => true;
-
     const hookName = "fetch";
     SystemJS.constructor.prototype[hookName] = async function (
         ...args: [string, any]
@@ -51,7 +53,7 @@ export const fetchHook = (
             code = await LoadEsmModule(url);
         }
         if (["worker-module", "worker-classic", "iframe"].includes(env)) {
-            code = environment({ config: moduleConfig }) + code;
+            code = banner + code;
         }
         return new Response(
             new Blob([code], {

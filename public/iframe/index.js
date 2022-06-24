@@ -1,2 +1,2 @@
 import * as A from "../wasm/wasm.js";
-console.log(A);
+console.log(A, location);
