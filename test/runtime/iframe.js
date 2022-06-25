@@ -1,4 +1,4 @@
-import { createWorker, Evaluator } from "../../dist/index.js";
+import { Evaluator } from "../../dist/index.js";
 import { IframeEnv } from "../../dist/Iframe.js";
 
 const Eval = new Evaluator();

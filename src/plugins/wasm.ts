@@ -19,7 +19,6 @@ const _wasm = (config: Config): Plugin => {
             const ext = checkExtension(thisFile, config.extensions!);
             // 只对 绝对路径进行拦截解析，
             if (isURLString(thisFile) && ext) {
-                console.warn(thisFile);
                 return { external: !isEntry, id: thisFile };
             }
         },

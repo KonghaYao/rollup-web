@@ -45,9 +45,11 @@ const _web_module = ({
         async resolveId(thisFile, importer = "", { isEntry }) {
             const first = thisFile.charAt(0);
             if (isURLString(thisFile) && isMatch(thisFile, ignore)) {
-                return { external: true, id: thisFile };
+                return { external: !isEntry, id: thisFile };
             }
-
+            if (thisFile.startsWith("blob:")) {
+                return thisFile;
+            }
             /* 是否存在于打包范围 */
             const isInArea =
                 isURLString(thisFile) &&

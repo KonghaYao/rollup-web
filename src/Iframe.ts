@@ -48,7 +48,6 @@ export class IframeEnv {
         const html = await fetch(baseURL).then((res) => res.text());
 
         const file = await this.transformHTML(baseURL, html);
-        // console.log(file.value);
         return URL.createObjectURL(
             new File([file.value], "index.html", { type: "text/html" })
         );
@@ -63,56 +62,50 @@ export class IframeEnv {
 
         return rehype()
             .use(() => (tree) => {
+                const collection: {
+                    normal: string[];
+                    defer: string[];
+                    async: string[];
+                } = {
+                    normal: [],
+                    defer: [],
+                    async: [],
+                };
+                const findTag = (props: any) =>
+                    props.async ? "async" : props.defer ? "defer" : "normal";
+                // 保留 head 标签，添加脚本
+                let head: any;
                 visit(tree, ["element"], (node) => {
                     if (node.type !== "element") return;
                     const { tagName, properties = {} } = node;
                     const { src, href } = properties;
                     if (tagName === "head") {
-                        //头部插入沟通函数
-                        node.children.unshift({
-                            type: "element",
-                            tagName: "script",
-                            properties: {
-                                src: Setting.NPM(
-                                    "@konghayao/iframe-box@0.0.5/dist/iframeCallback.umd.js"
-                                ),
-                                ignore: true,
-                            },
-                        } as any);
+                        head = node;
                         return;
                     }
-                    // TODO 解决 script 执行顺序的问题
                     if (tagName === "script") {
                         if (src && !node.properties!.ignore) {
-                            // 将 具有 src 地址的 script 转化为延迟函数
-                            node.children = [
-                                {
-                                    type: "text",
-                                    value: `addEventListener('__rollup_init__',()=>globalThis.__Rollup_Env__.evaluate("${URLResolve(
-                                        src as string,
-                                        baseURL
-                                    )}"))`,
-                                },
-                            ];
-                            // 取消掉 script 的 src， 防止出现错误
-                            node.properties!.src = false;
-                            return;
-                        }
-                        if (node.children && node.children.length) {
+                            collection[findTag(node.properties)].push(
+                                URLResolve(src as string, baseURL)
+                            );
+                        } else if (node.children && node.children.length) {
                             // 将 script 文本 转化为延迟函数
                             node.children = node.children.map((i) => {
                                 if (i.type === "text") {
-                                    i.value = `addEventListener('__rollup_init__',()=>{
-                                        const script = document.createElement('script')
-                                        script.innerHTML=\`${i.value}\`;
-                                        document.head.appendChild(script)
-                                        })`;
+                                    collection[findTag(node.properties)].push(
+                                        URL.createObjectURL(
+                                            new File([i.value], "index.js", {
+                                                type: "text/javascript",
+                                            })
+                                        )
+                                    );
                                 }
                                 return i;
                             });
                             node.properties!.src = false;
-                            return;
                         }
+                        node.properties!.type = "rollup-web/script";
+                        return;
                     }
 
                     // 如果部分 element 也有 地址，那么相对应地替换掉
@@ -121,6 +114,57 @@ export class IframeEnv {
                     if (typeof href === "string")
                         node.properties!.href = URLResolve(href, baseURL);
                 });
+                //头部插入沟通函数
+                head.children.unshift(
+                    {
+                        type: "element",
+                        tagName: "script",
+                        properties: {
+                            // 线程通信注册脚本
+                            src: Setting.NPM(
+                                "@konghayao/iframe-box@0.0.5/dist/iframeCallback.umd.js"
+                            ),
+                            ignore: true,
+                        },
+                    },
+                    {
+                        type: "element",
+                        tagName: "script",
+                        properties: {},
+                        children: [
+                            // 内部脚本顺序执行
+                            {
+                                type: "text",
+                                value: `addEventListener('__rollup_init__',async ()=>{
+                                const collection = ${JSON.stringify(
+                                    collection
+                                )};
+                                const evaluate = (url)=> globalThis.__Rollup_Env__.evaluate(url).then(()=>{
+                                    if(url.startsWith("blob")){
+                                        URL.revokeObjectURL(url);
+                                    }
+                                });
+                                // async 标记
+                                collection.async.forEach((i)=>{
+                                    return evaluate(i)
+                                });
+                                // 正常流程
+                                await collection.normal.reduce(async (promise,i)=>{
+                                    return promise.then(()=>{
+                                        return evaluate(i)
+                                    })
+                                },Promise.resolve());
+                                // defer 推迟标记
+                                await collection.defer.reduce(async (promise,i)=>{
+                                    return promise.then(()=>{
+                                        return evaluate(i);
+                                    })
+                                },Promise.resolve());
+                            })`,
+                            },
+                        ],
+                    }
+                );
             })
             .process(html);
     }
