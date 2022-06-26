@@ -47,6 +47,7 @@ const _web_module = ({
             if (isURLString(thisFile) && isMatch(thisFile, ignore)) {
                 return { external: !isEntry, id: thisFile };
             }
+            // blob URL 直接返回即可
             if (thisFile.startsWith("blob:")) {
                 return thisFile;
             }
@@ -65,7 +66,7 @@ const _web_module = ({
                     /* 解析后缀名 */
                     const current = await ExtensionsCache.get(url);
                     if (current && (await isExist(current))) {
-                        return { id: url, external: !isEntry };
+                        return { id: current, external: !isEntry };
                     }
 
                     //! 添加一个 空白字符的检测，可能空白字符就找到了，所以可以解析
@@ -73,13 +74,14 @@ const _web_module = ({
                         const result = await isExist(addExtension(url, ext));
                         if (result) {
                             await ExtensionsCache.set(url, result);
+
                             return { id: result, external: !isEntry };
                         }
                     }
                 } else {
                     /* 绝对位置或者为模块 */
                     const id = await isExist(url);
-                    return id ? { external: !isEntry, id } : url;
+                    return id ? { external: !isEntry, id } : false;
                 }
             }
             return;
