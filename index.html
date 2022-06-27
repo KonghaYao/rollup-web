@@ -8,5 +8,64 @@
     </head>
     <body></body>
 
-    <script type="module" src=""></script>
+    <script type="module" defer>
+        import "https://fastly.jsdelivr.net/npm/systemjs@6.12.1/dist/system.min.js";
+        globalThis.process = {
+            env: {
+                SYSTEM_BROWSER: false,
+            },
+        };
+        const {
+            resolveAndComposeImportMap,
+            resolveIfNotPlainOrUrl,
+            resolveImportMap,
+        } = await import(
+            "https://fastly.jsdelivr.net/gh/systemjs/systemjs@6.12.1/src/common.js"
+        );
+        const systemJSPrototype = System.__proto__ || System.prototype;
+
+        var importMapPromise = Promise.resolve();
+        systemJSPrototype.importMap = {
+            imports: {},
+            scopes: {},
+            depcache: {},
+            integrity: {},
+        };
+
+        systemJSPrototype.extendImportMap = function (
+            newMap,
+            newMapUrl = globalThis.location.href
+        ) {
+            resolveAndComposeImportMap(newMap, newMapUrl, this.importMap);
+        };
+        const oldResolve = systemJSPrototype.resolve;
+        systemJSPrototype.resolve = function (
+            id,
+            parentUrl = globalThis.location.href
+        ) {
+            return (
+                resolveImportMap(
+                    this.importMap,
+                    resolveIfNotPlainOrUrl(id, parentUrl) || id,
+                    parentUrl
+                ) || oldResolve(id, parentUrl)
+            );
+        };
+
+        System.extendImportMap({
+            imports: {
+                path: "https://esm.sh/path",
+                chai: "https://fastly.jsdelivr.net/npm/chai/+esm",
+
+                binaryen:
+                    "https://fastly.jsdelivr.net/npm/binaryen@108.0.0-nightly.20220528/index.js",
+                long: "https://fastly.jsdelivr.net/npm/long@5.2.0/index.js",
+                assemblyscript:
+                    "https://fastly.jsdelivr.net/npm/assemblyscript@0.20.8/dist/assemblyscript.js",
+                "assemblyscript/asc":
+                    "https://fastly.jsdelivr.net/npm/assemblyscript@0.20.8/dist/asc.js",
+            },
+        });
+        System.import("path");
+    </script>
 </html>
