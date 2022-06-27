@@ -8,7 +8,7 @@ import {
 export interface ImportMap {}
 
 /* 添加 ImportMap 尝试 */
-export const resolveHook = (importMap: ImportMap = {}) => {
+export const resolveHook = (importMap: ImportMap = {}, baseURL: string) => {
     importMap = Object.assign(
         {
             imports: {},
@@ -26,17 +26,14 @@ export const resolveHook = (importMap: ImportMap = {}) => {
     // 注入扩展 importMap 的函数
     systemJSPrototype.extendsImportMap = function (
         newMap: ImportMap,
-        newMapUrl = globalThis.location.href
+        newMapUrl = baseURL
     ) {
         resolveAndComposeImportMap(newMap, newMapUrl, this.importMap);
     };
 
     // 覆盖 resolve
     const oldResolve = systemJSPrototype.resolve;
-    systemJSPrototype.resolve = function (
-        id: string,
-        parentUrl = globalThis.location.href
-    ) {
+    systemJSPrototype.resolve = function (id: string, parentUrl = baseURL) {
         return (
             resolveImportMap(
                 this.importMap,

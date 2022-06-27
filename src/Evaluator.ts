@@ -125,7 +125,7 @@ export class Evaluator {
             () => this.Compiler.CompileSingleFile.bind(this.Compiler),
             this.env
         );
-        resolveHook(this.importMap);
+        resolveHook(this.importMap, this.root);
     }
     /*  创建一个端口通向 Compiler 线程的端口给其他的线程使用 */
     async createCompilerPort(): Promise<MessagePort> {
