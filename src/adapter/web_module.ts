@@ -92,7 +92,7 @@ const _web_module = ({
             try {
                 const code = await readFile(id);
                 log && log(id);
-                return { code: `//${id};\n` + code };
+                return { code: code };
             } catch (e) {
                 return;
             }

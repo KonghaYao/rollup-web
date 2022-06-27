@@ -6,7 +6,19 @@ import {
     /* @ts-ignore */
 } from "./System/common.js";
 interface ImportMap {}
+
+/* 添加 ImportMap 尝试 */
 export const resolveHook = (importMap: ImportMap = {}) => {
+    importMap = Object.assign(
+        {
+            imports: {},
+            scopes: {},
+            depcache: {},
+            integrity: {},
+        },
+        importMap
+    );
+
     const System = useGlobal<any>("System");
     const systemJSPrototype = System.constructor.prototype;
     // 向外暴露 importMap
