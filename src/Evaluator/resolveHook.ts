@@ -5,7 +5,7 @@ import {
     resolveImportMap,
     /* @ts-ignore */
 } from "./System/common.js";
-interface ImportMap {}
+export interface ImportMap {}
 
 /* 添加 ImportMap 尝试 */
 export const resolveHook = (importMap: ImportMap = {}) => {

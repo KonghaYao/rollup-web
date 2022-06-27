@@ -71,15 +71,16 @@ const config = {
         }),
         sky_module({
             cdn: (name) => `https://fastly.jsdelivr.net/npm/${name}/+esm`,
-            rename: {
-                pinia: "pinia@2.0.11/dist/pinia.esm-browser.js/+esm",
-                "vue-router":
-                    "vue-router@4.0.12/dist/vue-router.esm-browser.js",
-                "@vue/devtools-api": "@vue/devtools-api/+esm",
-                vue: "vue@3.2.25/dist/vue.runtime.esm-browser.js",
-            },
+            // rename: {
+            //     pinia: "pinia@2.0.11/dist/pinia.esm-browser.js/+esm",
+            //     "vue-router":
+            //         "vue-router@4.0.12/dist/vue-router.esm-browser.js",
+            //     "@vue/devtools-api": "@vue/devtools-api/+esm",
+            //     vue: "vue@3.2.25/dist/vue.runtime.esm-browser.js",
+            // },
         }),
     ],
+    external: ["vue", "vue-router", "pinia", "@vue/devtools-api"],
 };
 
 const compiler = new Compiler(config, {
@@ -92,5 +93,16 @@ import { Evaluator } from "../../dist/index.js";
 const Eval = new Evaluator();
 await Eval.createEnv({
     Compiler: compiler,
+    importMap: {
+        imports: {
+            pinia: "https://fastly.jsdelivr.net/npm/pinia@2.0.11/dist/pinia.esm-browser.js/+esm",
+            "vue-router":
+                "https://fastly.jsdelivr.net/npm/vue-router@4.0.12/dist/vue-router.esm-browser.js",
+            "@vue/devtools-api":
+                "https://fastly.jsdelivr.net/npm/@vue/devtools-api/+esm",
+            vue: "https://fastly.jsdelivr.net/npm/vue@3.2.25/dist/vue.runtime.esm-browser.js",
+        },
+    },
+    useDataCache: {},
 });
 export const module = await Eval.evaluate("./public/vue-main.ts");

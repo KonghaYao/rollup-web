@@ -12,7 +12,7 @@ import {
     releaseProxy,
     wrap,
 } from "comlink";
-import { resolveHook } from "./Evaluator/resolveHook";
+import { ImportMap, resolveHook } from "./Evaluator/resolveHook";
 import { log } from "./utils/ColorConsole";
 import { createWorker, isInWorker } from "./utils/createWorker";
 import { URLResolve } from "./utils/isURLString";
@@ -51,7 +51,7 @@ export class Evaluator {
         delete this.Compiler;
         this.destroyed = true;
     }
-
+    importMap?: ImportMap;
     /* 初始化环境，进行之后才能够自动进行 Compiler */
     async createEnv({
         Compiler,
@@ -59,8 +59,10 @@ export class Evaluator {
         root = globalThis.location.href,
         wrap = false,
         env,
+        importMap,
     }: {
         Compiler?: Compiler;
+        importMap?: ImportMap;
         env?: EnvTag;
         /**
          * 极端情况下覆盖 worker 选项
@@ -69,6 +71,7 @@ export class Evaluator {
         root?: string;
         wrap?: boolean;
     } = {}) {
+        if (importMap) this.importMap = importMap;
         if (Compiler) this.Compiler = Compiler;
         if (!this.Compiler)
             throw new Error(
@@ -122,7 +125,7 @@ export class Evaluator {
             () => this.Compiler.CompileSingleFile.bind(this.Compiler),
             this.env
         );
-        resolveHook();
+        resolveHook(this.importMap);
     }
     /*  创建一个端口通向 Compiler 线程的端口给其他的线程使用 */
     async createCompilerPort(): Promise<MessagePort> {
