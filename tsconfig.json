@@ -30,6 +30,7 @@
         "src/shim/errors.ts",
         "src/shim/brotli.js",
         "src/shim/loader-utils/lib/interpolateName.js",
-        "src/plugins/worker/worker.module.js"
+        "src/plugins/worker/worker.module.js",
+        "src/Evaluator/System/common.js"
     ]
 }

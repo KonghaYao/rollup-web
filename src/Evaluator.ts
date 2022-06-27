@@ -3,6 +3,7 @@ import { fetchHook } from "./Evaluator/fetchHook";
 import { setGlobal, useGlobal } from "./utils/useGlobal";
 import { Setting } from "./Setting";
 import { ModuleWorkerInit } from "./Evaluator/systemWorker";
+
 import {
     createEndpoint,
     expose,
@@ -11,7 +12,7 @@ import {
     releaseProxy,
     wrap,
 } from "comlink";
-import { resolveHook } from "./Compiler/resolveHook";
+import { resolveHook } from "./Evaluator/resolveHook";
 import { log } from "./utils/ColorConsole";
 import { createWorker, isInWorker } from "./utils/createWorker";
 import { URLResolve } from "./utils/isURLString";

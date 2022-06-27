@@ -1,32 +1,18 @@
-import merge from "lodash-es/merge";
-import { useGlobal } from "src/utils/useGlobal";
+import { useGlobal } from "../utils/useGlobal";
+import {
+    resolveAndComposeImportMap,
+    resolveIfNotPlainOrUrl,
+    resolveImportMap,
+    /* @ts-ignore */
+} from "./System/common.js";
 interface ImportMap {}
-export const resolveHook = async (importMap: ImportMap = {}) => {
-    importMap = merge(
-        {
-            imports: {},
-            scopes: {},
-            depcache: {},
-            integrity: {},
-        },
-        importMap
-    );
-    const {
-        /* @ts-ignore */
-        resolveAndComposeImportMap,
-        /* @ts-ignore */
-        resolveIfNotPlainOrUrl,
-        /* @ts-ignore */
-        resolveImportMap,
-    } = await import(
-        "https://fastly.jsdelivr.net/gh/systemjs/systemjs@6.12.1/src/common.js"
-    );
+export const resolveHook = (importMap: ImportMap = {}) => {
     const System = useGlobal<any>("System");
-    const systemJSPrototype = System.__proto__ || System.prototype;
+    const systemJSPrototype = System.constructor.prototype;
     // 向外暴露 importMap
     systemJSPrototype.importMap = importMap;
     // 注入扩展 importMap 的函数
-    systemJSPrototype.extendImportMap = function (
+    systemJSPrototype.extendsImportMap = function (
         newMap: ImportMap,
         newMapUrl = globalThis.location.href
     ) {
