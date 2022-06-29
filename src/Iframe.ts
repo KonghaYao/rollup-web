@@ -4,23 +4,38 @@ import { threadInit } from "./iframe/threadInit";
 import { URLResolve } from "./utils/isURLString";
 import { wrapper } from "./iframe/wrapper";
 
+/* IframeEnv 是创建一个 iframe 对象进行整个页面渲染的操作，一般使用在需要进行封装的项目中 */
 export class IframeEnv {
+    destroy() {}
+    /* 内部 html 文件的虚拟地址 */
+    root!: string;
     async mount({
         container = document.body,
+        /* src 是获取 html 文件的地址，可以通过 root 进行修改 */
         src,
+        getFile,
         port,
+        root,
     }: {
         container?: HTMLElement;
         src: string;
         port: MessagePort;
+        getFile?: IframeEnv["getFile"];
+        root?: string;
     }) {
+        if (typeof getFile === "function") this.getFile = getFile;
+        if (root) {
+            this.root = root;
+        } else {
+            root = src;
+        }
         const box = new IframeBox();
         box.src = await this.createSrc(src);
         box.sandbox += " allow-same-origin";
         container.appendChild(box);
 
         return box.ready.then(async (api) => {
-            await api.runCode(`${wrapper(src)}
+            await api.runCode(`${wrapper(this.root)}
             (${threadInit.toString()})();`);
             // Evaluator 初始化
             box.frame.contentWindow!.addEventListener(
@@ -29,7 +44,7 @@ export class IframeEnv {
                     box.frame.contentWindow!.postMessage(
                         {
                             password: "__rollup_init__",
-                            localURL: src,
+                            localURL: this.root,
                             port,
                         },
                         "*",
@@ -40,14 +55,16 @@ export class IframeEnv {
             );
         });
     }
+    async getFile(baseURL: string) {
+        return fetch(baseURL).then((res) => res.text());
+    }
     /**
      * 重写 iframe 内部的 HTML,并将其转化为 blob URL
      * @param baseURL html 的位置，相对于 location
      */
     async createSrc(baseURL: string) {
-        const html = await fetch(baseURL).then((res) => res.text());
-
-        const file = await this.transformHTML(baseURL, html);
+        const html = await this.getFile(baseURL);
+        const file = await this.transformHTML(this.root, html);
         return URL.createObjectURL(
             new File([file.value], "index.html", { type: "text/html" })
         );
@@ -89,7 +106,7 @@ export class IframeEnv {
                                 URLResolve(src as string, baseURL)
                             );
                         } else if (node.children && node.children.length) {
-                            // 将 script 文本 转化为延迟函数
+                            // 将 script 文本 转化为 Blob URL  并加以延迟
                             node.children = node.children.map((i) => {
                                 if (i.type === "text") {
                                     collection[findTag(node.properties)].push(
@@ -102,7 +119,6 @@ export class IframeEnv {
                                 }
                                 return i;
                             });
-                            node.properties!.src = false;
                         }
                         node.properties!.type = "rollup-web/script";
                         return;
@@ -145,20 +161,14 @@ export class IframeEnv {
                                     }
                                 });
                                 // async 标记
-                                collection.async.forEach((i)=>{
-                                    return evaluate(i)
-                                });
+                                collection.async.forEach((i)=>evaluate(i));
                                 // 正常流程
                                 await collection.normal.reduce(async (promise,i)=>{
-                                    return promise.then(()=>{
-                                        return evaluate(i)
-                                    })
+                                    return promise.then(()=>evaluate(i))
                                 },Promise.resolve());
                                 // defer 推迟标记
                                 await collection.defer.reduce(async (promise,i)=>{
-                                    return promise.then(()=>{
-                                        return evaluate(i);
-                                    })
+                                    return promise.then(()=> evaluate(i))
                                 },Promise.resolve());
                             })`,
                             },
