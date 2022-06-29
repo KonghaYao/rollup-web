@@ -30,7 +30,7 @@ const _web_module = ({
     extensions = [],
     extraBundle,
     /* 可以自定义获取方式 */
-    adapter = WebFetcher,
+    adapter = WebFetcher(),
     ignore = [],
 }: ModuleConfig = {}) => {
     const { isExist, readFile } = adapter;

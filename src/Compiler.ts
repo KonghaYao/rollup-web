@@ -140,7 +140,7 @@ export class Compiler {
 
         if (isCached) {
             const hasNewer = await (
-                this.moduleConfig.adapter || WebFetcher
+                this.moduleConfig.adapter || WebFetcher()
             ).isNew(url, this.reporter.lastEvaluate.time);
             if (hasNewer) return false;
             log.green(` System fetch | cache ` + url);

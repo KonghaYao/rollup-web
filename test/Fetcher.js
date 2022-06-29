@@ -1,9 +1,9 @@
 import { module, port } from "./runtime/Fetcher.js";
-import { fs } from "../dist/adapter/Fetcher/FSFetcher.js";
+import { FS } from "../dist/adapter/Fetcher/FSFetcher.js";
 
 describe("Fetcher 替换测试 线程测试", async () => {
-    console.log(module, fs);
-
+    console.log(module, FS);
+    const fs = new FS("test");
     await Promise.all(
         [
             "../public/iframe/index.js",

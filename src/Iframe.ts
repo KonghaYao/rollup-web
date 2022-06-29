@@ -27,6 +27,7 @@ export class IframeEnv {
         if (root) {
             this.root = root;
         } else {
+            this.root = src;
             root = src;
         }
         const box = new IframeBox();

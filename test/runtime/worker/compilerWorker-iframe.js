@@ -20,7 +20,7 @@ const compiler = new Compiler(config, {
     log(url) {
         console.log("%c Download ==> " + url, "color:green");
     },
-    adapter: FSFetcher,
+    adapter: FSFetcher("test"),
     extraBundle: ["https://fastly.jsdelivr.net/npm/brotli-wasm*/**"],
     ignore: ["http://localhost:8888/package/rollup-web/dist/plugins/**"],
 });
