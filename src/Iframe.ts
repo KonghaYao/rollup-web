@@ -7,9 +7,11 @@ import { wrapper } from "./iframe/wrapper";
 /* IframeEnv 是创建一个 iframe 对象进行整个页面渲染的操作，一般使用在需要进行封装的项目中 */
 export class IframeEnv {
     async destroy() {
-        this.port.close();
+        this.iframeBox.remove();
+        // ? 注意, port 已经传递给 iframe ，无法调用，但是 iframe 被销毁， port 不做处理
     }
     port!: MessagePort;
+    iframeBox!: IframeBox;
     /* 内部 html 文件的虚拟地址 */
     root!: string;
     async mount({
@@ -30,6 +32,7 @@ export class IframeEnv {
         this.port = port;
         this.root = root || src;
         const box = new IframeBox();
+        this.iframeBox = box;
         box.src = await this.createSrc(src);
         box.sandbox += " allow-same-origin";
         container.appendChild(box);

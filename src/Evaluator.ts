@@ -131,8 +131,10 @@ export class Evaluator {
     async createCompilerPort(): Promise<MessagePort> {
         console.warn("创建端口");
         if ((this.Compiler as Remote<Compiler>)[createEndpoint]) {
+            // worker Compiler
             return (this.Compiler as Remote<Compiler>)[createEndpoint]();
         } else {
+            // 主线程 Compiler
             const { port1, port2 } = new MessageChannel();
             expose(this.Compiler, port2);
             return port1;
