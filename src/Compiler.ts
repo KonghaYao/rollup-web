@@ -40,6 +40,26 @@ type ImportTool = (url: string) => void | Promise<void>;
 export class Compiler {
     System = useGlobal<any>("System");
     inWorker = isInWorker();
+    destroyed = false;
+    destroy() {
+        if (this.inWorker) {
+            // 在线程中直接关闭线程
+            return self.close();
+        } else {
+            const names = [
+                "System",
+                "options",
+                "plugins",
+                "moduleCache",
+                "moduleConfig",
+                "RollupCache",
+            ] as (keyof Compiler)[];
+            names.map((i) => {
+                this[i] = null;
+            });
+        }
+        this.destroyed = true;
+    }
     constructor(
         /* input 和 output 将会被覆盖 */
         public options: RollupOptions,
