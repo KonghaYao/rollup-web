@@ -3,10 +3,10 @@ export function destroyIframe(iframe: HTMLIFrameElement) {
     iframe.src = "about:blank";
 
     try {
-        iframe.contentWindow!.document.write("");
-        iframe.contentWindow!.document.clear();
+        iframe.contentWindow?.document.write("");
+        iframe.contentWindow?.document.clear();
     } catch (e) {}
 
     //把iframe从页面移除
-    iframe.parentNode!.removeChild(iframe);
+    iframe.parentNode?.removeChild(iframe);
 }
