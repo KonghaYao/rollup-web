@@ -3,11 +3,13 @@ import { Setting } from "./Setting";
 import { threadInit } from "./iframe/threadInit";
 import { URLResolve } from "./utils/isURLString";
 import { wrapper } from "./iframe/wrapper";
+import { destroyIframe } from "./utils/destroyIframe";
 
 /* IframeEnv 是创建一个 iframe 对象进行整个页面渲染的操作，一般使用在需要进行封装的项目中 */
 export class IframeEnv {
     async destroy() {
         this.iframeBox.remove();
+        destroyIframe(this.iframeBox.frame);
         // ? 注意, port 已经传递给 iframe ，无法调用，但是 iframe 被销毁， port 不做处理
     }
     port!: MessagePort;
