@@ -1,6 +1,9 @@
 import Post from "./index.mdx";
-import { render } from "react-dom";
-import { MDXProvider } from "@mdx-js/react";
+// react version
+// import { render } from "react-dom";
+// import { MDXProvider } from "@mdx-js/react";
+import { render } from "solid-js/web";
+import { MDXProvider } from "solid-jsx/jsx-runtime";
 
 function App() {
     return (
