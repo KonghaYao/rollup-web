@@ -36,7 +36,7 @@ export type CompilerModuleConfig = ModuleConfig & {
 };
 type ImportTool = (url: string) => void | Promise<void>;
 
-/* Compiler 是一个浏览器打包环境，需要 systemjs 支持 */
+/* Compiler 是一个打包器 Server ，执行环境请查看 Evaluator*/
 export class Compiler {
     System = useGlobal<any>("System");
     inWorker = isInWorker();

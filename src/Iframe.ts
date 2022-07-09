@@ -41,7 +41,7 @@ export class IframeEnv {
 
         return box.ready.then(async (api) => {
             await api.runCode(`${wrapper(this.root)}
-            (${threadInit.toString()})();`);
+            (${threadInit})();`);
             // Evaluator 初始化
             box.frame.contentWindow!.addEventListener(
                 "__rollup_ready__",

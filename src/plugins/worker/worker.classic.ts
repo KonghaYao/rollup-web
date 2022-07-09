@@ -86,6 +86,6 @@ const ClassicInit = () => {
     );
 };
 export const classicWorkerURL = createModule(
-    `(${ClassicInit.toString().replace("$version$", Setting.workerVersion)})()`,
+    `(${ClassicInit.toString().replace("$version$", Setting.version)})()`,
     "worker.classic.js"
 );

@@ -1,5 +1,5 @@
 import { ModuleConfig } from "../../adapter/web_module";
-
+/* 覆盖全局的 Location */
 export function createLocationCode(env: string, config: ModuleConfig) {
     let locationCode;
     if (env === "iframe") {

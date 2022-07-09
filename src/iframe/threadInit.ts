@@ -1,11 +1,13 @@
+import { Setting } from "src/Setting";
+
 /* 这个是直接被 String 放置在 iframe 中的代码，所以不能使用外部的参数 */
-export const threadInit = async () => {
+export const threadInit = (async () => {
     // const { Evaluator } = await import(
     //     "http://localhost:8888/package/rollup-web/dist/index.js"
     // );
     /* @ts-ignore */
     const { Evaluator } = await import(
-        "https://fastly.jsdelivr.net/npm/rollup-web@4.3.3/dist/index.js"
+        "https://fastly.jsdelivr.net/npm/rollup-web@$Version$/dist/index.js"
     );
     const Eval = new Evaluator();
     (globalThis as any).__Rollup_Env__ = Eval;
@@ -28,4 +30,6 @@ export const threadInit = async () => {
     addEventListener("beforeunload", () => {
         Eval.destroy();
     });
-};
+})
+    .toString()
+    .replace("$Version$", Setting.version);

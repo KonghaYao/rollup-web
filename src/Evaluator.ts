@@ -119,7 +119,7 @@ export class Evaluator {
     env: EnvTag = this.isWorker ? (("worker-" + this.isWorker) as any) : "main";
     /* 链接 SystemJS */
     HookSystemJS() {
-        // 只是异步地使用 cache 内的函数，所以可以这样子传递 proxy
+        // 只是异步地使用 cache 内的函数，所以可以传递 proxy
         fetchHook(
             this.moduleConfig,
             () => this.Compiler.CompileSingleFile.bind(this.Compiler),
