@@ -1,4 +1,4 @@
-import { Setting } from "src/Setting";
+import { Setting } from "../Setting";
 
 /* 这个是直接被 String 放置在 iframe 中的代码，所以不能使用外部的参数 */
 export const threadInit = (async () => {
