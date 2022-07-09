@@ -37,8 +37,10 @@ export const wrapRequest = function (baseURL: string) {
             // 注意，只拦截字符串，而不拦截 url，
             // 因为 url 可能是已经被 wrap 的
             if (typeof url === "string") {
+                /* @ts-ignore */
                 return new target(new URL(url, baseURL), options);
             }
+            /* @ts-ignore */
             return new target(url, options);
         },
     });
@@ -48,6 +50,7 @@ export const wrapFetch = function (baseURL: string) {
     const realFetch = globalThis.fetch;
     globalThis.fetch = function (url, options) {
         if (typeof url === "string") {
+            /* @ts-ignore */
             return realFetch(new URL(url, baseURL), options);
         }
         return realFetch(url, options);

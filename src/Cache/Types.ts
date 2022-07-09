@@ -1,5 +1,5 @@
 import { LocalCache } from "./LocalCache";
-type OriginPlugin<T> = {
+export type OriginPlugin<T> = {
     /**
      * 如果有一个插件返回值，那么立即返回值 ，
      * 若返回 null, 那么直接结束；

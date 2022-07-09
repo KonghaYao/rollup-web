@@ -1,4 +1,4 @@
-import { CachePlugin, CacheKey } from "./Types";
+import { CachePlugin, CacheKey, OriginPlugin } from "./Types";
 
 export class LocalCache<T = string> {
     constructor(public name: string) {}
@@ -8,12 +8,10 @@ export class LocalCache<T = string> {
         this.plugins.map((i) => {});
         return this;
     }
-    private async walker<
-        Key extends CacheKey<T>,
-        Func extends CachePlugin<T>[Key],
-        Args extends Parameters<Func>,
-        Result extends ReturnType<Func>
-    >(key: Key, ...args: Args): Promise<Result | null> {
+    private async walker<Key extends keyof OriginPlugin<T>>(
+        key: Key,
+        ...args: Parameters<OriginPlugin<T>[Key]>
+    ): Promise<ReturnType<OriginPlugin<T>[Key]> | null> {
         for (let plugin of this.plugins) {
             if (typeof plugin[key] !== "function") continue;
             const result = await (plugin[key] as any).apply(this, args);
