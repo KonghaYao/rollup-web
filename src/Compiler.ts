@@ -6,7 +6,7 @@ import { createModuleCache } from "./Cache";
 import { Plugin, RollupCache } from "rollup-web";
 import { bareURL, URLResolve } from "./utils/isURLString";
 import { isInWorker } from "./utils/createWorker";
-import { expose, proxy } from "comlink";
+import { expose, proxy, transfer } from "comlink";
 import { LocalCache } from "./Cache/LocalCache";
 import { log } from "./utils/ColorConsole";
 import { WebFetcher } from "./adapter/Fetcher/WebFetcher";
@@ -118,8 +118,8 @@ export class Compiler {
 
         const url = URLResolve(path, this.moduleConfig.root!);
 
-        const isExist = await this.moduleCache.has(url);
-        if (!isExist) await this.CompileSingleFile(url);
+        /* 内部进行去重 */
+        await this.CompileSingleFile(url);
 
         if (this.inWorker && !importTool) {
             // 在线程中若没有环境则直接报错
@@ -149,6 +149,7 @@ export class Compiler {
             return result;
         }
     }
+
     RollupCache: RollupCache = {
         modules: [],
         plugins: {},
@@ -167,6 +168,13 @@ export class Compiler {
             return (await this.moduleCache.get(url)) || "";
         }
         return false;
+    }
+    /* dev */
+    async CompileMultiFile(paths: string[]) {
+        const codes = await Promise.all(
+            paths.map((path) => this.CompileSingleFile(path))
+        );
+        return this.inWorker ? transfer(codes, [codes]) : codes;
     }
     /* 编译单个代码，不宜单独使用 */
     async CompileSingleFile(url: string): Promise<string> {
