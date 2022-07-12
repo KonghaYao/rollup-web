@@ -11,7 +11,7 @@ import { EnvTag } from "../Evaluator";
  */
 export const fetchHook = (
     moduleConfig: Compiler["moduleConfig"],
-    rollupCode: () => (code: string) => Promise<string>,
+    rollupCode: (code: string) => Promise<string>,
     env: EnvTag
 ) => {
     const SystemJS = useGlobal<any>("System");
@@ -29,8 +29,7 @@ export const fetchHook = (
         const [url] = args;
 
         let code: string;
-        const extraBundle = moduleConfig.extraBundle;
-        const ignore = moduleConfig.ignore || [];
+        const { extraBundle, ignore = [], root } = moduleConfig;
         // console.log(ignore, url);
         if (isMatch(url, ignore)) {
             /* 默认使用 esm import 方式导入代码 */
@@ -43,12 +42,12 @@ export const fetchHook = (
                 extraBundle.length &&
                 /* 如果设置了打包区域，那么将会按照这些进行打包 */
                 isMatch(url, extraBundle)) ||
-            url.startsWith(new URL(moduleConfig.root!).origin)
+            url.startsWith(new URL(root!).origin)
         ) {
             // console.log(cacheUrl, url);
 
             /* 全打包或者被选中打包 */
-            code = await rollupCode()(url);
+            code = await rollupCode(url);
             // console.log(url, "\n", code);
         } else {
             /* 默认使用 esm import 方式导入代码 */

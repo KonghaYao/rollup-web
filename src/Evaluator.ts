@@ -17,6 +17,7 @@ import { log } from "./utils/ColorConsole";
 import { createWorker, isInWorker } from "./utils/createWorker";
 import { URLResolve } from "./utils/isURLString";
 import { wrapAll } from "./iframe/wrapper";
+import { BundleBuffer } from "./Evaluator/BundleBuffer";
 
 export type EnvTag =
     | "main"
@@ -117,12 +118,18 @@ export class Evaluator {
         return this;
     }
     env: EnvTag = this.isWorker ? (("worker-" + this.isWorker) as any) : "main";
+    timeBuffer!: BundleBuffer<string, string>;
     /* 链接 SystemJS */
     HookSystemJS() {
+        this.timeBuffer = new BundleBuffer<string, string>(100, (paths) => {
+            return this.Compiler.CompileMultiFile(paths);
+        });
         // 只是异步地使用 cache 内的函数，所以可以传递 proxy
         fetchHook(
             this.moduleConfig,
-            () => this.Compiler.CompileSingleFile.bind(this.Compiler),
+            (path: string) => {
+                return this.timeBuffer.send(path);
+            },
             this.env
         );
         resolveHook(this.importMap, this.root);
