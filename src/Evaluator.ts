@@ -141,22 +141,12 @@ export class Evaluator {
         }
     }
     /* 执行代码 */
-    async evaluate<T>(path: string) {
+    async evaluate<T>(path: string): Promise<T> {
         const System = useGlobal<any>("System");
 
-        // 不需要跨线程进行环境数据传输，所以用一个数组承接即可
-        // 需要这样子进行一次初始化
-        let result = undefined as any as T;
-
-        const cb = async (url: string) => {
-            await System.import(url).then((res: T) => (result = res));
-        };
         // 传递 第二回调函数 时不会在 Compiler 进行执行，而是返回给 Evaluator 进行处理
         const url = URLResolve(path, this.root);
-        /* @ts-ignore */
-        await this.Compiler.evaluate(url, proxy(cb));
-
-        return result;
+        return System.import(url);
     }
     /* 在所在环境启动一个 Compiler Worker 或者是使用 worker port */
     async useWorker(

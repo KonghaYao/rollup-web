@@ -174,7 +174,7 @@ export class Compiler {
         const codes = await Promise.all(
             paths.map((path) => this.CompileSingleFile(path))
         );
-        return this.inWorker ? transfer(codes, [codes]) : codes;
+        return codes;
     }
     /* 编译单个代码，不宜单独使用 */
     async CompileSingleFile(url: string): Promise<string> {
