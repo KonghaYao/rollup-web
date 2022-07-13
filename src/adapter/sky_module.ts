@@ -1,3 +1,4 @@
+import { isMatch } from "picomatch";
 import { Plugin } from "rollup";
 import { isURLString, URLResolve } from "../utils/isURLString";
 type CDNCreator = (cdn: string) => string;
@@ -28,7 +29,7 @@ export const sky_module = ({
             if (isURLString(thisFile)) return;
             // 当有前缀时，进行 ignore
             if (thisFile[0] !== "." && thisFile[0] !== "/") {
-                if (ignore?.includes(thisFile)) return;
+                if (ignore && isMatch(thisFile, ignore)) return;
                 // 重命名模块
                 thisFile = thisFile in rename ? rename[thisFile] : thisFile;
                 // 全解析
