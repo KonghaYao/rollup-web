@@ -3,7 +3,7 @@ import { wrapPlugin } from "../utils/wrapPlugin";
 import Postcss, { AcceptedPlugin } from "postcss";
 import atImport from "postcss-import";
 import importURL from "./postcss/import-url";
-import { loadFromRollupCache } from "./postcss/loadFromRollupCache";
+import { loadFromRollup } from "./postcss/loadFromRollupCache";
 import { URLResolve } from "../utils/isURLString";
 
 /**
@@ -38,14 +38,14 @@ export const _postcss = ({
                 // 这是为了可以获取标记，区分 url
                 return "//" + encodeURIComponent(url);
             },
-            load(p) {
-                if (p.startsWith("//")) p = decodeURIComponent(p.slice(2));
-                if (filter && filter(p)) return p;
-                return loadFromRollupCache.call(
-                    Context,
-                    p,
-                    Info
-                ) as Promise<string>;
+            async load(url) {
+                if (url.startsWith("//"))
+                    url = decodeURIComponent(url.slice(2));
+
+                if (filter && filter(url)) return url;
+                console.log(url);
+                await loadFromRollup.call(Context, url, Info);
+                return Context.cache.get(url);
             },
         }),
         /**
@@ -55,8 +55,11 @@ export const _postcss = ({
         importURL({
             /* 绝对路径直接忽略就好 */
             async load(url, options) {
+                if (url.startsWith("//"))
+                    url = decodeURIComponent(url.slice(2));
                 if (filter && filter(url)) return;
-                return await loadFromRollupCache.call(Context, url, Info);
+                await loadFromRollup.call(Context, url, Info);
+                return Context.cache.get(url);
             },
         }),
     ];
