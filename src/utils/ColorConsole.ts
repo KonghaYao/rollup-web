@@ -15,7 +15,10 @@ const inner = Object.entries(colors).reduce(
             console.log(
                 ...args.flatMap((i) => {
                     if (typeof i === "string")
-                        return ["%c" + i, "background-color:#" + hex];
+                        return [
+                            "%c" + i,
+                            `background-color:#${hex};color:black;`,
+                        ];
                     return [i];
                 })
             );

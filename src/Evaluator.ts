@@ -46,6 +46,7 @@ export class Evaluator {
     destroyed = false;
     /* 销毁执行环境 */
     destroy() {
+        this.timeBuffer.destroy();
         /* @ts-ignore */
         if (this.Compiler[releaseProxy]) this.Compiler[releaseProxy]();
         /* @ts-ignore */
