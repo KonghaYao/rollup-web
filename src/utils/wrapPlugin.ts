@@ -20,11 +20,8 @@ export const checkExtension = (path: string, extensions: string[]) => {
     return extensions.includes(ext) && ext;
 };
 
-export const checkPrefix = (path: string, prefix: string[]) => {
-    return prefix.find((i) => path.startsWith(i));
-};
-export const checkSuffix = (path: string, prefix: string[]) => {
-    return prefix.find((i) => path.endsWith(i));
+export const checkSuffix = (path: string, suffix: string[]) => {
+    return suffix.find((i) => path.endsWith(i));
 };
 interface ExtraOptions {
     exclude?: FilterPattern;
@@ -32,7 +29,6 @@ interface ExtraOptions {
     extensions?: string[];
     __modifyId?: (result: ResolveIdResult, importer: string) => ResolveIdResult;
     loadCache?: false | string;
-    _prefix?: string[];
     _suffix?: string[];
 }
 /** 对于插件的简单封装 */
@@ -115,20 +111,18 @@ function WrapLoad<T>(
 
         //! 前缀和后缀有一个符合即可
         // vue3 使用 suffix 进行检测
-        if (
-            Options._prefix &&
-            Options._prefix.length &&
-            checkPrefix(id, Options._prefix) &&
-            Options._suffix &&
-            Options._suffix.length &&
-            checkSuffix(id, Options._suffix)
-        ) {
-            // 前缀名检查
-            console.warn("通过前缀测试", id);
-        } else if (Options.extensions) {
+        if (Options.extensions) {
             // 后缀名检查
             const result = checkExtension(id, Options.extensions);
             if (result === false) return;
+        } else if (
+            !(
+                Options._suffix &&
+                Options._suffix.length &&
+                checkSuffix(id, Options._suffix)
+            )
+        ) {
+            return;
         }
         return origin.load!.call(this, id);
     } as LoadHook;

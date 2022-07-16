@@ -1,3 +1,4 @@
+/* 异步创建一个 worker，等候第一个信息返回 */
 export const createWorker = (
     url: string | URL,
     options?: WorkerOptions,
@@ -20,6 +21,7 @@ export const createWorker = (
     });
 };
 
+/* 判断 worker 环境 */
 export const isInWorker = (): "classic" | "module" | false => {
     if (
         globalThis.self &&

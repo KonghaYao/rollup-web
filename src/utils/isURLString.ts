@@ -10,3 +10,17 @@ export const URLResolve = (relative: string, baseURL: string) => {
 };
 export const bareURL = (url: string) => url.split(/\#|\?/g)[0];
 export const URLDir = (url: string) => bareURL(url).replace(/\/[^\/]*?$/, "/");
+
+/* 将远程 URL 转化为 Blob URL */
+export const RemoteToBlobURL = async (
+    url: string,
+    name = "index",
+    config: FilePropertyBag = {
+        type: "application/javascript",
+    }
+) => {
+    const res = await fetch(url);
+    const blob = await res.blob();
+    const file = new File([blob], name, config);
+    return URL.createObjectURL(file);
+};

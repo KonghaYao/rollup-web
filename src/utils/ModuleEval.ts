@@ -1,14 +1,15 @@
+import { RemoteToBlobURL } from "./isURLString";
+
 /* 创建 ESM 代码的 URL */
 export const createModule = (str: string, fileName: string) => {
     return URL.createObjectURL(
         new File([str], fileName, { type: "application/javascript" })
     );
 };
+
+/* 创建 ESM 代码的 URL */
 export const createLocalModule = async (url: string, fileName: string) => {
-    const blob = await fetch(url).then((res) => res.blob());
-    return URL.createObjectURL(
-        new File([blob], fileName, { type: "application/javascript" })
-    );
+    return RemoteToBlobURL(url, fileName);
 };
 /* 创建 ESM 代码的 URL */
 export const createCSSModule = (str: string, fileName: string) => {

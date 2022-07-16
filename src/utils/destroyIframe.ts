@@ -1,3 +1,4 @@
+/* 移除 Iframe 元素 */
 export function destroyIframe(iframe: HTMLIFrameElement) {
     //把iframe指向空白页面，这样可以释放大部分内存。
     iframe.src = "about:blank";

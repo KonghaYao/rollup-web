@@ -1,11 +1,11 @@
 export { Setting } from "./Setting";
 export * from "./adapter/index";
-export * from "./Compiler/rollup";
-export * from "./utils/ModuleEval";
-export * from "./utils/loadScript";
 export * from "./Compiler";
 export * from "./Evaluator";
 export * from "./Helper/PluginLoader";
-export { createWorker } from "./utils/createWorker";
+export * from "./utils/ModuleEval";
+export * from "./utils/loadScript";
+export { createWorker, isInWorker } from "./utils/createWorker";
 export { LocalCache } from "./Cache/LocalCache";
 export * as Cache from "./Cache/index";
+export { wrapPlugin, checkExtension } from "./utils/wrapPlugin";

@@ -6,7 +6,7 @@ import { createModuleCache } from "./Cache";
 import { Plugin, RollupCache } from "rollup-web";
 import { bareURL, URLResolve } from "./utils/isURLString";
 import { isInWorker } from "./utils/createWorker";
-import { expose, proxy, transfer } from "comlink";
+import { expose, proxy } from "comlink";
 import { LocalCache } from "./Cache/LocalCache";
 import { log } from "./utils/ColorConsole";
 import { WebFetcher } from "./adapter/Fetcher/WebFetcher";
