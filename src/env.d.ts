@@ -2,7 +2,7 @@ declare module "https://*" {
     const a: any;
     export default a;
 }
-declare module "rollup-web" {
+declare module "rollup-remote-cdn" {
     export * from "rollup";
 }
 declare var __Rollup_baseURL__!: string;

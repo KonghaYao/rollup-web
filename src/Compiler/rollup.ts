@@ -1,4 +1,4 @@
-import { rollup, RollupOptions } from "rollup-web";
+import { rollup, RollupOptions } from "rollup-remote-cdn";
 /** 单独使用 rollup 进行打包 */
 export const useRollup = async (options: RollupOptions) => {
     return rollup(options).then((res) => {

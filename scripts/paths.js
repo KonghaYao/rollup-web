@@ -4,7 +4,7 @@ export const Skypack = "https://cdn.skypack.dev/";
     统一的 paths 替换项
 */
 export const paths = {
-    "rollup-web": npmCDN + "rollup/dist/es/rollup.browser.js",
+    "rollup-remote-cdn": npmCDN + "rollup/dist/es/rollup.browser.js",
     "@swc/core": npmCDN + "@swc/wasm-web/wasm-web.js",
     "@swc/wasm-web": npmCDN + "@swc/wasm-web/wasm-web.js",
     "process-bundle": npmCDN + "process/browser.js/+esm",

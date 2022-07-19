@@ -23,7 +23,7 @@ export const checkExtension = (path: string, extensions: string[]) => {
 export const checkSuffix = (path: string, suffix: string[]) => {
     return suffix.find((i) => path.endsWith(i));
 };
-interface ExtraOptions {
+export interface ExtraOptions {
     exclude?: FilterPattern;
     include?: FilterPattern;
     extensions?: string[];
@@ -31,6 +31,7 @@ interface ExtraOptions {
     loadCache?: false | string;
     _suffix?: string[];
 }
+
 /** 对于插件的简单封装 */
 export const wrapPlugin = <T>(
     creator: (options: T) => Plugin,
@@ -42,7 +43,7 @@ export const wrapPlugin = <T>(
         resolveId?: boolean;
         transform?: boolean;
     }
-) => {
+): ((options: T & ExtraOptions) => Plugin) => {
     return function (Options: T & ExtraOptions) {
         Options = Object.assign({}, defaultOptions, Options);
         const origin = creator.call(null, Options);

@@ -24,15 +24,6 @@
         "src/**/*.vue",
         "test/**/*.vue",
         "test/**/*.ts",
-        "test/**/*.d.ts",
-        "src/shim/fs.js",
-        "src/shim/glob.js",
-        "test/resolve.js",
-        "src/shim/url.js",
-        "src/shim/errors.ts",
-        "src/shim/brotli.js",
-        "src/shim/loader-utils/lib/interpolateName.js",
-        "src/plugins/worker/worker.module.js",
-        "src/Evaluator/System/common.js"
+        "test/**/*.d.ts"
     ]
 }
