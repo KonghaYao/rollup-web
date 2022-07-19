@@ -1,4 +1,4 @@
-import { Plugin, TransformPluginContext } from "rollup-web";
+import { Plugin, TransformPluginContext } from "rollup";
 import { wrapPlugin } from "../utils/wrapPlugin";
 import Postcss, { AcceptedPlugin } from "postcss";
 import atImport from "postcss-import";

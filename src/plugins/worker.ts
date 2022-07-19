@@ -1,4 +1,4 @@
-import { Plugin } from "rollup-web";
+import { Plugin } from "rollup";
 import { wrapPlugin } from "../utils/wrapPlugin";
 import { WorkerWrapper } from "./worker/WorkerWrapper";
 
@@ -23,5 +23,3 @@ export const _worker = ({}: {} = {}) => {
 export const worker = wrapPlugin(_worker, {
     extensions: [".js"],
 });
-
-const SharedWorkerWrapper = (code: string) => {};

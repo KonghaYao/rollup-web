@@ -1,5 +1,5 @@
 import "../shim/process";
-import { Plugin } from "rollup-web";
+import { Plugin } from "rollup";
 import { BabelFileResult, TransformOptions } from "@babel/core";
 import { wrapPlugin } from "../utils/wrapPlugin";
 import { loadScript } from "../utils/loadScript";

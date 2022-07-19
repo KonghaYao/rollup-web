@@ -7,7 +7,7 @@
     "type": "module",
     "scripts": {
         "dev": "rollup -c rollup.config.js --watch",
-        "build": "rollup -c rollup.config.js",
+        "build": "rollup -c rollup.config.js && tsc",
         "draw": "madge src/index.ts --image dist/index.svg"
     },
     "repository": {
@@ -49,7 +49,7 @@
     },
     "dependencies": {
         "@isomorphic-git/lightning-fs": "^4.6.0",
-        "@konghayao/iframe-box": "^0.0.5",
+        "@konghayao/iframe-box": "^0.0.6",
         "@mdx-js/mdx": "^2.1.1",
         "@rollup/plugin-babel": "^5.3.1",
         "@rollup/plugin-commonjs": "21.1.0",

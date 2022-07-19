@@ -3,7 +3,7 @@ import { web_module, ModuleConfig } from "./adapter/web_module";
 import { useRollup } from "./Compiler/rollup";
 import { useGlobal } from "./utils/useGlobal";
 import { createModuleCache } from "./Cache";
-import { Plugin, RollupCache } from "rollup-web";
+import type { Plugin, RollupCache } from "rollup";
 import { bareURL, URLResolve } from "./utils/isURLString";
 import { isInWorker } from "./utils/createWorker";
 import { expose, proxy } from "comlink";

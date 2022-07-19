@@ -1,4 +1,4 @@
-import { Plugin } from "rollup-web";
+import { Plugin } from "rollup";
 import type { BabelFileResult, TransformOptions } from "@babel/core";
 import { transform } from "@babel/core";
 import { wrapPlugin } from "../utils/wrapPlugin";

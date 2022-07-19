@@ -1,4 +1,4 @@
-import type { Plugin, OutputChunk } from "rollup-web";
+import type { Plugin, OutputChunk } from "rollup";
 import { ModuleTree, ModuleTreeLeaf } from "./drawDependence/types";
 import { ModuleMapper } from "./drawDependence/module-mapper";
 import { addLinks, buildTree } from "./drawDependence/data";

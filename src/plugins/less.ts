@@ -1,4 +1,4 @@
-import { Plugin } from "rollup-web";
+import { Plugin } from "rollup";
 import { wrapPlugin } from "../utils/wrapPlugin";
 import { less as LESS } from "./postcss/preprocess";
 import { log as Log } from "../utils/ColorConsole";

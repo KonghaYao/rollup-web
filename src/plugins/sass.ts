@@ -1,4 +1,4 @@
-import { Plugin } from "rollup-web";
+import { Plugin } from "rollup";
 import { useGlobal } from "../utils/useGlobal";
 import { checkExtension, wrapPlugin } from "../utils/wrapPlugin";
 import { sass as SASS } from "./postcss/preprocess";

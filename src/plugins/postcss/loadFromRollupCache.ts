@@ -1,4 +1,4 @@
-import { TransformPluginContext } from "rollup-web";
+import { TransformPluginContext } from "rollup";
 
 /* 将url 经过 rollup 打包，一般这样会打包出来可执行文件，但是可以从 cache 中获取历史文件来获取特定打包文件 */
 export const loadFromRollup = async function (

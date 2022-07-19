@@ -23,12 +23,14 @@ export class IframeEnv {
         getFile,
         port,
         root,
+        beforeBind,
     }: {
         container?: HTMLElement;
         src: string;
         port: MessagePort;
         getFile?: IframeEnv["getFile"];
         root?: string;
+        beforeBind?: (api: IframeBox["api"]) => Promise<void>;
     }) {
         if (typeof getFile === "function") this.getFile = getFile;
         this.port = port;
@@ -42,6 +44,7 @@ export class IframeEnv {
         return box.ready.then(async (api) => {
             await api.runCode(`${wrapper(this.root)}
             (${threadInit})();`);
+            beforeBind && (await beforeBind(api));
             // Evaluator 初始化
             box.frame.contentWindow!.addEventListener(
                 "__rollup_ready__",

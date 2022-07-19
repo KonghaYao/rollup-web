@@ -1,4 +1,4 @@
-import { Plugin, PluginCache } from "rollup-web";
+import { Plugin, PluginCache } from "rollup";
 import { checkExtension, wrapPlugin } from "../utils/wrapPlugin";
 import type { APIOptions } from "assemblyscript/dist/asc";
 import merge from "lodash-es/merge";

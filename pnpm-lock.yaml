@@ -4,7 +4,7 @@ specifiers:
   '@babel/core': ^7.17.9
   '@babel/preset-typescript': ^7.16.7
   '@isomorphic-git/lightning-fs': ^4.6.0
-  '@konghayao/iframe-box': ^0.0.5
+  '@konghayao/iframe-box': ^0.0.6
   '@mdx-js/mdx': ^2.1.1
   '@rollup/plugin-babel': ^5.3.1
   '@rollup/plugin-commonjs': 21.1.0
@@ -52,7 +52,7 @@ specifiers:
 
 dependencies:
   '@isomorphic-git/lightning-fs': 4.6.0
-  '@konghayao/iframe-box': 0.0.5
+  '@konghayao/iframe-box': 0.0.6
   '@mdx-js/mdx': 2.1.1
   '@rollup/plugin-babel': 5.3.1_tdv6xmyjufxrs36xvlgrh4mhge
   '@rollup/plugin-commonjs': 21.1.0_rollup@2.63.0
@@ -420,15 +420,15 @@ packages:
       '@jridgewell/sourcemap-codec': 1.4.11
     dev: true
 
-  /@konghayao/iframe-box/0.0.5:
-    resolution: {integrity: sha512-7pgzY1F97Ge1uuXtsUmF+YwwNODUc5/5v25z4pJiFNhcSIVlVs801pogsdP7odZkZPa/mLegDSYgt8TPAxsH7g==}
+  /@konghayao/iframe-box/0.0.6:
+    resolution: {integrity: sha512-Jd4Hg0knEJJnl8JkmmdAKOK166zwAKW/ncrH6QwvaLd4oxs4VEYoshd4VY7/09JT6lHH3cVSYvlGD36IjK6eNA==}
     dependencies:
       comlink: 4.3.1
-      lit: 2.2.6
+      lit: 2.2.7
     dev: false
 
-  /@lit/reactive-element/1.3.2:
-    resolution: {integrity: sha512-A2e18XzPMrIh35nhIdE4uoqRzoIpEU5vZYuQN4S3Ee1zkGdYC27DP12pewbw/RLgPHzaE4kx/YqxMzebOpm0dA==}
+  /@lit/reactive-element/1.3.3:
+    resolution: {integrity: sha512-ukelZ49tzUqgOAEbVujl/U62JNK3wdn5kKtXVqrjKND4QvHACZOMOYaZI6/5Jd8vsg+Fq9HDwiib70FBLydOiQ==}
     dev: false
 
   /@mdx-js/mdx/2.1.1:
@@ -1874,10 +1874,10 @@ packages:
     resolution: {integrity: sha512-7ylylesZQ/PV29jhEDl3Ufjo6ZX7gCqJr5F7PKrqc93v7fzSymt1BpwEU8nAUXs8qzzvqhbjhK5QZg6Mt/HkBg==}
     dev: false
 
-  /lit-element/3.2.0:
-    resolution: {integrity: sha512-HbE7yt2SnUtg5DCrWt028oaU4D5F4k/1cntAFHTkzY8ZIa8N0Wmu92PxSxucsQSOXlODFrICkQ5x/tEshKi13g==}
+  /lit-element/3.2.1:
+    resolution: {integrity: sha512-2PxyE9Yq9Jyo/YBK2anycaHcqo93YvB5D+24JxloPVqryW/BOXekne+jGsm0Ke3E5E2v7CDgkmpEmCAzYfrHCQ==}
     dependencies:
-      '@lit/reactive-element': 1.3.2
+      '@lit/reactive-element': 1.3.3
       lit-html: 2.2.6
     dev: false
 
@@ -1887,11 +1887,11 @@ packages:
       '@types/trusted-types': 2.0.2
     dev: false
 
-  /lit/2.2.6:
-    resolution: {integrity: sha512-K2vkeGABfSJSfkhqHy86ujchJs3NR9nW1bEEiV+bXDkbiQ60Tv5GUausYN2mXigZn8lC1qXuc46ArQRKYmumZw==}
+  /lit/2.2.7:
+    resolution: {integrity: sha512-WXYujlKFwme5ZqXOZoWuRVZQAwy7scbcVT3wCbAOHefOxyscqjywWGlF2e6nnC9E64yP9l2ZQlN8wZcRlrjUMQ==}
     dependencies:
-      '@lit/reactive-element': 1.3.2
-      lit-element: 3.2.0
+      '@lit/reactive-element': 1.3.3
+      lit-element: 3.2.1
       lit-html: 2.2.6
     dev: false
 

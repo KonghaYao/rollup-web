@@ -1,5 +1,5 @@
 import "../shim/process";
-import { Plugin } from "rollup-web";
+import { Plugin } from "rollup";
 
 import type { Options } from "@swc/core";
 import merge from "lodash-es/merge";

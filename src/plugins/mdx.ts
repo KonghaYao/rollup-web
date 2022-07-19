@@ -1,4 +1,4 @@
-import { Plugin } from "rollup-web";
+import { Plugin } from "rollup";
 import { wrapPlugin } from "../utils/wrapPlugin";
 // TODO 在 worker 中会因为没有 dom 而报错，可能是 cdn 使用 browser 问题
 import type { CompileOptions } from "@mdx-js/mdx/lib/compile";

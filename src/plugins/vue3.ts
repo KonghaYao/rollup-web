@@ -3,7 +3,7 @@ import {
     SFCStyleCompileOptions,
     SFCTemplateCompileOptions,
 } from "@vue/compiler-sfc";
-import { Plugin } from "rollup-web";
+import { Plugin } from "rollup";
 import { checkSuffix, wrapPlugin } from "../utils/wrapPlugin";
 import { getScript, getStyle } from "./vue3/splitSFC";
 
