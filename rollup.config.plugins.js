@@ -6,7 +6,8 @@ import { emptyDirSync } from "fs-extra";
 import { plugins } from "./scripts/plugins.js";
 import { paths } from "./scripts/paths.js";
 
-true && emptyDirSync("./dist/plugins/");
+emptyDirSync("./dist/plugins/");
+emptyDirSync("./dist/adapter/");
 const pluginInput = "*";
 export default {
     //  插件制造，必须要使用这种方式保证 rollup 能够识别 paths

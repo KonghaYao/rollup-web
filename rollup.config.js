@@ -7,6 +7,7 @@ import { paths } from "./scripts/paths.js";
 emptyDirSync("./dist/index");
 const external = [
     "rollup-web",
+    "rollup-remote-cdn",
     "process-bundle",
     "picomatch",
     "comlink",

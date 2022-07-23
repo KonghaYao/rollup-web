@@ -9,6 +9,14 @@ import p from "../package.json";
  */
 console.log(p.version);
 export const plugins = [
+    {
+        resolveId(thisFile) {
+            // * 自动忽略 CDN
+            if (thisFile.startsWith("https://")) {
+                return { external: true, id: thisFile };
+            }
+        },
+    },
     replace({
         preventAssignment: false,
         values: {
@@ -48,7 +56,6 @@ export const plugins = [
         preferBuiltins: true,
     }),
     babel({
-        presets: ["@babel/preset-typescript"],
         extensions: [".ts"],
         babelHelpers: "bundled",
     }),

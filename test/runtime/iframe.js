@@ -1,5 +1,4 @@
-import { Evaluator } from "../../dist/index.js";
-import { IframeEnv } from "../../dist/Iframe.js";
+import { Evaluator, IframeEnv } from "../../dist/index.js";
 
 const Eval = new Evaluator();
 await Eval.useWorker("./test/runtime/worker/compilerWorker.js");
