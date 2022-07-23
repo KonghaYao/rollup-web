@@ -3,13 +3,18 @@ import commonjs from "@rollup/plugin-commonjs";
 import babel from "@rollup/plugin-babel";
 import alias from "@rollup/plugin-alias";
 import replace from "@rollup/plugin-replace";
-
+import p from "../package.json";
 /*
     统一的插件配置
  */
+console.log(p.version);
 export const plugins = [
     replace({
-        __dirname: JSON.stringify(""),
+        preventAssignment: false,
+        values: {
+            __dirname: JSON.stringify(""),
+            __Version: JSON.stringify(p.version),
+        },
     }),
     alias({
         entries: {

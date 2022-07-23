@@ -1,4 +1,6 @@
 export const npmCDN = "https://fastly.jsdelivr.net/npm/";
+export const ESMCDN = "https://esm.run/";
+export const SHCDN = "https://esm.sh/";
 export const Skypack = "https://cdn.skypack.dev/";
 /*
     统一的 paths 替换项
@@ -19,7 +21,7 @@ export const paths = {
     "lodash-es/merge": npmCDN + "lodash-es/merge.js",
     comlink: npmCDN + "comlink/dist/esm/comlink.mjs",
     "assemblyscript/dist/asc": npmCDN + "assemblyscript@0.20.8/dist/asc.min.js",
-
+    "@mdx-js/mdx/lib/compile.js": SHCDN + "@mdx-js/mdx/lib/compile.js",
     "@isomorphic-git/lightning-fs": Skypack + "@isomorphic-git/lightning-fs",
     "@mdx-js/mdx": Skypack + "@mdx-js/mdx",
     rehype: Skypack + "rehype",

@@ -9,3 +9,4 @@ export { createWorker, isInWorker } from "./utils/createWorker";
 export { LocalCache } from "./Cache/LocalCache";
 export * as Cache from "./Cache/index";
 export { wrapPlugin, checkExtension } from "./utils/wrapPlugin";
+export { IframeEnv } from "./Iframe";

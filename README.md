@@ -63,7 +63,7 @@ We already create some website just bundling in browser!
 import {
     Compiler,
     Evaluator,
-} from "https://fastly.jsdelivr.net/npm/rollup-web@4/dist/index.js";
+} from "https://fastly.jsdelivr.net/npm/rollup-web@4";
 
 // We use Rollup to compile Code!
 const RollupConfig = {

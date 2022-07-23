@@ -1,4 +1,4 @@
-import { IframeBox } from "@konghayao/iframe-box";
+import type { IframeBox } from "@konghayao/iframe-box";
 import { Setting } from "./Setting";
 import { threadInit } from "./iframe/threadInit";
 import { URLResolve } from "./utils/isURLString";
@@ -32,6 +32,7 @@ export class IframeEnv {
         root?: string;
         beforeBind?: (api: IframeBox["api"]) => Promise<void>;
     }) {
+        const { IframeBox } = await import("@konghayao/iframe-box");
         if (typeof getFile === "function") this.getFile = getFile;
         this.port = port;
         this.root = root || src;

@@ -44,3 +44,4 @@ declare module "os-bundle" {
 declare module "nv-browser-brotli" {
     export * from "brotli";
 }
+declare const __Version: string;
