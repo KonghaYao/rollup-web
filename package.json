@@ -9,8 +9,9 @@
     "scripts": {
         "dev": "rollup -c rollup.config.js --watch",
         "build": "rollup -c rollup.config.js ",
+        "clear": "node ./scripts/emptyDist.js",
         "build:plugins": "rollup -c rollup.config.plugins.js && pnpm build",
-        "prepublish": "pnpm build:plugins"
+        "prepublish": "pnpm clear && pnpm build:plugins"
     },
     "repository": {
         "type": "git",
