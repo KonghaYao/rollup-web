@@ -6,6 +6,7 @@ import { emptyDirSync } from "fs-extra";
 import { plugins } from "./scripts/plugins.js";
 import { paths } from "./scripts/paths.js";
 
+// 清除一下以前的文件，反正 publish 的时候自动删除整个 dist 并重新构建
 emptyDirSync("./dist/plugins/");
 emptyDirSync("./dist/adapter/");
 const pluginInput = "*";
