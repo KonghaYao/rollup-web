@@ -19,8 +19,7 @@ const Eval = new Evaluator();
 await Eval.createEnv({
     Compiler: compiler,
 });
-console.log(__Rollup_Web_System__.extendsImportMap);
-globalThis.__Rollup_Web_System__.extendsImportMap({
+Eval.System.extendImportMap({
     imports: {
         path: "https://esm.sh/path",
         chai: "https://fastly.jsdelivr.net/npm/chai/+esm",

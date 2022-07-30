@@ -25,5 +25,6 @@ export const Setting = {
             setGlobal("__Rollup_Web_System__", System);
         }
         System.setBaseUrl(baseURL);
+        return System;
     },
 };

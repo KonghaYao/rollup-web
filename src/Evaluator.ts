@@ -28,6 +28,8 @@ export type EnvTag =
     | "iframe";
 /** 一个单独的 Compiler 执行环境, 专门用于 适配 执行 的环境 */
 export class Evaluator {
+    /* TODO 添加类型 */
+    System!: any;
     Compiler!: Compiler | Remote<Compiler>;
     moduleConfig: Compiler["moduleConfig"] = {};
 
@@ -87,11 +89,11 @@ export class Evaluator {
         // 注入全局的地址
         globalThis.__Rollup_baseURL__ = this.root;
 
-        let system = useGlobal<any>("Sys__Rollup_Web_System__tem");
+        let system = useGlobal<any>("__Rollup_Web_System__");
 
-        if (!system || !system.__rollup_web__) {
+        if (!system) {
             log.pink("Evaluator Systemjs | init");
-            await Setting.loadSystemJS(this.root);
+            this.System = await Setting.loadSystemJS(this.root);
             this.HookSystemJS();
         }
 
