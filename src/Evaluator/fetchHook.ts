@@ -16,6 +16,9 @@ const RunMissions = async (
         }
     }
 };
+const createClosure = (code: string) => {
+    return `(function (){${code}})()`;
+};
 /**
  * 用于和 Systemjs 进行互动,
  * fetch 只与第一次打包有关，
@@ -81,7 +84,7 @@ export const fetchHook = (
         }
         code = SystemJSProvider + code;
         return new Response(
-            new Blob([code], {
+            new Blob([createClosure(code)], {
                 type: "application/javascript",
             })
         );

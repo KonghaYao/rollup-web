@@ -14,7 +14,7 @@ export const environment = (
 ${locationCode}
 
 // 挂载 config, var 声明才能使用
-var __config = (()=>{
+let __config = (()=>{
     const replacer = {
         location,
     };
@@ -25,13 +25,16 @@ var __config = (()=>{
         },
     }
 })();
+
+// 重复声明它们，保证其可用
 self = new Proxy(globalThis.self, __config);
 globalThis = new Proxy(globalThis, __config); 
 
 // This is Source Code
 `;
 };
-export const SystemJSProvider = `// 加载 SystemJS
+export const SystemJSProvider = `
 
-const System = globalThis.__Rollup_Web_System__
+// 使用 var 可以保证全局是加载，但是在 Classic 中覆盖了全局的变量
+let System = globalThis.__Rollup_Web_System__
 `;
