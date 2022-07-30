@@ -5,24 +5,23 @@ import { plugins } from "./scripts/plugins.js";
 import { paths } from "./scripts/paths.js";
 
 emptyDirSync("./dist/index");
-const external = [
-    "rollup-web",
-    "rollup-remote-cdn",
-    "process-bundle",
-    "picomatch",
-    "comlink",
-    "@isomorphic-git/lightning-fs",
-    "rehype",
-    "unist-util-visit",
-    "@konghayao/iframe-box",
-];
 
 // * 输出这个文件是为了与之前的 API 共存
 outputFileSync("./dist/index.js", `export * from './index/index.js';`);
 export default [
     {
         // ! IframeEnv 太小了，所以直接打包进去
-        external,
+        external: [
+            "rollup-web",
+            "rollup-remote-cdn",
+            "process-bundle",
+            "picomatch",
+            "comlink",
+            "@isomorphic-git/lightning-fs",
+            "rehype",
+            "unist-util-visit",
+            "@konghayao/iframe-box",
+        ],
         input: "./src/index.ts",
         output: {
             dir: "./dist/index/",
@@ -42,7 +41,9 @@ export default [
     },
     {
         // 这是给 worker 使用的 umd 版本的环境
-        external: ["process-bundle"], //! UMD 不能去除
+        external: [
+            "process-bundle", //! UMD 不能去除
+        ],
         input: "./src/Evaluator.ts",
         output: {
             file: "./dist/Evaluator.umd.js",

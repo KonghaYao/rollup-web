@@ -116,11 +116,16 @@ export class Evaluator {
     }
     env: EnvTag = this.isWorker ? (("worker-" + this.isWorker) as any) : "main";
     timeBuffer!: BundleBuffer<string, string>;
+    bufferCacheTime = 100;
+
     /* 链接 SystemJS */
     HookSystemJS() {
-        this.timeBuffer = new BundleBuffer<string, string>(100, (paths) => {
-            return this.Compiler.CompileMultiFile(paths);
-        });
+        this.timeBuffer = new BundleBuffer<string, string>(
+            this.bufferCacheTime,
+            (paths) => {
+                return this.Compiler.CompileMultiFile(paths);
+            }
+        );
         // 只是异步地使用 cache 内的函数，所以可以传递 proxy
         fetchHook(
             this.moduleConfig,

@@ -7,6 +7,7 @@ const ClassicInit = () => {
     const importScripts = (globalThis as any).importScripts;
     /* @ts-ignore */
     globalThis.module = {};
+    // 需要全局变量 process
     importScripts("https://fastly.jsdelivr.net/npm/process/browser.js");
     // importScripts(
     //     "http://localhost:8888/package/rollup-web/dist/Evaluator.umd.js"

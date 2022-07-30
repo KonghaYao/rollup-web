@@ -11,7 +11,7 @@
         "build": "rollup -c rollup.config.js ",
         "clear": "node ./scripts/emptyDist.js",
         "build:plugins": "rollup -c rollup.config.plugins.js",
-        "prepublish": "pnpm clear && pnpm build:plugins && pnpm build"
+        "prepublish": "pnpm clear && pnpm build:plugins && pnpm build && tsc"
     },
     "repository": {
         "type": "git",
