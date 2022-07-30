@@ -4,7 +4,7 @@ export * from "./Compiler";
 export * from "./Evaluator";
 export * from "./Helper/PluginLoader";
 export * from "./utils/ModuleEval";
-export * from "./utils/loadScript";
+export { loadLink, loadScript } from "./utils/loadScript";
 export { createWorker, isInWorker } from "./utils/createWorker";
 export { LocalCache } from "./Cache/LocalCache";
 export * as Cache from "./Cache/index";

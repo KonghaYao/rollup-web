@@ -1,19 +1,29 @@
-import { useGlobal } from "./utils/useGlobal";
-
+import { setGlobal, useGlobal } from "./utils/useGlobal";
+// import type { SystemJS } from "system-ts";
 export const Setting = {
     NPM: (path: string) => "https://fastly.jsdelivr.net/npm/" + path,
     // worker 中有使用了 cdn 中的代码进行操作，故而需要 rollup-web 版本支持
     // iframe 中也需要
     // 发布版本时会进行一个替换
     version: __Version,
-    async loadSystemJS() {
-        const systemURL = this.NPM("systemjs@6.12.1/dist/system.min.js");
-
+    async loadSystemJS(baseURL: string) {
+        // TODO 注意类型替换
+        let System: any;
         try {
-            await import(systemURL);
+            const { SystemJS } = await import(
+                this.NPM("system-ts@6.12.1-1/dist/s.min.js")
+            );
+            System = new SystemJS();
+            setGlobal("__Rollup_Web_System__", System);
         } catch (e) {
             // 在 worker 中
-            await useGlobal<any>("importScripts")(systemURL);
+            await useGlobal<any>("importScripts")(
+                this.NPM("system-ts@6.12.1-1/dist/umd/s.min.js")
+            );
+            /* @ts-ignore */
+            System = new globalThis.SystemJS.SystemJS();
+            setGlobal("__Rollup_Web_System__", System);
         }
+        System.setBaseUrl(baseURL);
     },
 };

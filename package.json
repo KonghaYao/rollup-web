@@ -85,5 +85,8 @@
         "src",
         "tsconfig.json",
         "LICENSE"
-    ]
+    ],
+    "dependencies": {
+        "system-ts": "6.12.1-1"
+    }
 }

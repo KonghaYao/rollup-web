@@ -2,7 +2,6 @@ import type { Compiler } from "./Compiler";
 import { fetchHook } from "./Evaluator/fetchHook";
 import { setGlobal, useGlobal } from "./utils/useGlobal";
 import { Setting } from "./Setting";
-import { ModuleWorkerInit } from "./Evaluator/systemWorker";
 
 import {
     createEndpoint,
@@ -12,13 +11,14 @@ import {
     releaseProxy,
     wrap,
 } from "comlink";
-import { ImportMap, resolveHook } from "./Evaluator/resolveHook";
 import { log } from "./utils/ColorConsole";
 import { createWorker, isInWorker } from "./utils/createWorker";
 import { URLResolve } from "./utils/isURLString";
 import { wrapAll } from "./iframe/wrapper";
 import { BundleBuffer } from "./Evaluator/BundleBuffer";
 
+/* TODO 记得清理 */
+type ImportMap = any;
 export type EnvTag =
     | "main"
     | "module"
@@ -87,14 +87,11 @@ export class Evaluator {
         // 注入全局的地址
         globalThis.__Rollup_baseURL__ = this.root;
 
-        let system = useGlobal<any>("System");
+        let system = useGlobal<any>("Sys__Rollup_Web_System__tem");
 
         if (!system || !system.__rollup_web__) {
             log.pink("Evaluator Systemjs | init");
-            await Setting.loadSystemJS();
-
-            system = useGlobal("System");
-            system.__rollup_web__ = true;
+            await Setting.loadSystemJS(this.root);
             this.HookSystemJS();
         }
 
@@ -102,9 +99,6 @@ export class Evaluator {
         // worker 表示执行环境在 worker 中,默认情况下不需要填写 worker，但是避免错误，可以强制填写
         if (this.isWorker) {
             switch (this.isWorker) {
-                case "module":
-                    // module worker, 需要复写 system 的 fetch-loader
-                    ModuleWorkerInit();
             }
         }
 
@@ -133,7 +127,7 @@ export class Evaluator {
             },
             this.env
         );
-        resolveHook(this.importMap, this.root);
+        // resolveHook(this.importMap, this.root);
     }
     /*  创建一个端口通向 Compiler 线程的端口给其他的线程使用 */
     async createCompilerPort(): Promise<MessagePort> {
@@ -150,7 +144,7 @@ export class Evaluator {
     }
     /* 执行代码 */
     async evaluate<T>(path: string): Promise<T> {
-        const System = useGlobal<any>("System");
+        const System = useGlobal<any>("__Rollup_Web_System__");
 
         // 传递 第二回调函数 时不会在 Compiler 进行执行，而是返回给 Evaluator 进行处理
         const url = URLResolve(path, this.root);

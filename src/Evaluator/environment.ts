@@ -12,7 +12,8 @@ export const environment = (
 
 // 这里声明了 location 变量
 ${locationCode}
-// 挂载 config
+
+// 挂载 config, var 声明才能使用
 var __config = (()=>{
     const replacer = {
         location,
@@ -26,6 +27,11 @@ var __config = (()=>{
 })();
 self = new Proxy(globalThis.self, __config);
 globalThis = new Proxy(globalThis, __config); 
+
 // This is Source Code
 `;
 };
+export const SystemJSProvider = `// 加载 SystemJS
+
+const System = globalThis.__Rollup_Web_System__
+`;

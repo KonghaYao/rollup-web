@@ -24,7 +24,7 @@ const ClassicInit = () => {
     /* @ts-ignore */
     const __importScripts = globalThis.importScripts;
     async function fakeImport(url: string) {
-        const System = (globalThis as any).System;
+        const System = (globalThis as any).__Rollup_Web_System__;
         return System.fetch(url)
             .then((res: Response) => {
                 return res.text();
@@ -44,7 +44,7 @@ const ClassicInit = () => {
             });
     }
     function SystemInit(localURL: string) {
-        const System = (globalThis as any).System;
+        const System = (globalThis as any).__Rollup_Web_System__;
 
         /* @ts-ignore */
         globalThis.importScripts = (...urls: string[]) => {

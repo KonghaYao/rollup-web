@@ -38,7 +38,7 @@ type ImportTool = (url: string) => void | Promise<void>;
 
 /* Compiler 是一个打包器 Server ，执行环境请查看 Evaluator*/
 export class Compiler {
-    System = useGlobal<any>("System");
+    System = useGlobal<any>("__Rollup_Web_System__");
     inWorker = isInWorker();
     destroyed = false;
     destroy() {
@@ -136,13 +136,13 @@ export class Compiler {
             return; // 不返回数据
         } else {
             // 主线程中的操作
-            let System = useGlobal<any>("System");
+            let System = useGlobal<any>("__Rollup_Web_System__");
             if (!System) {
                 throw new Error(
                     "Compiler | evaluate : You need a Evaluator to start! "
                 );
             }
-            System = useGlobal<any>("System");
+            System = useGlobal<any>("__Rollup_Web_System__");
             const result: T = System.import(url);
             console.groupEnd();
             this.reporter.lastEvaluate.time = Date.now();
