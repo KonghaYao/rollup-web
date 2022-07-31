@@ -13,8 +13,7 @@ export interface ModuleConfig {
     log?: (string: string) => void;
     /* 用于没有设置后缀名时的猜测函数，并具有筛选功能 */
     extensions?: string[];
-    /* 不缓存文件 */
-    cache?: string | false;
+
     /* 额外的打包区域，使用 picomatch 进行 url 匹配 */
     extraBundle?: true | string[];
 

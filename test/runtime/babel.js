@@ -45,7 +45,7 @@ const compiler = new Compiler(config, {
     log(url) {
         console.log("%c Download ==> " + url, "color:green");
     },
-    useDataCache: {
+    cache: {
         // ignore: ["**/dynamic.ts"],
         maxAge: 60,
     },

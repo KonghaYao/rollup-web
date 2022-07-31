@@ -15,7 +15,6 @@ const config = {
 };
 const compiler = new Compiler(config, {
     root: "http://localhost:8888/package/rollup-web/",
-    autoBuildFetchHook: false,
     extensions: [".js", ".mjs", ".wasm"],
     log(url) {
         console.log("%c Download ==> " + url, "color:green");

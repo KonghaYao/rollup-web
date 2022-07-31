@@ -20,9 +20,6 @@ export const checkExtension = (path: string, extensions: string[]) => {
     return extensions.includes(ext) && ext;
 };
 
-export const checkSuffix = (path: string, suffix: string[]) => {
-    return suffix.find((i) => path.endsWith(i));
-};
 export interface ExtraOptions {
     exclude?: FilterPattern;
     include?: FilterPattern;
@@ -116,14 +113,6 @@ function WrapLoad<T>(
             // 后缀名检查
             const result = checkExtension(id, Options.extensions);
             if (result === false) return;
-        } else if (
-            !(
-                Options._suffix &&
-                Options._suffix.length &&
-                checkSuffix(id, Options._suffix)
-            )
-        ) {
-            return;
         }
         return origin.load!.call(this, id);
     } as LoadHook;

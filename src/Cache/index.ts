@@ -14,9 +14,7 @@ export const ExtensionsCache = new LocalCache(
     MemoryCache(),
     localforagePlugin({ name: "__rollup_extensions__" })
 );
-export const createModuleCache = (
-    config: CompilerModuleConfig["useDataCache"]
-) =>
+export const createModuleCache = (config: CompilerModuleConfig["cache"]) =>
     new LocalCache("__rollup_module_cache__").usePlugins(
         OutTimeCheck({
             maxAge: 60 * 60 * 24,

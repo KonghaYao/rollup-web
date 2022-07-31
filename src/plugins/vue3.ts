@@ -4,9 +4,11 @@ import {
     SFCTemplateCompileOptions,
 } from "@vue/compiler-sfc";
 import { Plugin } from "rollup";
-import { checkSuffix, wrapPlugin } from "../utils/wrapPlugin";
+import { wrapPlugin } from "../utils/wrapPlugin";
 import { getScript, getStyle } from "./vue3/splitSFC";
-
+export const checkSuffix = (path: string, suffix: string[]) => {
+    return suffix.find((i) => path.endsWith(i));
+};
 function generateID() {
     return Math.random().toString(36).slice(2, 12);
 }

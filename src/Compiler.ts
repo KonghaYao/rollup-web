@@ -30,9 +30,7 @@ export type CacheConfig = {
 */
 export type CompilerModuleConfig = ModuleConfig & {
     /* 匹配到的区域都将使用 rollup 打包 */
-    useDataCache?: false | CacheConfig;
-    autoBuildFetchHook?: boolean;
-    ignore?: string[];
+    cache?: false | CacheConfig;
 };
 
 /* Compiler 是一个打包器 Server ，执行环境请查看 Evaluator*/
@@ -72,11 +70,13 @@ export class Compiler {
         if (!this.moduleConfig.root) {
             this.moduleConfig.root = bareURL(globalThis.location.href);
         }
-        this.moduleCache =
-            moduleConfig.useDataCache === undefined ||
-            moduleConfig.useDataCache === false
+        const getCacheConfig = (tag: "cache") => {
+            return moduleConfig[tag] === undefined ||
+                moduleConfig[tag] === false
                 ? (new Map() as any as LocalCache)
-                : createModuleCache(moduleConfig.useDataCache);
+                : createModuleCache(moduleConfig[tag]);
+        };
+        this.moduleCache = getCacheConfig("cache");
 
         this.refreshPlugin();
     }

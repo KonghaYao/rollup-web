@@ -1,5 +1,5 @@
 import { ModuleConfig } from "../adapter/web_module";
-import { EnvTag } from "../Evaluator";
+import { EnvTag } from "../utils/EnvCheck";
 import { createLocationCode } from "./envi/createLocationCode";
 
 /* 内置插件，用于将 iframe, worker 中的环境参数统一 */
