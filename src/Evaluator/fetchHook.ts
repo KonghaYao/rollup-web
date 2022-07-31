@@ -3,7 +3,7 @@ import { useGlobal } from "../utils/useGlobal";
 import type { Compiler } from "../Compiler";
 import { log } from "../utils/ColorConsole";
 import { environment, SystemJSProvider } from "./environment";
-import { EnvTag } from "../Evaluator";
+import { EnvTag } from "../utils/EnvCheck";
 
 /* 判断执行器，当执行到 true 判断时，执行函数并退出 */
 const RunMissions = async (
@@ -79,7 +79,14 @@ export const fetchHook = (
         ];
 
         await RunMissions(missions);
-        if (["worker-module", "worker-classic", "iframe"].includes(env)) {
+        if (
+            [
+                "worker_module",
+                "worker_classic",
+                "iframe_classic",
+                "iframe_module",
+            ].includes(env)
+        ) {
             code = banner + code;
         }
         code = SystemJSProvider + code;

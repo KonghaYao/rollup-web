@@ -1,6 +1,7 @@
 import { module, classic } from "./runtime/web_worker.js";
 
 import { expect } from "chai";
+
 describe("Web Worker 测试", () => {
     it("module: brotli-wasm 在线编译", async () => {
         const moduleExport = await module();

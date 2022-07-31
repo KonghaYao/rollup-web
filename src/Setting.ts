@@ -6,19 +6,20 @@ export const Setting = {
     // iframe 中也需要
     // 发布版本时会进行一个替换
     version: __Version,
+    SystemVersion: "6.12.1-1",
     async loadSystemJS(baseURL: string) {
         // TODO 注意类型替换
         let System: any;
         try {
             const { SystemJS } = await import(
-                this.NPM("system-ts@6.12.1-1/dist/s.min.js")
+                this.NPM(`system-ts@${this.SystemVersion}/dist/s.min.js`)
             );
             System = new SystemJS();
             setGlobal("__Rollup_Web_System__", System);
         } catch (e) {
             // 在 worker 中
             await useGlobal<any>("importScripts")(
-                this.NPM("system-ts@6.12.1-1/dist/umd/s.min.js")
+                this.NPM(`system-ts@${this.SystemVersion}/dist/umd/s.min.js`)
             );
             /* @ts-ignore */
             System = new globalThis.SystemJS.SystemJS();

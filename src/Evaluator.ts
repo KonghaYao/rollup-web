@@ -16,16 +16,8 @@ import { createWorker, isInWorker } from "./utils/createWorker";
 import { URLResolve } from "./utils/isURLString";
 import { wrapAll } from "./iframe/wrapper";
 import { BundleBuffer } from "./Evaluator/BundleBuffer";
+import { EnvCheck, EnvTag } from "./utils/EnvCheck";
 
-/* TODO 记得清理 */
-type ImportMap = any;
-export type EnvTag =
-    | "main"
-    | "module"
-    | "classic"
-    | "worker-module"
-    | "worker-classic"
-    | "iframe";
 /** 一个单独的 Compiler 执行环境, 专门用于 适配 执行 的环境 */
 export class Evaluator {
     /* TODO 添加类型 */
@@ -37,7 +29,7 @@ export class Evaluator {
     get root() {
         return this.moduleConfig.root!;
     }
-    isWorker = isInWorker();
+
     static registered = false;
     constructor() {
         if (Evaluator.registered)
@@ -55,7 +47,6 @@ export class Evaluator {
         delete this.Compiler;
         this.destroyed = true;
     }
-    importMap?: ImportMap;
     /* 初始化环境，进行之后才能够自动进行 Compiler */
     async createEnv({
         Compiler,
@@ -63,25 +54,22 @@ export class Evaluator {
         root = globalThis.location.href,
         wrap = false,
         env,
-        importMap,
     }: {
         Compiler?: Compiler;
-        importMap?: ImportMap;
         env?: EnvTag;
         /**
          * 极端情况下覆盖 worker 选项
          */
         worker?: "module" | "classic";
+        /* 极端情况下用于覆盖 Compiler Worker 的 root  */
         root?: string;
         wrap?: boolean;
     } = {}) {
-        if (importMap) this.importMap = importMap;
         if (Compiler) this.Compiler = Compiler;
         if (!this.Compiler)
             throw new Error(
                 "Evaluator | Compiler must be built first! Like useWorker() or input a Compiler! "
             );
-        if (worker) this.isWorker = worker;
         if (env) this.env = env;
         this.moduleConfig = JSON.parse(await this.Compiler.getModuleConfig());
         if (root) this.moduleConfig.root = root;
@@ -92,16 +80,9 @@ export class Evaluator {
         let system = useGlobal<any>("__Rollup_Web_System__");
 
         if (!system) {
-            log.pink("Evaluator Systemjs | init");
+            log.pink(`Evaluator Systemjs | init | ${this.env}`);
             this.System = await Setting.loadSystemJS(this.root);
             this.HookSystemJS();
-        }
-
-        // 在 worker 中需要对 systemjs 初始化进行一些处理
-        // worker 表示执行环境在 worker 中,默认情况下不需要填写 worker，但是避免错误，可以强制填写
-        if (this.isWorker) {
-            switch (this.isWorker) {
-            }
         }
 
         if (wrap) {
@@ -114,7 +95,7 @@ export class Evaluator {
 
         return this;
     }
-    env: EnvTag = this.isWorker ? (("worker-" + this.isWorker) as any) : "main";
+    env: EnvTag = EnvCheck();
     timeBuffer!: BundleBuffer<string, string>;
     bufferCacheTime = 100;
 

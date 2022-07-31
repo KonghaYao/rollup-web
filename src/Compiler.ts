@@ -34,11 +34,9 @@ export type CompilerModuleConfig = ModuleConfig & {
     autoBuildFetchHook?: boolean;
     ignore?: string[];
 };
-type ImportTool = (url: string) => void | Promise<void>;
 
 /* Compiler 是一个打包器 Server ，执行环境请查看 Evaluator*/
 export class Compiler {
-    System = useGlobal<any>("__Rollup_Web_System__");
     inWorker = isInWorker();
     destroyed = false;
     destroy() {
@@ -47,14 +45,14 @@ export class Compiler {
             return self.close();
         } else {
             const names = [
-                "System",
                 "options",
                 "plugins",
                 "moduleCache",
                 "moduleConfig",
                 "RollupCache",
-            ] as (keyof Compiler)[];
+            ] as const;
             names.map((i) => {
+                /* @ts-ignore */
                 this[i] = null;
             });
         }
@@ -77,7 +75,7 @@ export class Compiler {
         this.moduleCache =
             moduleConfig.useDataCache === undefined ||
             moduleConfig.useDataCache === false
-                ? (new Map<string, string>() as any as LocalCache)
+                ? (new Map() as any as LocalCache)
                 : createModuleCache(moduleConfig.useDataCache);
 
         this.refreshPlugin();
@@ -104,51 +102,6 @@ export class Compiler {
             time: 0,
         },
     };
-    /**
-     * 执行代码
-     * @param importTool 用于线程调用的额外选项，可以替换与 systemjs 的交互
-     * */
-    evaluate<T = any>(path: string, importTool: ImportTool): Promise<void>;
-    evaluate<T = any>(path: string): Promise<T>;
-    async evaluate<T = any>(
-        path: string,
-        importTool?: ImportTool
-    ): Promise<unknown> {
-        console.group("Bundling Code ", path);
-
-        const url = URLResolve(path, this.moduleConfig.root!);
-
-        /* 内部进行去重 */
-        await this.CompileSingleFile(url);
-
-        if (this.inWorker && !importTool) {
-            // 在线程中若没有环境则直接报错
-            throw new Error(
-                "Rollup-web | Compiler in worker must use Evaluator to evaluate"
-            );
-        }
-
-        if (importTool) {
-            // 在 worker 线程中，使用线程的回调函数返回数据
-            await importTool(url);
-            console.groupEnd();
-            this.reporter.lastEvaluate.time = Date.now();
-            return; // 不返回数据
-        } else {
-            // 主线程中的操作
-            let System = useGlobal<any>("__Rollup_Web_System__");
-            if (!System) {
-                throw new Error(
-                    "Compiler | evaluate : You need a Evaluator to start! "
-                );
-            }
-            System = useGlobal<any>("__Rollup_Web_System__");
-            const result: T = System.import(url);
-            console.groupEnd();
-            this.reporter.lastEvaluate.time = Date.now();
-            return result;
-        }
-    }
 
     RollupCache: RollupCache = {
         modules: [],
