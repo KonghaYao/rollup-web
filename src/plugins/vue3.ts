@@ -57,8 +57,12 @@ export type VueCompileConfig = {
     css?: SFCStyleCompileOptions;
     sourceMap?: boolean;
 };
-
-export const vue = ({
+const tag = {
+    script: (id: string, ext = "js") => id + ("." + ext) + "?vue-script",
+    css: (id: string, index: number, ext = "css") =>
+        id + index.toString() + ("." + ext) + "?vue-style",
+};
+const vue = ({
     css,
     log,
 }: {
@@ -83,12 +87,7 @@ export const vue = ({
                 css: cssCode,
                 entry,
             } = transformVueSFC(vueCode, id, { css });
-            const tag = {
-                script: (id: string, ext = "js") =>
-                    id + ("." + ext) + "?vue-script",
-                css: (id: string, index: number, ext = "css") =>
-                    id + index.toString() + ("." + ext) + "?vue-style",
-            };
+
             const result = entry(
                 tag.script(id, script.lang),
                 cssCode && cssCode.length
@@ -98,10 +97,14 @@ export const vue = ({
                     : undefined
             );
             log && log(id);
+
+            // script 计入缓存
             const scriptCode = `/* ${id} */\n` + script.content;
+
             this.cache.set(tag.script(id, script.lang), {
                 code: scriptCode,
             });
+            // css 计入缓存
             if (cssCode && cssCode.length) {
                 cssCode.forEach((i, index) => {
                     this.cache.set(tag.css(id, index, i.lang), {
@@ -109,12 +112,16 @@ export const vue = ({
                     });
                 });
             }
+            // 整个代码计入缓存
             this.cache.set(id, result);
             return result;
         },
     } as Plugin;
 };
-export const vue3 = wrapPlugin(vue, {
-    extensions: [".vue"],
-    _suffix: suffix,
-});
+export const vue3 = wrapPlugin(
+    vue,
+    {
+        extensions: [".vue"],
+    },
+    { load: false }
+);

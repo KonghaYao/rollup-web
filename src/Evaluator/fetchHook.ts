@@ -63,7 +63,6 @@ export const fetchHook = (
                     );
                 },
                 async () => {
-                    log.blue(" System fetch | bundle " + url);
                     /* 全打包或者被选中打包 */
                     code = await rollupCode(url);
                 },

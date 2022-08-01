@@ -91,8 +91,9 @@ const _web_module = ({
             try {
                 const code = await readFile(id);
                 log && log(id);
+                // console.log(code);
                 // 注意，这里 code 不能乱改，它可能是 json
-                return { code: code };
+                return code ? { code } : undefined;
             } catch (e) {
                 return;
             }

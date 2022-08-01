@@ -1,6 +1,6 @@
 // 导入打包产物
 import { Compiler, sky_module } from "../../dist/index.js";
-import { vue } from "../../dist/plugins/vue3.js";
+import { vue3 } from "../../dist/plugins/vue3.js";
 import { babelCore } from "../../dist/plugins/babel.core.js";
 
 import { less } from "../../dist/plugins/less.js";
@@ -57,7 +57,7 @@ const config = {
             },
         }),
 
-        vue({
+        vue3({
             log(id, code) {
                 console.log(id, code);
             },
@@ -86,8 +86,6 @@ import { Evaluator } from "../../dist/index.js";
 const Eval = new Evaluator();
 await Eval.createEnv({
     Compiler: compiler,
-    useDataCache: {},
-    cache: {},
 });
 Eval.System.extendImportMap(
     {

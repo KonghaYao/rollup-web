@@ -5,8 +5,12 @@ const fileCache = new Set<string>();
 export const WebFetcher = (): Fetcher => {
     return {
         async readFile(path) {
-            const res = await fetch(path, { cache: "force-cache" });
-            return res.ok ? res.text() : undefined;
+            try {
+                const res = await fetch(path, { cache: "force-cache" });
+                return res.ok ? res.text() : undefined;
+            } catch (e) {
+                return undefined;
+            }
         },
         async isExist(url: string) {
             if (fileCache.has(url)) {
