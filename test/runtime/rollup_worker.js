@@ -10,3 +10,4 @@ console.log("环境布置完成");
 export const module = await Eval.evaluate(
     "http://localhost:8888/package/rollup-web/public/wasm/wasm.js"
 );
+console.log(Eval);

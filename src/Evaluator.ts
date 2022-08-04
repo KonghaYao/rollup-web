@@ -150,7 +150,7 @@ export class Evaluator {
             });
             this.Compiler = wrap(worker);
         } else {
-            log.lime("Evaluator | Link Worker");
+            log.lime("Evaluator | Linked Worker");
             this.Compiler = wrap(workerUrlOrPort);
         }
         return this;

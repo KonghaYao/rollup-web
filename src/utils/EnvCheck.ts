@@ -9,7 +9,7 @@ export type EnvTag =
 export const EnvCheck = (): EnvTag => {
     const isWorker = isInWorker();
     if (isWorker) {
-        return ("worker_" + isInWorker) as "worker_module" | "worker_classic";
+        return ("worker_" + isWorker) as "worker_module" | "worker_classic";
     }
 
     // 判断 iframe 和 main 中的 classic 和 module
