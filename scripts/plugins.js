@@ -47,7 +47,8 @@ export const plugins = [
         },
     }),
     commonjs({
-        transformMixedEsModules: true,
+        // ! 不要使用这个，这个会错误转义 lodash
+        // transformMixedEsModules: true,
         ignoreDynamicRequires: true,
     }),
     resolve({
