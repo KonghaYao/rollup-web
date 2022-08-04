@@ -1,6 +1,7 @@
 // 导入打包产物
 import { Compiler, sky_module, PluginLoader } from "../../dist/index.js";
-import { babel } from "../../dist/plugins/babel.js";
+import { babelCore } from "../../dist/plugins/babel.core.js";
+import typescript from "https://esm.sh/@babel/preset-typescript@7.18.6";
 // 导入各种插件
 const [
     { default: json },
@@ -27,9 +28,9 @@ const config = {
             __buildDate__: () => JSON.stringify(3434),
             __buildVersion: "15",
         }),
-        babel({
+        babelCore({
             babelrc: {
-                presets: ["typescript"],
+                presets: [typescript],
             },
             extensions: [".ts"],
             log(id) {

@@ -8,10 +8,10 @@ import { sass } from "../../dist/plugins/sass.js";
 import { postcss } from "../../dist/plugins/postcss.js";
 import { assets } from "../../dist/plugins/assets.js";
 // 导入各种插件
-import json from "https://esm.sh/@rollup/plugin-json";
-import alias from "https://esm.sh/@rollup/plugin-alias";
+import json from "https://esm.sh/@rollup/plugin-json@4.1.0";
+import alias from "https://esm.sh/@rollup/plugin-alias@3.1.9";
 import commonjs from "https://esm.sh/@rollup/plugin-commonjs";
-import replace from "https://esm.sh/@rollup/plugin-replace";
+import replace from "https://esm.sh/@rollup/plugin-replace@4.0.0";
 import typescript from "https://esm.sh/@babel/preset-typescript";
 
 const config = {
