@@ -6,7 +6,7 @@
         "moduleResolution": "node",
         "declaration": true,
         "emitDeclarationOnly": true,
-        "declarationDir": "./types",
+        "declarationDir": "./dist",
         "strict": true,
         "jsx": "preserve",
         "sourceMap": true,
