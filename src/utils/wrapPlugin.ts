@@ -1,6 +1,6 @@
 import { createFilter, FilterPattern } from "@rollup/pluginutils";
+import type { WebPlugin } from "../types";
 import type {
-    Plugin,
     LoadHook,
     TransformHook,
     ResolveIdHook,
@@ -31,7 +31,7 @@ export interface ExtraOptions {
 
 /** 对于插件的简单封装 */
 export const wrapPlugin = <T>(
-    creator: (options: T) => Plugin,
+    creator: (options: T) => WebPlugin,
     defaultOptions: Partial<T & ExtraOptions>,
     /* 这里可以取消对某一个部分的 wrap */
     wrapOptions?: {
@@ -40,7 +40,7 @@ export const wrapPlugin = <T>(
         resolveId?: boolean;
         transform?: boolean;
     }
-): ((options: T & ExtraOptions) => Plugin) => {
+): ((options: T & ExtraOptions) => WebPlugin) => {
     return function (Options: T & ExtraOptions) {
         Options = Object.assign({}, defaultOptions, Options);
         const origin = creator.call(null, Options);
@@ -78,7 +78,7 @@ export const wrapPlugin = <T>(
 /* ResolveId 的 */
 function WrapResolveId<T>(
     filter: (id: unknown) => boolean,
-    origin: Plugin,
+    origin: WebPlugin,
     Options: T & ExtraOptions
 ) {
     // resolve 不对 extensions 进行限制
@@ -102,7 +102,7 @@ function WrapResolveId<T>(
 function WrapLoad<T>(
     filter: (id: unknown) => boolean,
     Options: T & ExtraOptions,
-    origin: Plugin
+    origin: WebPlugin
 ) {
     return async function (id) {
         if (!isURLString(id) && !filter(id)) return;

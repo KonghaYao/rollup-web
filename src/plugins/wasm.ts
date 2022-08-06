@@ -1,4 +1,5 @@
 import type { Plugin } from "rollup";
+import { WebPlugin } from "../types";
 import type { ModuleConfig } from "../adapter/web_module";
 import { isURLString } from "../utils/isURLString";
 export { wasmHelper } from "./wasm/wasmHelper";
@@ -13,11 +14,11 @@ type Config = { mode?: Mode | ModeCreator; extensions?: string[] };
  * wasm 插件
  * @param mode vite 模式需要自己初始化；node 模式可以自动初始化，但是可能会导致错误
  */
-const _wasm = (config: Config): Plugin => {
+const _wasm = (config: Config): WebPlugin => {
     return {
         name: "wasm",
         // 添加自己的忽略器，保证成功
-        ChangeConfig(moduleConfig: ModuleConfig) {
+        ChangeConfig(moduleConfig) {
             if (moduleConfig.ignore) {
                 moduleConfig.ignore.push(import.meta.url);
             } else {
@@ -47,7 +48,7 @@ const _wasm = (config: Config): Plugin => {
                     export default opts => wasmHelper(opts, "${id}")`;
             }
         },
-    } as Plugin;
+    };
 };
 /**
  * WASM 桥接插件, 和 vite 的使用方式类似
