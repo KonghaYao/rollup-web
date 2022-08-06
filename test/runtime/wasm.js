@@ -30,4 +30,5 @@ const Eval = new Evaluator();
 await Eval.createEnv({
     Compiler: compiler,
 });
+console.log(Eval.moduleConfig.ignore);
 export const module = await Eval.evaluate("./public/wasm/wasm.js");

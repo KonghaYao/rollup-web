@@ -84,6 +84,11 @@ export class Compiler {
     /* 更新插件配置 */
     refreshPlugin() {
         this.plugins = this.options.plugins as Plugin[];
+        this.plugins.forEach((i) => {
+            // 自定义预先配置修改
+            /* @ts-ignore */
+            i.ChangeConfig && i.ChangeConfig(this.moduleConfig);
+        });
         this.plugins.push(
             web_module({
                 ...this.moduleConfig,

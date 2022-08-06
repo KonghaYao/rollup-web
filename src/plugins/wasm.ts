@@ -1,4 +1,5 @@
 import type { Plugin } from "rollup";
+import type { ModuleConfig } from "../adapter/web_module";
 import { isURLString } from "../utils/isURLString";
 export { wasmHelper } from "./wasm/wasmHelper";
 import { checkExtension, wrapPlugin } from "../utils/wrapPlugin";
@@ -15,6 +16,15 @@ type Config = { mode?: Mode | ModeCreator; extensions?: string[] };
 const _wasm = (config: Config): Plugin => {
     return {
         name: "wasm",
+        // 添加自己的忽略器，保证成功
+        ChangeConfig(moduleConfig: ModuleConfig) {
+            if (moduleConfig.ignore) {
+                moduleConfig.ignore.push(import.meta.url);
+            } else {
+                moduleConfig.ignore = [import.meta.url];
+            }
+        },
+
         resolveId(thisFile, importer, { isEntry }) {
             const ext = checkExtension(thisFile, config.extensions!);
             // 只对 绝对路径进行拦截解析，
