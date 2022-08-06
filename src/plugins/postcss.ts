@@ -1,10 +1,13 @@
-import { Plugin, TransformPluginContext } from "rollup";
+import { TransformPluginContext } from "rollup";
 import { wrapPlugin } from "../utils/wrapPlugin";
 import Postcss, { AcceptedPlugin } from "postcss";
 import atImport from "postcss-import";
 import importURL from "./postcss/import-url";
 import { loadFromRollup } from "./postcss/loadFromRollupCache";
 import { URLResolve } from "../utils/isURLString";
+import { WebPlugin } from "../types";
+import { CompilerModuleConfig } from "../Compiler";
+import { isMatch } from "picomatch";
 
 /**
  * postcss 的接口
@@ -21,10 +24,26 @@ export const _postcss = ({
     options?: (css: string, id: string) => any;
     log?: (id: string, code: string) => void;
     filter?: (url: string) => boolean;
-} = {}) => {
+} = {}): WebPlugin => {
     // Rollup 内置环境
     let Context: TransformPluginContext;
     let Info: { id: string };
+    let config!: CompilerModuleConfig;
+
+    const checkFilter = (url: string) => {
+        // filter 权限高于一切
+        if (filter) {
+            if (filter(url)) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+        if (config.ignore && isMatch(url, config.ignore)) {
+            // 如果 url 属性被匹配到，则直接被返回
+            return true;
+        }
+    };
 
     /* Postcss 内置插件 */
     const innerPlugin = [
@@ -41,9 +60,9 @@ export const _postcss = ({
             async load(url) {
                 if (url.startsWith("//"))
                     url = decodeURIComponent(url.slice(2));
-
-                if (filter && filter(url)) return url;
-                console.log(url);
+                // filter 权限高于一切
+                const ignore = checkFilter(url);
+                if (ignore) return url;
                 await loadFromRollup.call(Context, url, Info);
                 return Context.cache.get(url);
             },
@@ -57,7 +76,8 @@ export const _postcss = ({
             async load(url, options) {
                 if (url.startsWith("//"))
                     url = decodeURIComponent(url.slice(2));
-                if (filter && filter(url)) return;
+                const ignore = checkFilter(url);
+                if (ignore) return;
                 await loadFromRollup.call(Context, url, Info);
                 return Context.cache.get(url);
             },
@@ -66,7 +86,9 @@ export const _postcss = ({
     const converter = Postcss(plugins.concat(innerPlugin));
     return {
         name: "postcss",
-
+        ChangeConfig(ModuleConfig) {
+            config = ModuleConfig;
+        },
         /* Postcss 最终将会被写为 CSS-In-JS 的形式 */
         async transform(input, id) {
             Context = this;
@@ -82,7 +104,7 @@ export const _postcss = ({
             styleInject(\`${css}\`)
             `;
         },
-    } as Plugin;
+    };
 };
 /* Postcss 插件，内置 css 模块解析，如果需要 sass，less 解析，需要使用额外插件，并配置 extensions 属性  */
 export const postcss = wrapPlugin(_postcss, {
