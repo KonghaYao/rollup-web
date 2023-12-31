@@ -1,4 +1,4 @@
-import process from "process-bundle";
+import { process } from "./_/process";
 Object.assign(process, {
     cwd() {
         return globalThis.location.href;

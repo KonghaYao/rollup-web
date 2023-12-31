@@ -6,7 +6,7 @@ import type {
     ResolveIdHook,
     ResolveIdResult,
 } from "rollup";
-import { extname } from "../shim/_/path";
+import { extname } from "path";
 import { isURLString } from "./isURLString";
 import { relativeResolve } from "./pathUtils";
 
@@ -115,5 +115,5 @@ function WrapLoad<T>(
             if (result === false) return;
         }
         return origin.load!.call(this, id);
-    } as LoadHook;
+    } as unknown as LoadHook;
 }

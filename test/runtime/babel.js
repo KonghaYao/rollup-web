@@ -5,11 +5,11 @@ import { Compiler, sky_module } from "../../dist/index.js";
 import { babelCore } from "../../dist/plugins/babel.core.js";
 
 // 导入各种插件
-import json from "https://esm.sh/@rollup/plugin-json";
-import alias from "https://esm.sh/@rollup/plugin-alias";
-import commonjs from "https://esm.sh/@rollup/plugin-commonjs";
-import replace from "https://esm.sh/@rollup/plugin-replace";
-import ts from "https://esm.sh/@babel/preset-typescript";
+import json from "@rollup/plugin-json";
+import alias from "@rollup/plugin-alias";
+import commonjs from "@rollup/plugin-commonjs";
+import replace from "@rollup/plugin-replace";
+import ts from "@babel/preset-typescript";
 
 const config = {
     plugins: [
@@ -57,4 +57,4 @@ const Eval = new Evaluator();
 await Eval.createEnv({
     Compiler: compiler,
 });
-export const module = await Eval.evaluate("./public/test.ts");
+export const module = await Eval.evaluate("./test.ts");

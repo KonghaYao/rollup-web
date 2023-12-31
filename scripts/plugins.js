@@ -20,12 +20,13 @@ export const plugins = [
     replace({
         preventAssignment: false,
         values: {
-            __dirname: JSON.stringify(""),
+            // __dirname: JSON.stringify(""),
             __Version: JSON.stringify(p.version),
         },
     }),
     alias({
         entries: {
+            "buffer-bundle": "node_modules/buffer/index.js",
             path: "src/shim/path.ts",
             fs: "src/shim/fs.cjs",
             glob: "src/shim/glob/glob.js",
@@ -44,6 +45,7 @@ export const plugins = [
             "@rollup/pluginutils": "src/plugins/plugin-utils.ts",
             "rollup-pluginutils": "@rollup/pluginutils",
             "safe-identifier": "src/shim/safe-identifier.ts",
+            "rollup-remote-cdn": "node_modules/rollup/dist/es/rollup.browser.js",
         },
     }),
     commonjs({
@@ -57,7 +59,7 @@ export const plugins = [
         preferBuiltins: true,
     }),
     babel({
-        extensions: [".ts"],
+        extensions: [".ts", '.js'],
         babelHelpers: "bundled",
     }),
 ];

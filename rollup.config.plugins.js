@@ -13,6 +13,7 @@ const pluginInput = "*";
 export default {
     //  插件制造，必须要使用这种方式保证 rollup 能够识别 paths
     external: [
+        // "picomatch",
         ...Object.keys(paths),
         "https://fastly.jsdelivr.net/npm/@babel/standalone/babel.min.js",
     ],
@@ -24,7 +25,6 @@ export default {
         dir: "dist",
         format: "es",
         paths: {
-            ...paths,
         },
     },
     plugins: [

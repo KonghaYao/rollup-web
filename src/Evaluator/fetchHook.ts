@@ -101,7 +101,10 @@ async function LoadEsmModule(url: string) {
     const System = useGlobal<any>("__Rollup_Web_System__");
     if (!System._esm_module_.has(url)) {
         // import 数据并加入全局缓存
-        await import(url).then((module) => {
+        await import(
+            /** @vite-ignore */
+            url
+        ).then((module) => {
             System._esm_module_.set(url, module);
         });
     }

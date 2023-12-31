@@ -1,7 +1,6 @@
 import type { RollupOptions, OutputChunk } from "rollup";
 import { web_module, ModuleConfig } from "./adapter/web_module";
 import { useRollup } from "./Compiler/rollup";
-import { useGlobal } from "./utils/useGlobal";
 import { createModuleCache } from "./Cache";
 import type { Plugin, RollupCache } from "rollup";
 import { bareURL, URLResolve } from "./utils/isURLString";
@@ -141,7 +140,7 @@ export class Compiler {
         return useRollup({
             ...this.options,
             input: url,
-            plugins: this.plugins,
+            plugins: [...this.plugins],
             output: {
                 format: "system",
             },

@@ -2,8 +2,9 @@
 import { sky_module, PluginLoader, Compiler } from "../../dist/index.js";
 
 // 导入各种插件
-// import { babel } from "../../dist/plugins/babel.js";
-const { babel } = await PluginLoader.load("babel");
+// import { resolve } from '../../dist/plugins/resolve.js'
+import { babelCore as babel } from "../../dist/plugins/babel.core.js";
+// const { babel } = await PluginLoader.load("babel");
 
 import SolidPresets from "https://esm.sh/babel-preset-solid@1.3.13";
 

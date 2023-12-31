@@ -13,9 +13,8 @@ export default [
         // ! IframeEnv 太小了，所以直接打包进去
         external: [
             "rollup-web",
-            "rollup-remote-cdn",
             "process-bundle",
-            "picomatch",
+            // "picomatch",
             "comlink",
             "@isomorphic-git/lightning-fs",
             "rehype",
@@ -41,9 +40,7 @@ export default [
     },
     {
         // 这是给 worker 使用的 umd 版本的环境
-        external: [
-            "process-bundle", //! UMD 不能去除
-        ],
+        external: [],
         input: "./src/Evaluator.ts",
         output: {
             file: "./dist/Evaluator.umd.js",

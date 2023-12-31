@@ -1,4 +1,4 @@
-import "../shim/process";
+import "process";
 import { builtinModules } from "module";
 import type { Plugin } from "rollup";
 

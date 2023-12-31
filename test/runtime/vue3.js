@@ -8,11 +8,11 @@ import { sass } from "../../dist/plugins/sass.js";
 import { postcss } from "../../dist/plugins/postcss.js";
 import { assets } from "../../dist/plugins/assets.js";
 // 导入各种插件
-import json from "https://esm.sh/@rollup/plugin-json@4.1.0";
-import alias from "https://esm.sh/@rollup/plugin-alias@3.1.9";
-import commonjs from "https://esm.sh/@rollup/plugin-commonjs";
-import replace from "https://esm.sh/@rollup/plugin-replace@4.0.0";
-import typescript from "https://esm.sh/@babel/preset-typescript";
+import json from "@rollup/plugin-json";
+import alias from "@rollup/plugin-alias";
+import commonjs from "@rollup/plugin-commonjs";
+import replace from "@rollup/plugin-replace";
+import typescript from "@babel/preset-typescript";
 
 const config = {
     plugins: [
@@ -44,8 +44,6 @@ const config = {
                     [
                         typescript,
                         {
-                            // 需要使用这种方式兼容 solid 配置
-                            isTSX: true,
                             allExtensions: true,
                         },
                     ],
@@ -73,7 +71,7 @@ const config = {
             cdn: (name) => `https://fastly.jsdelivr.net/npm/${name}/+esm`,
         }),
     ],
-    external: ["vue", "vue-router", "pinia", "@vue/devtools-api"],
+    // external: ["vue", "vue-router", "pinia", "@vue/devtools-api"],
 };
 
 const compiler = new Compiler(config, {

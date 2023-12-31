@@ -1,3 +1,5 @@
+import "process";
+import "buffer";
 export { Setting } from "./Setting";
 export * from "./adapter/index";
 export * from "./Compiler";

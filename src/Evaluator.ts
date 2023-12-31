@@ -1,18 +1,12 @@
+import "process";
 import type { Compiler } from "./Compiler";
 import { fetchHook } from "./Evaluator/fetchHook";
 import { setGlobal, useGlobal } from "./utils/useGlobal";
 import { Setting } from "./Setting";
 
-import {
-    createEndpoint,
-    expose,
-    proxy,
-    Remote,
-    releaseProxy,
-    wrap,
-} from "comlink";
+import { createEndpoint, expose, Remote, releaseProxy, wrap } from "comlink";
 import { log } from "./utils/ColorConsole";
-import { createWorker, isInWorker } from "./utils/createWorker";
+import { createWorker } from "./utils/createWorker";
 import { URLResolve } from "./utils/isURLString";
 import { wrapAll } from "./iframe/wrapper";
 import { BundleBuffer } from "./Evaluator/BundleBuffer";

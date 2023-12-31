@@ -1,5 +1,5 @@
 import { Compiler, PluginLoader, sky_module } from "../../../dist/index.js";
-const { wasm } = await PluginLoader.load("wasm", "4.1.2");
+import { wasm } from '../../../dist/plugins/wasm.js'
 const config = {
     plugins: [
         wasm({

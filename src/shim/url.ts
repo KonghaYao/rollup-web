@@ -1,4 +1,4 @@
-export * from "url-bundle";
+export * from "url";
 import { toASCII as domainToASCII } from "punycode";
 import { CHAR_FORWARD_SLASH, CHAR_BACKWARD_SLASH } from "./constants";
 

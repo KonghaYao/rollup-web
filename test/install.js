@@ -7,7 +7,9 @@ const paths = window.location.hash.replace("#", "").split("|");
 if (paths) {
     await Promise.all(
         paths.map((path) => {
-            return import(`./${path}.js`);
+            return import(
+                /** @vite-ignore */
+                `./${path}.js`);
         })
     );
 }

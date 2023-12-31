@@ -1,4 +1,3 @@
-import "../shim/process";
 import { Plugin } from "rollup";
 
 import type { Options } from "@swc/core";
